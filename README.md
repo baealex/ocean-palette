@@ -4,12 +4,6 @@
 
 Manage prompts like a color palette, browse your generated images, extract metadata, and sync your output folder — all in one place.
 
-![](https://github.com/baealex/ocean-palette/assets/35596687/e4310657-7520-4f0b-9645-6e8f754a6461)
-
-![](https://github.com/baealex/ocean-palette/assets/35596687/207c4996-a932-4216-b41d-c328a8397a0d)
-
-![](https://github.com/baealex/ocean-palette/assets/35596687/4e1242f3-e4d6-4265-9b46-18d2da6775f1)
-
 ## Features
 
 - **Ocean Palette** — Organize keywords by category, click to copy, drag to reorder. Treat words like paint on a palette.
