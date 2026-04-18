@@ -56,6 +56,10 @@ class LiveImagesService {
     private promptCache = new Map<number, PromptCacheItem>();
     private emitTimer: NodeJS.Timeout | null = null;
     private pendingEmitReason = 'init';
+    private activeSyncRuns = 0;
+    private syncReason: string | null = null;
+    private syncScanned: number | null = null;
+    private syncUpdatedAt = Date.now();
     private imageMutationQueue: Promise<void> = Promise.resolve();
     private readonly imageMutationContext = new AsyncLocalStorage<boolean>();
 
@@ -637,7 +641,8 @@ class LiveImagesService {
             return task();
         }
 
-        const runTaskInContext = () => this.imageMutationContext.run(true, task);
+        const runTaskInContext = () =>
+            this.imageMutationContext.run(true, task);
         const run = this.imageMutationQueue.then(
             runTaskInContext,
             runTaskInContext,

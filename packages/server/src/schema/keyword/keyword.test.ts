@@ -82,6 +82,15 @@ afterAll(async () => {
     await models.keyword.deleteMany();
 });
 
+type TestKeyword = {
+    id: number;
+};
+
+type TestCategory = {
+    id: number;
+    keywords: TestKeyword[];
+};
+
 describe('Keyword Schema', () => {
     const allCategoriesQuery = `
         query {
@@ -100,7 +109,7 @@ describe('Keyword Schema', () => {
         }       
     `;
 
-    const getAllCategories = async () => {
+    const getAllCategories = async (): Promise<TestCategory[]> => {
         const res = await request(app).post('/graphql').send({
             query: allCategoriesQuery,
         });
@@ -108,10 +117,10 @@ describe('Keyword Schema', () => {
         return res.body.data.allCategories;
     };
 
-    const getAllKeywords = async () => {
+    const getAllKeywords = async (): Promise<TestKeyword[]> => {
         const allCategories = await getAllCategories();
 
-        return allCategories.reduce((acc, cur) => {
+        return allCategories.reduce<TestKeyword[]>((acc, cur) => {
             return acc.concat(cur.keywords);
         }, []);
     };

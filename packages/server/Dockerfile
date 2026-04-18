@@ -1,33 +1,43 @@
-FROM node:21-alpine as client
+FROM node:22-alpine AS client
 
-WORKDIR /app/packages/client
+WORKDIR /app
 
-COPY ./packages/client/package.json ./
+RUN corepack enable && corepack prepare pnpm@10.25.0 --activate
 
-RUN npx pnpm i
+COPY ./package.json ./pnpm-lock.yaml ./pnpm-workspace.yaml ./
+COPY ./packages/client/package.json ./packages/client/package.json
+COPY ./packages/server/package.json ./packages/server/package.json
+COPY ./packages/shared/package.json ./packages/shared/package.json
+COPY ./packages/server/prisma ./packages/server/prisma
 
-COPY ./packages/client/ ./
+RUN pnpm install --frozen-lockfile
 
-RUN npm run build
+COPY ./packages/client ./packages/client
 
-FROM node:21-alpine as server
+RUN pnpm --filter @ocean-palette/client run build
 
-WORKDIR /app/packages/server
+FROM node:22-alpine AS server
 
-COPY ./packages/server/package.json ./
-COPY ./packages/server/pnpm-lock.yaml ./
-COPY ./packages/server/prisma ./prisma
+WORKDIR /app
 
-RUN npx pnpm i
+RUN corepack enable && corepack prepare pnpm@10.25.0 --activate
 
-COPY ./packages/server/ ./
+COPY ./package.json ./pnpm-lock.yaml ./pnpm-workspace.yaml ./
+COPY ./packages/client/package.json ./packages/client/package.json
+COPY ./packages/server/package.json ./packages/server/package.json
+COPY ./packages/shared/package.json ./packages/shared/package.json
+COPY ./packages/server/prisma ./packages/server/prisma
 
-FROM node:21-alpine
+RUN pnpm install --frozen-lockfile
+
+COPY ./packages/server ./packages/server
+
+FROM node:22-alpine
 
 WORKDIR /app/packages/server
 ENV DATABASE_URL=file:./data/db.sqlite3
 
-COPY --from=server /app/packages/server ./
+COPY --from=server /app /app
 COPY --from=client /app/packages/client/dist /app/packages/client/dist
 
 RUN mkdir -p /app/packages/server/public/assets/images

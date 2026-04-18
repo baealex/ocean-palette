@@ -1,26 +1,21 @@
 {
     "compilerOptions": {
         "outDir": "dist",
+        "rootDir": "src",
         "esModuleInterop": true,
         "module": "CommonJS",
         "moduleResolution": "Node",
         "baseUrl": "./src",
-        "target": "ES5",
+        "target": "ES2022",
+        "ignoreDeprecations": "6.0",
+        "types": ["node", "jest"],
         "paths": {
-            "~/*": [
-                "./*"
-            ],
-        },
+            "~/*": ["./*"]
+        }
     },
-    "include": [
-        "src/**/*"
-    ],
-    "exclude": [
-        "scripts/**/*",
-    ],
+    "include": ["src/**/*"],
+    "exclude": ["scripts/**/*", "src/**/*.test.ts"],
     "ts-node": {
-        "require": [
-            "tsconfig-paths/register"
-        ]
+        "require": ["tsconfig-paths/register"]
     }
 }

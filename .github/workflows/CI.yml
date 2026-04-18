@@ -7,6 +7,7 @@ on:
     paths:
       - 'packages/**'
       - 'package.json'
+      - 'pnpm-lock.yaml'
       - 'pnpm-workspace.yaml'
       - '.github/workflows/CI.yml'
   pull_request:
@@ -15,6 +16,7 @@ on:
     paths:
       - 'packages/**'
       - 'package.json'
+      - 'pnpm-lock.yaml'
       - 'pnpm-workspace.yaml'
       - '.github/workflows/CI.yml'
   workflow_dispatch:
@@ -22,41 +24,49 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     strategy:
       matrix:
-        node-version: [21.x]
+        node-version: [22.x]
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v6
 
     - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@v6
       with:
         node-version: ${{ matrix.node-version }}
 
+    - name: Enable pnpm
+      run: corepack enable && corepack prepare pnpm@10.25.0 --activate
+
     - name: Install Dependencies
-      run: npx pnpm i
+      run: pnpm install --frozen-lockfile
+
+    - name: Audit Dependencies
+      run: pnpm audit
     
     - name: Lint (Server)
-      run: npx pnpm --filter @ocean-palette/server run lint
+      run: pnpm --filter @ocean-palette/server run lint
     
     - name: Test (Server)
-      run: npx pnpm --filter @ocean-palette/server run test
+      run: pnpm --filter @ocean-palette/server run test
     
     - name: Build (Server)
-      run: npx pnpm --filter @ocean-palette/server run build
+      run: pnpm --filter @ocean-palette/server run build
 
     - name: Lint (Client React)
-      run: npx pnpm --filter @ocean-palette/client run lint
+      run: pnpm --filter @ocean-palette/client run lint
 
     - name: Typecheck (Client React)
-      run: npx pnpm --filter @ocean-palette/client run typecheck
+      run: pnpm --filter @ocean-palette/client run typecheck
 
     - name: React Compiler Healthcheck (Client React)
-      run: npx pnpm --filter @ocean-palette/client run react-compiler:check
+      run: pnpm --filter @ocean-palette/client run react-compiler:check
 
     - name: Test (Client React)
-      run: npx pnpm --filter @ocean-palette/client run test
+      run: pnpm --filter @ocean-palette/client run test
 
     - name: Build (Client React)
-      run: npx pnpm --filter @ocean-palette/client run build
+      run: pnpm --filter @ocean-palette/client run build

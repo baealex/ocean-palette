@@ -1,4 +1,8 @@
-import express, { type NextFunction, type Request, type Response } from 'express';
+import express, {
+    type NextFunction,
+    type Request,
+    type Response,
+} from 'express';
 import { createHandler } from 'graphql-http/lib/use/express';
 import path from 'path';
 
@@ -26,9 +30,12 @@ export const app = express()
             },
         }),
     )
-    .use('/assets/images/', express.static(path.resolve('public/assets/images/')))
+    .use(
+        '/assets/images/',
+        express.static(path.resolve('public/assets/images/')),
+    )
     .use('/api/', router)
-    .get('*', (req, res) => {
+    .use((req, res) => {
         if (req.path.startsWith('/api/')) {
             return res.status(404).json({
                 message: 'Not Found',
@@ -37,12 +44,7 @@ export const app = express()
         return res.sendFile(path.resolve('../client/dist/index.html'));
     })
     .use(
-        (
-            error: unknown,
-            _req: Request,
-            res: Response,
-            _next: NextFunction,
-        ) => {
+        (error: unknown, _req: Request, res: Response, _next: NextFunction) => {
             if (res.headersSent) {
                 return;
             }

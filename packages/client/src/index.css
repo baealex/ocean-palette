@@ -1,3 +1,4 @@
+@config "../tailwind.config.ts";
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -57,6 +58,7 @@ body {
     }
 
     .ui-touch {
-        @apply min-h-11 min-w-11;
+        min-height: 2.75rem;
+        min-width: 2.75rem;
     }
 }

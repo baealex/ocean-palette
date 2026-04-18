@@ -2,6 +2,7 @@
     "name": "ocean-palette",
     "version": "1.0.0",
     "private": true,
+    "packageManager": "pnpm@10.25.0",
     "scripts": {
         "dev": "pnpm --parallel --stream --filter @ocean-palette/server --filter @ocean-palette/client run dev",
         "start": "pnpm build:client && pnpm start:server",
@@ -22,13 +23,26 @@
         "test": "pnpm --filter @ocean-palette/server run test && pnpm --filter @ocean-palette/client run test"
     },
     "devDependencies": {
-        "@biomejs/biome": "^1.9.4",
-        "lefthook": "^1.11.2"
+        "@biomejs/biome": "^2.4.12",
+        "lefthook": "^2.1.6"
     },
     "pnpm": {
         "overrides": {
-            "tar": "7.5.8",
-            "esbuild": "0.25.0"
-        }
+            "esbuild": "0.25.12",
+            "tar": "7.5.13"
+        },
+        "onlyBuiltDependencies": [
+            "@parcel/watcher",
+            "@prisma/client",
+            "@prisma/engines",
+            "@swc/core",
+            "bcrypt",
+            "esbuild",
+            "lefthook",
+            "prisma",
+            "sharp",
+            "sqlite3",
+            "unrs-resolver"
+        ]
     }
 }
