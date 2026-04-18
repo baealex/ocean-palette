@@ -2,8 +2,21 @@ import type { ButtonHTMLAttributes } from 'react';
 
 import { cn } from './cn';
 
-type ButtonVariant = 'primary' | 'secondary' | 'danger' | 'ghost' | 'soft';
-type ButtonSize = 'sm' | 'md' | 'lg' | 'icon';
+type ButtonVariant =
+    | 'primary'
+    | 'secondary'
+    | 'danger'
+    | 'ghost'
+    | 'soft'
+    | 'control';
+type ButtonSize =
+    | 'sm'
+    | 'md'
+    | 'lg'
+    | 'icon'
+    | 'control'
+    | 'compact'
+    | 'compactIcon';
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
     variant?: ButtonVariant;
@@ -21,6 +34,8 @@ const VARIANT_CLASS: Record<ButtonVariant, string> = {
     danger: 'border border-danger-700 bg-gradient-to-b from-danger-700 to-danger-800 text-white shadow-surface hover:from-danger-800 hover:to-danger-800',
     ghost: 'border border-transparent bg-transparent text-ink-muted hover:bg-surface-muted',
     soft: 'border border-brand-200 bg-brand-50 text-brand-800 shadow-surface hover:bg-brand-100',
+    control:
+        'border border-line bg-surface-base text-ink shadow-none tracking-normal hover:bg-surface-raised',
 };
 
 const SIZE_CLASS: Record<ButtonSize, string> = {
@@ -28,6 +43,9 @@ const SIZE_CLASS: Record<ButtonSize, string> = {
     md: 'h-11 px-4 text-sm',
     lg: 'h-12 px-5 text-sm',
     icon: 'h-11 w-11',
+    control: 'h-10 px-4 text-sm',
+    compact: 'h-10 px-3 text-xs',
+    compactIcon: 'h-8 w-8',
 };
 
 export const Button = ({

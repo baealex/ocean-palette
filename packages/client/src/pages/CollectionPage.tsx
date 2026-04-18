@@ -94,17 +94,19 @@ export const CollectionPage = () => {
         <PageFrame title={COLLECTION_PAGE_META.title}>
             <section
                 aria-label="Collection search and filters"
-                className="mb-3 rounded-token-lg border border-line/80 bg-surface-base/90 p-2"
+                className="mb-3 overflow-hidden rounded-token-lg border border-line/80 bg-surface-base/95"
             >
-                <CollectionSearchBar
-                    value={draftQuery}
-                    searchBy={searchBy}
-                    onChange={setDraftQuery}
-                    onSearchByChange={handleSearchByChange}
-                    onSubmit={applySearch}
-                    placeholder={COLLECTION_PAGE_META.searchPlaceholder}
-                    embedded
-                />
+                <div className="p-3">
+                    <CollectionSearchBar
+                        value={draftQuery}
+                        searchBy={searchBy}
+                        onChange={setDraftQuery}
+                        onSearchByChange={handleSearchByChange}
+                        onSubmit={applySearch}
+                        placeholder={COLLECTION_PAGE_META.searchPlaceholder}
+                        embedded
+                    />
+                </div>
                 <CollectionFilterBar
                     query={draftQuery}
                     searchBy={searchBy}
@@ -124,7 +126,6 @@ export const CollectionPage = () => {
                     onDateRangeChange={handleDateRangeChange}
                     onDateQuickPreset={handleDateQuickPreset}
                     onReset={resetFilters}
-                    className="mt-2"
                     embedded
                 />
             </section>

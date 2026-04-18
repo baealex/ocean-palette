@@ -50,6 +50,8 @@ export const CollectionPrimaryFiltersSection = ({
                     id="collection-model-filter"
                     ariaLabelledBy="collection-model-filter-label"
                     value={model || modelAllValue}
+                    size="control"
+                    tone="control"
                     options={modelSelectOptions}
                     onValueChange={(nextValue) => {
                         onModelChange(
@@ -59,7 +61,6 @@ export const CollectionPrimaryFiltersSection = ({
                     disabled={
                         loadingModelOptions && resolvedModelOptions.length === 0
                     }
-                    triggerClassName="!h-10 border-line bg-surface-base text-sm shadow-none"
                 />
                 {modelOptionsError ? (
                     <p className="mt-1 text-xs font-medium text-warning-700">
@@ -79,17 +80,18 @@ export const CollectionPrimaryFiltersSection = ({
                     id="collection-sort-filter"
                     ariaLabelledBy="collection-sort-filter-label"
                     value={sort}
+                    size="control"
+                    tone="control"
                     options={sortSelectOptions}
                     onValueChange={onSortChange}
-                    triggerClassName="!h-10 border-line bg-surface-base text-sm shadow-none"
                 />
             </div>
 
             <Button
                 type="button"
                 variant="ghost"
-                size="md"
-                className="!h-10 px-3 text-xs sm:justify-self-start md:justify-self-end"
+                size="compact"
+                className="sm:justify-self-start md:justify-self-end"
                 disabled={!canReset}
                 onClick={onReset}
             >

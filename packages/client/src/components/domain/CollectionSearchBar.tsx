@@ -50,7 +50,7 @@ export const CollectionSearchBar = ({
                 )}
             >
                 <div className="grid gap-2 md:grid-cols-[minmax(0,1fr)_auto] md:items-end">
-                    <div className="grid gap-2 rounded-token-md bg-surface-muted/60 p-2 sm:grid-cols-[184px_minmax(0,1fr)]">
+                    <div className="grid gap-2 sm:grid-cols-[184px_minmax(0,1fr)]">
                         <div>
                             <label
                                 id="collection-search-field-label"
@@ -62,6 +62,8 @@ export const CollectionSearchBar = ({
                                 id={searchById}
                                 ariaLabelledBy="collection-search-field-label"
                                 value={searchBy}
+                                size="control"
+                                tone="control"
                                 options={[
                                     { value: 'title', label: 'Title' },
                                     { value: 'prompt', label: 'Prompt' },
@@ -70,7 +72,6 @@ export const CollectionSearchBar = ({
                                         label: 'Negative prompt',
                                     },
                                 ]}
-                                triggerClassName="!h-10 border-line bg-surface-base text-sm shadow-none"
                                 onValueChange={(nextValue) => {
                                     onSearchByChange(
                                         parseCollectionSearchBy(nextValue),
@@ -90,12 +91,14 @@ export const CollectionSearchBar = ({
                                 <Input
                                     id={inputId}
                                     value={value}
+                                    inputSize="control"
+                                    tone="control"
                                     onChange={(event) => {
                                         onChange(event.target.value);
                                     }}
                                     placeholder={placeholder}
                                     className={cn(
-                                        '!h-10 border-line bg-surface-base pl-9 text-sm shadow-none',
+                                        'pl-9',
                                         hasQuery ? 'pr-10' : 'pr-3',
                                     )}
                                 />
@@ -103,8 +106,8 @@ export const CollectionSearchBar = ({
                                     <Button
                                         type="button"
                                         variant="ghost"
-                                        size="icon"
-                                        className="ui-focus-ring absolute right-1.5 top-1/2 inline-flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-token-sm text-ink-subtle transition-colors hover:bg-surface-muted hover:text-ink"
+                                        size="compactIcon"
+                                        className="absolute right-1.5 top-1/2 -translate-y-1/2 rounded-token-sm text-ink-subtle hover:text-ink"
                                         aria-label="Clear search query"
                                         onClick={() => {
                                             onChange('');
@@ -119,9 +122,9 @@ export const CollectionSearchBar = ({
                     <div className="flex items-center justify-end">
                         <Button
                             type="submit"
-                            variant="secondary"
-                            size="sm"
-                            className="!h-10 px-4 shadow-none"
+                            variant="control"
+                            size="control"
+                            className="min-w-[88px]"
                             aria-label="Run collection search"
                         >
                             Search

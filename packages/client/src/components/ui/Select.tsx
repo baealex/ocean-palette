@@ -10,6 +10,9 @@ export interface SelectOption {
     disabled?: boolean;
 }
 
+type SelectSize = 'default' | 'control';
+type SelectTone = 'default' | 'control';
+
 interface SelectProps {
     value: string;
     options: SelectOption[];
@@ -17,10 +20,25 @@ interface SelectProps {
     disabled?: boolean;
     id?: string;
     ariaLabelledBy?: string;
+    size?: SelectSize;
+    tone?: SelectTone;
     triggerClassName?: string;
     contentClassName?: string;
     onValueChange: (value: string) => void;
 }
+
+const TRIGGER_BASE_CLASS =
+    'ui-focus-ring inline-flex w-full items-center justify-between gap-2 rounded-token-md border px-3 text-left text-sm text-ink disabled:cursor-not-allowed disabled:opacity-55';
+
+const TRIGGER_SIZE_CLASS: Record<SelectSize, string> = {
+    default: 'h-11',
+    control: 'h-10',
+};
+
+const TRIGGER_TONE_CLASS: Record<SelectTone, string> = {
+    default: 'border-line-strong bg-surface-base',
+    control: 'border-line bg-surface-base shadow-none',
+};
 
 export const Select = ({
     value,
@@ -29,6 +47,8 @@ export const Select = ({
     disabled = false,
     id,
     ariaLabelledBy,
+    size = 'default',
+    tone = 'default',
     triggerClassName,
     contentClassName,
     onValueChange,
@@ -43,7 +63,9 @@ export const Select = ({
                 id={id}
                 aria-labelledby={ariaLabelledBy}
                 className={cn(
-                    'ui-focus-ring inline-flex h-11 w-full items-center justify-between gap-2 rounded-token-md border border-line-strong bg-surface-base px-3 text-left text-sm text-ink disabled:cursor-not-allowed disabled:opacity-55',
+                    TRIGGER_BASE_CLASS,
+                    TRIGGER_SIZE_CLASS[size],
+                    TRIGGER_TONE_CLASS[tone],
                     triggerClassName,
                 )}
             >
