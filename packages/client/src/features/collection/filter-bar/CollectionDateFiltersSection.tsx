@@ -89,27 +89,27 @@ export const CollectionDateFiltersSection = ({
         <section
             aria-labelledby="collection-date-filter-group-label"
             className={cn(
-                'rounded-token-md border border-line/70 bg-surface-base/80 p-3',
-                embedded ? 'shadow-surface' : '',
+                'col-span-full block w-full min-w-0 self-stretch justify-self-stretch',
+                embedded
+                    ? 'border-t border-line/70 pt-2'
+                    : 'rounded-token-md border border-line/70 bg-surface-base/80 p-3',
             )}
         >
-            <Button
+            <button
                 type="button"
-                variant="ghost"
-                size="sm"
                 aria-expanded={dateFiltersExpanded}
                 aria-controls="collection-date-filter-panel"
                 onClick={() => {
                     setDateFiltersExpanded((previous) => !previous);
                 }}
-                className="!h-auto w-full justify-between rounded-token-md border border-line/60 bg-surface-raised px-3.5 py-3 hover:border-line-strong hover:bg-surface-muted"
+                className="ui-focus-ring flex min-h-12 w-full min-w-0 items-center justify-between gap-3 rounded-token-md border border-line bg-surface-base px-3 py-2 text-left transition-colors hover:border-line-strong hover:bg-surface-raised"
             >
                 <span className="flex min-w-0 flex-col items-start text-left">
                     <span
                         id="collection-date-filter-group-label"
-                        className="text-sm font-semibold text-ink"
+                        className="text-[11px] font-semibold uppercase text-ink-subtle"
                     >
-                        Date filters
+                        Date
                     </span>
                     <span className="mt-0.5 text-xs font-medium text-ink-subtle">
                         {dateSummary}
@@ -124,7 +124,7 @@ export const CollectionDateFiltersSection = ({
                         )}
                     />
                 </span>
-            </Button>
+            </button>
 
             {dateFiltersExpanded ? (
                 <div
@@ -168,11 +168,16 @@ export const CollectionDateFiltersSection = ({
                                 )}
                                 onClick={() => {
                                     setDateFilterMode('single');
-                                    const baseDay = singleDay?.startOf('day')
-                                        ?? dayjs().startOf('day');
+                                    const baseDay =
+                                        singleDay?.startOf('day') ??
+                                        dayjs().startOf('day');
                                     onDateRangeChange(
-                                        formatStorageDateTime(baseDay.startOf('day')),
-                                        formatStorageDateTime(baseDay.endOf('day')),
+                                        formatStorageDateTime(
+                                            baseDay.startOf('day'),
+                                        ),
+                                        formatStorageDateTime(
+                                            baseDay.endOf('day'),
+                                        ),
                                     );
                                 }}
                             >

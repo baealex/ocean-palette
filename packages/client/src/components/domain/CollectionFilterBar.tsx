@@ -5,11 +5,12 @@ import { cn } from '~/components/ui/cn';
 import { CollectionDateFiltersSection } from '~/features/collection/filter-bar/CollectionDateFiltersSection';
 import { CollectionPrimaryFiltersSection } from '~/features/collection/filter-bar/CollectionPrimaryFiltersSection';
 import { isSameCalendarDay } from '~/features/collection/filter-bar/date-utils';
-import type { CollectionDateField } from '~/api';
+import type { CollectionDateField, CollectionSearchBy } from '~/api';
 import {
     COLLECTION_DATE_FIELD_OPTIONS,
     COLLECTION_SORT_OPTIONS,
     DEFAULT_COLLECTION_DATE_FIELD,
+    DEFAULT_COLLECTION_SEARCH_BY,
     DEFAULT_COLLECTION_SORT,
     parseCollectionSort,
     type CollectionDateQuickPreset,
@@ -20,6 +21,8 @@ import type { SelectOption } from '~/components/ui/Select';
 const MODEL_ALL_VALUE = '__collection_model_all__';
 
 interface CollectionFilterBarProps {
+    query: string;
+    searchBy: CollectionSearchBy;
     sort: CollectionSort;
     model: string;
     dateField: CollectionDateField;
@@ -41,6 +44,8 @@ interface CollectionFilterBarProps {
 }
 
 export const CollectionFilterBar = ({
+    query,
+    searchBy,
     sort,
     model,
     dateField,
@@ -64,7 +69,9 @@ export const CollectionFilterBar = ({
     const hasActiveDateFilter =
         hasDateRange || dateField !== DEFAULT_COLLECTION_DATE_FIELD;
     const canReset =
+        query.trim().length > 0 ||
         model.length > 0 ||
+        searchBy !== DEFAULT_COLLECTION_SEARCH_BY ||
         sort !== DEFAULT_COLLECTION_SORT ||
         hasDateRange ||
         dateField !== DEFAULT_COLLECTION_DATE_FIELD;
@@ -134,7 +141,7 @@ export const CollectionFilterBar = ({
 
     const dateSummary = useMemo(() => {
         if (!hasActiveDateFilter) {
-            return 'Filter by collection added or image generated date.';
+            return 'All dates';
         }
 
         const activeFieldLabel =
@@ -167,9 +174,9 @@ export const CollectionFilterBar = ({
     return (
         <div
             className={cn(
-                'grid gap-4',
+                'grid gap-2',
                 embedded
-                    ? 'border-t border-brand-100 px-3 py-3'
+                    ? 'rounded-token-md bg-surface-muted/60 p-2'
                     : 'rounded-token-lg border border-line bg-surface-raised p-4',
                 className,
             )}

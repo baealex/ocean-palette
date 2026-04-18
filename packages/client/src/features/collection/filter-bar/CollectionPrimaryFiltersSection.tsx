@@ -34,7 +34,7 @@ export const CollectionPrimaryFiltersSection = ({
     return (
         <section
             aria-labelledby="collection-primary-filter-group-label"
-            className="grid gap-3 md:grid-cols-[minmax(0,1fr)_240px_auto] md:items-end"
+            className="grid gap-2 sm:grid-cols-2 md:grid-cols-[repeat(2,minmax(0,1fr))_auto] md:items-end"
         >
             <h3 id="collection-primary-filter-group-label" className="sr-only">
                 Primary filters
@@ -42,7 +42,7 @@ export const CollectionPrimaryFiltersSection = ({
             <div>
                 <label
                     id="collection-model-filter-label"
-                    className="mb-1 block text-xs font-semibold text-ink-muted"
+                    className="mb-1 block text-[11px] font-semibold uppercase text-ink-subtle"
                 >
                     Model
                 </label>
@@ -52,20 +52,26 @@ export const CollectionPrimaryFiltersSection = ({
                     value={model || modelAllValue}
                     options={modelSelectOptions}
                     onValueChange={(nextValue) => {
-                        onModelChange(nextValue === modelAllValue ? '' : nextValue);
+                        onModelChange(
+                            nextValue === modelAllValue ? '' : nextValue,
+                        );
                     }}
-                    disabled={loadingModelOptions && resolvedModelOptions.length === 0}
+                    disabled={
+                        loadingModelOptions && resolvedModelOptions.length === 0
+                    }
+                    triggerClassName="!h-10 border-line bg-surface-base text-sm shadow-none"
                 />
                 {modelOptionsError ? (
                     <p className="mt-1 text-xs font-medium text-warning-700">
-                        Model options could not be loaded. You can still browse all models.
+                        Model options could not be loaded. You can still browse
+                        all models.
                     </p>
                 ) : null}
             </div>
             <div>
                 <label
                     id="collection-sort-filter-label"
-                    className="mb-1 block text-xs font-semibold text-ink-muted"
+                    className="mb-1 block text-[11px] font-semibold uppercase text-ink-subtle"
                 >
                     Sort
                 </label>
@@ -75,6 +81,7 @@ export const CollectionPrimaryFiltersSection = ({
                     value={sort}
                     options={sortSelectOptions}
                     onValueChange={onSortChange}
+                    triggerClassName="!h-10 border-line bg-surface-base text-sm shadow-none"
                 />
             </div>
 
@@ -82,6 +89,7 @@ export const CollectionPrimaryFiltersSection = ({
                 type="button"
                 variant="ghost"
                 size="md"
+                className="!h-10 px-3 text-xs sm:justify-self-start md:justify-self-end"
                 disabled={!canReset}
                 onClick={onReset}
             >

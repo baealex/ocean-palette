@@ -2,7 +2,6 @@ import { useEffect } from 'react';
 
 import { Badge } from '~/components/ui/Badge';
 import { Button } from '~/components/ui/Button';
-import { Card } from '~/components/ui/Card';
 import {
     DialogClose,
     DialogContent,
@@ -89,7 +88,7 @@ export const CollectionRealtimeControl = () => {
 
     return (
         <>
-            <Card as="section" padding="sm">
+            <section className="rounded-token-md border border-line bg-surface-base/70 px-3 py-2">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                     <div className="flex items-center gap-2">
                         <Switch
@@ -101,10 +100,10 @@ export const CollectionRealtimeControl = () => {
                             }}
                         />
                         <div className="min-w-0">
-                            <span className="text-sm font-semibold text-ink">
+                            <span className="text-sm font-semibold text-ink-muted">
                                 Auto Collect
                             </span>
-                            <p className="text-xs text-ink-muted">
+                            <p className="text-xs text-ink-subtle">
                                 {statusSummary}
                             </p>
                         </div>
@@ -118,6 +117,7 @@ export const CollectionRealtimeControl = () => {
                         <Button
                             variant="secondary"
                             size="sm"
+                            className="shadow-none"
                             onClick={() => {
                                 void handleCollectNow();
                             }}
@@ -134,7 +134,7 @@ export const CollectionRealtimeControl = () => {
                         </Button>
                     </div>
                 </div>
-            </Card>
+            </section>
 
             <DialogRoot
                 open={settingsOpen}

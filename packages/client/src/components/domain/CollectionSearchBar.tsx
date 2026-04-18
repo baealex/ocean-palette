@@ -41,63 +41,87 @@ export const CollectionSearchBar = ({
             }}
             className={cn('w-full', className)}
         >
-            <label htmlFor={inputId} className="sr-only">
-                Collection search
-            </label>
-            <label htmlFor={searchById} className="sr-only">
-                Search field
-            </label>
             <div
                 className={cn(
-                    'grid gap-2 p-1.5',
+                    'grid gap-2',
+                    embedded ? '' : 'p-1.5',
                     !embedded &&
                         'rounded-token-lg border-2 border-brand-200 bg-surface-raised shadow-surface',
                 )}
             >
-                <div className="grid gap-2 md:grid-cols-[220px_minmax(0,1fr)_auto] md:items-center">
-                    <Select
-                        id={searchById}
-                        value={searchBy}
-                        options={[
-                            { value: 'title', label: 'Search in Title' },
-                            { value: 'prompt', label: 'Search in Prompt' },
-                            {
-                                value: 'negative_prompt',
-                                label: 'Search in Negative Prompt',
-                            },
-                        ]}
-                        onValueChange={(nextValue) =>
-                            onSearchByChange(parseCollectionSearchBy(nextValue))
-                        }
-                    />
-                    <div className="relative">
-                        <SearchIcon className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-brand-500" />
-                        <Input
-                            id={inputId}
-                            value={value}
-                            onChange={(event) => onChange(event.target.value)}
-                            placeholder={placeholder}
-                            className="h-11 border-0 bg-transparent pl-9 pr-3 text-sm shadow-none focus-visible:ring-0"
-                        />
-                    </div>
-                    <div className="flex items-center justify-end gap-1">
-                        {hasQuery ? (
-                            <Button
-                                type="button"
-                                variant="ghost"
-                                size="sm"
-                                className="px-2"
-                                aria-label="Clear search query"
-                                onClick={() => onChange('')}
+                <div className="grid gap-2 md:grid-cols-[minmax(0,1fr)_auto] md:items-end">
+                    <div className="grid gap-2 rounded-token-md bg-surface-muted/60 p-2 sm:grid-cols-[184px_minmax(0,1fr)]">
+                        <div>
+                            <label
+                                id="collection-search-field-label"
+                                className="mb-1 block text-[11px] font-semibold uppercase text-ink-subtle"
                             >
-                                <CrossIcon width={14} height={14} />
-                            </Button>
-                        ) : null}
+                                Field
+                            </label>
+                            <Select
+                                id={searchById}
+                                ariaLabelledBy="collection-search-field-label"
+                                value={searchBy}
+                                options={[
+                                    { value: 'title', label: 'Title' },
+                                    { value: 'prompt', label: 'Prompt' },
+                                    {
+                                        value: 'negative_prompt',
+                                        label: 'Negative prompt',
+                                    },
+                                ]}
+                                triggerClassName="!h-10 border-line bg-surface-base text-sm shadow-none"
+                                onValueChange={(nextValue) => {
+                                    onSearchByChange(
+                                        parseCollectionSearchBy(nextValue),
+                                    );
+                                }}
+                            />
+                        </div>
+                        <div>
+                            <label
+                                htmlFor={inputId}
+                                className="mb-1 block text-[11px] font-semibold uppercase text-ink-subtle"
+                            >
+                                Keyword
+                            </label>
+                            <div className="relative min-w-0">
+                                <SearchIcon className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-subtle" />
+                                <Input
+                                    id={inputId}
+                                    value={value}
+                                    onChange={(event) => {
+                                        onChange(event.target.value);
+                                    }}
+                                    placeholder={placeholder}
+                                    className={cn(
+                                        '!h-10 border-line bg-surface-base pl-9 text-sm shadow-none',
+                                        hasQuery ? 'pr-10' : 'pr-3',
+                                    )}
+                                />
+                                {hasQuery ? (
+                                    <Button
+                                        type="button"
+                                        variant="ghost"
+                                        size="icon"
+                                        className="ui-focus-ring absolute right-1.5 top-1/2 inline-flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-token-sm text-ink-subtle transition-colors hover:bg-surface-muted hover:text-ink"
+                                        aria-label="Clear search query"
+                                        onClick={() => {
+                                            onChange('');
+                                        }}
+                                    >
+                                        <CrossIcon width={14} height={14} />
+                                    </Button>
+                                ) : null}
+                            </div>
+                        </div>
+                    </div>
+                    <div className="flex items-center justify-end">
                         <Button
                             type="submit"
-                            variant="primary"
+                            variant="secondary"
                             size="sm"
-                            className="px-3"
+                            className="!h-10 px-4 shadow-none"
                             aria-label="Run collection search"
                         >
                             Search

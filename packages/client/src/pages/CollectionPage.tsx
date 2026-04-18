@@ -4,7 +4,6 @@ import { CollectionRealtimeControl } from '~/components/domain/CollectionRealtim
 import { CollectionSearchBar } from '~/components/domain/CollectionSearchBar';
 import { CollectionShowcaseShortcut } from '~/components/domain/CollectionShowcaseShortcut';
 import { PageFrame } from '~/components/domain/PageFrame';
-import { Card } from '~/components/ui/Card';
 import { useCollectionPageContent } from '~/features/collection/use-collection-page-content';
 import { useCollectionPageData } from '~/features/collection/use-collection-page-data';
 import { useCollectionPageFilters } from '~/features/collection/use-collection-page-filters';
@@ -12,7 +11,6 @@ import { useCollectionPagePaginationSync } from '~/features/collection/use-colle
 
 const COLLECTION_PAGE_META = {
     title: 'Collection',
-    description: 'Browse, search, and manage saved prompts.',
     searchPlaceholder: 'Search collections',
 } as const;
 
@@ -93,15 +91,10 @@ export const CollectionPage = () => {
     });
 
     return (
-        <PageFrame
-            title={COLLECTION_PAGE_META.title}
-            description={COLLECTION_PAGE_META.description}
-        >
-            <Card
-                as="section"
-                padding="none"
-                emphasis="brandGlow"
-                className="mb-4 overflow-hidden"
+        <PageFrame title={COLLECTION_PAGE_META.title}>
+            <section
+                aria-label="Collection search and filters"
+                className="mb-3 rounded-token-lg border border-line/80 bg-surface-base/90 p-2"
             >
                 <CollectionSearchBar
                     value={draftQuery}
@@ -113,6 +106,8 @@ export const CollectionPage = () => {
                     embedded
                 />
                 <CollectionFilterBar
+                    query={draftQuery}
+                    searchBy={searchBy}
                     sort={sort}
                     model={draftModel}
                     dateField={dateField}
@@ -129,18 +124,17 @@ export const CollectionPage = () => {
                     onDateRangeChange={handleDateRangeChange}
                     onDateQuickPreset={handleDateQuickPreset}
                     onReset={resetFilters}
+                    className="mt-2"
                     embedded
                 />
-            </Card>
+            </section>
+            <div className="mb-3 flex flex-wrap items-center justify-between gap-2 px-1">
+                <CollectionNav view={view} onViewChange={handleViewChange} />
+                <CollectionShowcaseShortcut />
+            </div>
             <div className="mb-4">
                 <CollectionRealtimeControl />
             </div>
-            <Card as="section" padding="sm" className="mb-4">
-                <div className="flex flex-wrap items-center justify-between gap-2">
-                    <CollectionNav view={view} onViewChange={handleViewChange} />
-                    <CollectionShowcaseShortcut />
-                </div>
-            </Card>
 
             {content}
         </PageFrame>
