@@ -3,7 +3,6 @@ node_modules
 .npm-cache
 .git
 .github
-.conor
 .agents
 .tmp-design-refs
 docs
