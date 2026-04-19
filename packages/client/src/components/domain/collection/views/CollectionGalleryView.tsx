@@ -42,24 +42,30 @@ const CollectionGalleryViewComponent = ({
                 <MasonryColumns
                     items={items}
                     getItemKey={(item) => item.id}
-                    renderItem={(item) => (
-                        <Link
-                            to="/collection/$id"
-                            params={{ id: String(item.id) }}
-                            className="group relative block overflow-hidden rounded-token-md border border-line bg-surface-base shadow-surface"
-                        >
-                            <div className="pointer-events-none absolute inset-x-0 top-0 z-10 -translate-y-full bg-overlay/60 p-4 text-center text-sm font-semibold text-ink-inverse transition group-hover:translate-y-0">
-                                {item.title || '(untitled)'}
-                            </div>
-                            <Image
-                                className="block h-auto w-full object-cover"
-                                src={item.image.url}
-                                alt={item.title}
-                                width={item.image.width}
-                                height={item.image.height}
-                            />
-                        </Link>
-                    )}
+                    renderItem={(item) => {
+                        const displayTitle = item.title || '(untitled)';
+
+                        return (
+                            <Link
+                                to="/collection/$id"
+                                params={{ id: String(item.id) }}
+                                className="ui-focus-ring group relative block overflow-hidden rounded-token-md border border-line/80 bg-surface-muted transition-colors hover:border-line-strong"
+                            >
+                                <Image
+                                    className="block h-auto w-full object-cover"
+                                    src={item.image.url}
+                                    alt={displayTitle}
+                                    width={item.image.width}
+                                    height={item.image.height}
+                                />
+                                <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 translate-y-full bg-overlay/70 px-3 py-2 transition-transform duration-200 group-hover:translate-y-0 group-focus-visible:translate-y-0">
+                                    <p className="truncate text-xs font-semibold text-ink-inverse">
+                                        {displayTitle}
+                                    </p>
+                                </div>
+                            </Link>
+                        );
+                    }}
                 />
             )}
 
