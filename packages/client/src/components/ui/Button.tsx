@@ -1,3 +1,4 @@
+import { forwardRef } from 'react';
 import type { ButtonHTMLAttributes } from 'react';
 
 import { cn } from './cn';
@@ -54,23 +55,31 @@ const SIZE_CLASS: Record<ButtonSize, string> = {
     tab: 'h-10 px-2.5 text-sm',
 };
 
-export const Button = ({
-    variant = 'secondary',
-    size = 'md',
-    className,
-    type = 'button',
-    ...props
-}: ButtonProps) => {
-    return (
-        <button
-            type={type}
-            className={cn(
-                BASE_CLASS,
-                VARIANT_CLASS[variant],
-                SIZE_CLASS[size],
-                className,
-            )}
-            {...props}
-        />
-    );
-};
+export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
+    (
+        {
+            variant = 'secondary',
+            size = 'md',
+            className,
+            type = 'button',
+            ...props
+        },
+        ref,
+    ) => {
+        return (
+            <button
+                ref={ref}
+                type={type}
+                className={cn(
+                    BASE_CLASS,
+                    VARIANT_CLASS[variant],
+                    SIZE_CLASS[size],
+                    className,
+                )}
+                {...props}
+            />
+        );
+    },
+);
+
+Button.displayName = 'Button';
