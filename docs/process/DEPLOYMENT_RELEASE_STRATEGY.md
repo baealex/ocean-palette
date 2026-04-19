@@ -40,8 +40,8 @@ Updated: 2026-03-08
 
 ## 4. Runtime and Data Contracts
 1. App port
-- Container app port: `3332`
-- Example host mapping in `docker-compose.yml`: `3000:3332`
+- Container app port: `7768`
+- Example host mapping in `docker-compose.yml`: `7768:7768`
 
 2. Persistent volumes
 - `/data`: database persistence
@@ -57,7 +57,7 @@ Updated: 2026-03-08
 docker run \
   -v ./data:/data \
   -v ./assets:/assets \
-  -p 3332:3332 \
+  -p 7768:7768 \
   baealex/ocean-palette:latest
 ```
 

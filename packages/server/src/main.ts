@@ -6,7 +6,7 @@ import { liveImagesService } from './modules/live-images';
 import { logger } from './modules/logger';
 import { models } from './models';
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 7768;
 
 const server = http.createServer(app);
 const io = new SocketIOServer(server, {
@@ -33,7 +33,7 @@ async function shutdown(signal: string) {
         await liveImagesService.close();
     } catch (error: unknown) {
         logger.error(
-            `live-images shutdown failed: ${error instanceof Error ? (error.stack || error.message) : String(error)}`,
+            `live-images shutdown failed: ${error instanceof Error ? error.stack || error.message : String(error)}`,
         );
     }
 
@@ -41,7 +41,7 @@ async function shutdown(signal: string) {
         await models.$disconnect();
     } catch (error: unknown) {
         logger.error(
-            `database disconnect failed: ${error instanceof Error ? (error.stack || error.message) : String(error)}`,
+            `database disconnect failed: ${error instanceof Error ? error.stack || error.message : String(error)}`,
         );
     }
 

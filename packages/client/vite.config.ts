@@ -22,16 +22,16 @@ export default defineConfig({
         host: '0.0.0.0',
         proxy: {
             '/api': {
-                target: 'http://localhost:3332',
+                target: 'http://localhost:7768',
             },
             '/graphql': {
-                target: 'http://localhost:3332',
+                target: 'http://localhost:7768',
             },
             '/assets/images': {
-                target: 'http://localhost:3332',
+                target: 'http://localhost:7768',
             },
             '/socket.io': {
-                target: 'http://localhost:3332',
+                target: 'http://localhost:7768',
                 ws: true,
             },
         },

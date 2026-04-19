@@ -20,11 +20,11 @@ Manage prompts like a color palette, browse your generated images, extract metad
 docker run \
     -v ./data:/data \
     -v ./assets:/assets \
-    -p 3332:3332 \
+    -p 7768:7768 \
     baealex/ocean-palette
 ```
 
-Open `http://localhost:3332` and start organizing.
+Open `http://localhost:7768` and start organizing.
 
 ### Node.js
 
@@ -35,7 +35,7 @@ pnpm i
 pnpm start
 ```
 
-Open `http://localhost:3332`.
+Open `http://localhost:7768`.
 
 ## License
 

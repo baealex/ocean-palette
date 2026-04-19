@@ -6,9 +6,9 @@
     "scripts": {
         "postinstall": "prisma generate",
         "prisma:generate": "prisma generate",
-        "dev": "cross-env PORT=3332 ts-node script/_dev.ts",
+        "dev": "cross-env PORT=7768 ts-node script/_dev.ts",
         "build": "pnpm run prisma:generate && tsc",
-        "start": "cross-env PORT=3332 ts-node script/_start.ts",
+        "start": "cross-env PORT=7768 ts-node script/_start.ts",
         "lint": "biome lint src",
         "test": "cross-env DATABASE_URL=file:./test.sqlite3 ts-node script/_test.ts"
     },
