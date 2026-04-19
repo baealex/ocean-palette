@@ -16,7 +16,7 @@ interface IconButtonProps
 
 const VARIANT_CLASS: Record<IconButtonVariant, string> = {
     secondary:
-        'border-line-strong bg-surface-base text-ink-muted shadow-surface hover:bg-surface-muted',
+        'border-line-strong bg-surface-base text-ink-muted hover:bg-surface-muted',
     ghost: 'border-transparent bg-transparent text-ink-muted hover:bg-surface-muted',
     danger: 'border-danger-200 bg-danger-50 text-danger-700 hover:bg-danger-200',
 };

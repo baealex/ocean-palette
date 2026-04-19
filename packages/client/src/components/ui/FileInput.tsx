@@ -1,6 +1,7 @@
 ﻿import { useEffect, useRef, useState } from 'react';
 
 import { Button } from './Button';
+import { Card } from './Card';
 
 interface FileInputProps {
     accept?: string;
@@ -63,7 +64,7 @@ export const FileInput = ({
     };
 
     return (
-        <div className="rounded-token-lg border border-line bg-surface-base p-3 shadow-surface">
+        <Card padding="sm">
             <input
                 ref={inputRef}
                 type="file"
@@ -108,12 +109,13 @@ export const FileInput = ({
 
             {selectedFile ? (
                 <p className="mt-2 text-xs text-ink-subtle">
-                    {selectedFile.type || 'unknown'} | {formatFileSize(selectedFile.size)}
+                    {selectedFile.type || 'unknown'} |{' '}
+                    {formatFileSize(selectedFile.size)}
                 </p>
             ) : null}
 
             {previewUrl ? (
-                <div className="mt-3 overflow-hidden rounded-token-md border border-line bg-surface-muted">
+                <div className="mt-3 overflow-hidden rounded-token-sm border border-line/70 bg-surface-muted">
                     <img
                         src={previewUrl}
                         alt={selectedFile?.name ?? 'Selected preview'}
@@ -121,6 +123,6 @@ export const FileInput = ({
                     />
                 </div>
             ) : null}
-        </div>
+        </Card>
     );
 };

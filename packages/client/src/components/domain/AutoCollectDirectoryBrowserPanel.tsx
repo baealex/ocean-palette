@@ -180,7 +180,7 @@ export const AutoCollectDirectoryBrowserPanel = ({
     );
 
     return (
-        <div className="grid gap-3 rounded-token-md border border-line bg-surface-raised p-3 shadow-surface">
+        <div className="grid gap-3 rounded-token-md border border-line/70 bg-surface-base p-3">
             <div className="grid gap-2">
                 <div className="text-xs font-semibold uppercase tracking-[0.06em] text-ink-muted">
                     Current Folder

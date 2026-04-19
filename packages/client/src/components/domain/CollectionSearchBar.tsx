@@ -52,7 +52,7 @@ export const CollectionSearchBar = ({
                     'grid gap-2',
                     embedded ? '' : 'p-1.5',
                     !embedded &&
-                        'rounded-token-lg border-2 border-brand-200 bg-surface-raised shadow-surface',
+                        'rounded-token-md border border-line/70 bg-surface-base',
                 )}
             >
                 <div className="grid gap-2 md:grid-cols-[minmax(0,1fr)_auto] md:items-end">

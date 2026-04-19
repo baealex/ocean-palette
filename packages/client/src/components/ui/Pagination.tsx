@@ -3,6 +3,7 @@ import { useMemo } from 'react';
 import { ArrowLeftIcon, ArrowRightIcon } from '~/icons';
 import { getPageRange } from '~/modules/page';
 import { Button } from '~/components/ui/Button';
+import { Card } from '~/components/ui/Card';
 
 type PaginationVariant = 'standard' | 'compact';
 
@@ -41,8 +42,7 @@ export const Pagination = ({
     const showLeadingEllipsis = firstVisiblePage > 2;
     const showTrailingEllipsis = lastVisiblePage < totalPages - 1;
     const isJsDom =
-        typeof navigator !== 'undefined' &&
-        /jsdom/i.test(navigator.userAgent);
+        typeof navigator !== 'undefined' && /jsdom/i.test(navigator.userAgent);
 
     const moveToPage = (page: number) => {
         if (page < 1 || page > totalPages) {
@@ -84,9 +84,11 @@ export const Pagination = ({
 
     if (variant === 'compact') {
         return (
-            <nav
+            <Card
+                as="nav"
                 aria-label="Pagination"
-                className="mt-4 rounded-token-md border border-line bg-surface-base p-2 shadow-surface"
+                padding="sm"
+                className="mt-4"
             >
                 <div className="mb-2 flex items-center justify-between gap-2">
                     <p className="text-xs font-semibold text-ink-muted">
@@ -124,15 +126,12 @@ export const Pagination = ({
                         Next
                     </Button>
                 </div>
-            </nav>
+            </Card>
         );
     }
 
     return (
-        <nav
-            aria-label="Pagination"
-            className="mt-4 rounded-token-md border border-line bg-surface-base p-3 shadow-surface md:p-4"
-        >
+        <Card as="nav" aria-label="Pagination" className="mt-4">
             <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
                 <p className="text-xs font-semibold text-ink-muted">
                     Page {currentPage} of {totalPages}
@@ -240,6 +239,6 @@ export const Pagination = ({
                     <ArrowRightIcon width={14} height={14} />
                 </Button>
             </div>
-        </nav>
+        </Card>
     );
 };

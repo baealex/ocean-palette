@@ -31,12 +31,12 @@ const BASE_CLASS =
 
 const VARIANT_CLASS: Record<ButtonVariant, string> = {
     primary:
-        'border border-brand-700 bg-brand-700 text-white shadow-surface hover:bg-brand-800',
+        'border border-brand-700 bg-brand-700 text-white hover:bg-brand-800',
     secondary:
-        'border border-line-strong bg-surface-base text-ink-muted shadow-surface hover:bg-surface-muted',
-    danger: 'border border-danger-700 bg-danger-700 text-white shadow-surface hover:bg-danger-800',
+        'border border-line-strong bg-surface-base text-ink-muted hover:bg-surface-muted',
+    danger: 'border border-danger-700 bg-danger-700 text-white hover:bg-danger-800',
     ghost: 'border border-transparent bg-transparent text-ink-muted hover:bg-surface-muted',
-    soft: 'border border-brand-200 bg-brand-50 text-brand-800 shadow-surface hover:bg-brand-100',
+    soft: 'border border-brand-200 bg-brand-50 text-brand-800 hover:bg-brand-100',
     control:
         'border border-line bg-surface-base text-ink shadow-none tracking-normal hover:bg-surface-raised',
     text: 'border border-transparent bg-transparent text-ink-muted shadow-none tracking-normal hover:text-ink',

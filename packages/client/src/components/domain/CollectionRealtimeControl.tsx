@@ -88,7 +88,7 @@ export const CollectionRealtimeControl = () => {
 
     return (
         <>
-            <section className="rounded-token-md border border-line bg-surface-base/70 px-3 py-2">
+            <section className="rounded-token-md border border-line/70 bg-surface-base px-3 py-2">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                     <div className="flex items-center gap-2">
                         <Switch

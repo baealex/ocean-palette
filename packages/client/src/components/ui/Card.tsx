@@ -8,7 +8,7 @@ type CardPadding = 'none' | 'sm' | 'md' | 'lg';
 type CardEmphasis = 'none' | 'flat' | 'brand' | 'brandGlow';
 
 interface CardProps extends HTMLAttributes<HTMLElement> {
-    as?: 'article' | 'section' | 'div' | 'li';
+    as?: 'article' | 'section' | 'div' | 'li' | 'nav';
     tone?: CardTone;
     padding?: CardPadding;
     emphasis?: CardEmphasis;
