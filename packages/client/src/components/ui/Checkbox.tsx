@@ -1,3 +1,5 @@
+import { useId } from 'react';
+
 import { cn } from '~/components/ui/cn';
 
 interface CheckboxProps {
@@ -17,8 +19,11 @@ export const Checkbox = ({
     disabled = false,
     onChange,
 }: CheckboxProps) => {
+    const checkboxId = useId();
+
     return (
         <label
+            htmlFor={checkboxId}
             className={cn(
                 'group flex min-h-11 cursor-pointer items-center gap-3 rounded-token-md border px-3 py-2 transition-colors',
                 checked
@@ -28,6 +33,7 @@ export const Checkbox = ({
             )}
         >
             <input
+                id={checkboxId}
                 type="checkbox"
                 name={name}
                 checked={checked}
@@ -38,7 +44,7 @@ export const Checkbox = ({
             <span
                 aria-hidden
                 className={cn(
-                    'flex h-5 w-5 shrink-0 items-center justify-center rounded-token-sm border text-[11px] leading-none transition-colors',
+                    'pointer-events-none flex h-5 w-5 shrink-0 items-center justify-center rounded-token-sm border text-[11px] leading-none transition-colors',
                     'peer-focus-visible:ring-2 peer-focus-visible:ring-brand-500 peer-focus-visible:ring-offset-2 peer-focus-visible:ring-offset-surface-base',
                     checked
                         ? 'border-brand-700 bg-brand-700 text-ink-inverse'
@@ -55,7 +61,7 @@ export const Checkbox = ({
                     <path d="M3.5 8.5L6.5 11.5L12.5 4.5" />
                 </svg>
             </span>
-            <span className="flex flex-1 items-center justify-between gap-3">
+            <span className="pointer-events-none flex flex-1 items-center justify-between gap-3">
                 <span className="text-sm font-semibold">{label}</span>
                 {meta ? (
                     <span

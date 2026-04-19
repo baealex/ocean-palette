@@ -43,9 +43,7 @@ beforeEach(() => {
     clearMemoStore();
     window.sessionStorage.clear();
     vi.clearAllMocks();
-    mockedGetCategories.mockResolvedValue(
-        categoriesResponse as never,
-    );
+    mockedGetCategories.mockResolvedValue(categoriesResponse as never);
 });
 
 afterEach(() => {
@@ -53,6 +51,19 @@ afterEach(() => {
 });
 
 describe('IdeaPage', () => {
+    it('toggles category selection from the visible category row', async () => {
+        renderIdeaPage();
+
+        const checkboxes = await screen.findAllByRole('checkbox');
+        const secondCategoryRow = checkboxes[1]?.closest('label');
+        expect(secondCategoryRow).not.toBeNull();
+
+        fireEvent.click(secondCategoryRow as HTMLLabelElement);
+
+        expect(checkboxes[1]).not.toBeChecked();
+        expect(screen.getByText('1/2 selected')).toBeInTheDocument();
+    });
+
     it('keeps selection distinct by id even with duplicate category names', async () => {
         renderIdeaPage();
 

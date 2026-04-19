@@ -183,14 +183,6 @@ export const IdeaPage = () => {
                         <h1 className="text-xl font-semibold tracking-tight text-ink sm:text-2xl">
                             Idea Mixer
                         </h1>
-                        <p className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs font-medium text-ink-subtle">
-                            <span>
-                                {selectedCount} of {categoryList.length}{' '}
-                                selected
-                            </span>
-                            <span aria-hidden="true">/</span>
-                            <span>{keywords.length} generated</span>
-                        </p>
                     </div>
                 </div>
             </section>

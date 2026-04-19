@@ -106,9 +106,6 @@ export const ImageLoadPage = () => {
                     <h1 className="text-xl font-semibold tracking-tight text-ink sm:text-2xl">
                         Prompt Info
                     </h1>
-                    <p className="mt-1 text-xs font-medium text-ink-subtle">
-                        {statusLabel}
-                    </p>
                 </div>
             </section>
 
@@ -145,12 +142,16 @@ export const ImageLoadPage = () => {
 
                             {parsedPrompt ? (
                                 <Button
-                                    variant="primary"
+                                    variant="control"
                                     size="control"
                                     onClick={() => setSaveDialogOpen(true)}
                                     disabled={loading || !canSaveToCollection}
                                 >
-                                    <HeartIcon width={14} height={14} />
+                                    <HeartIcon
+                                        width={14}
+                                        height={14}
+                                        className="fill-danger-700 text-danger-700"
+                                    />
                                     Save to Collection
                                 </Button>
                             ) : null}
