@@ -161,9 +161,17 @@ export const CollectionCard = ({
                                 Copy
                             </Button>
                         </div>
-                        <p className="overflow-hidden whitespace-pre-wrap text-sm leading-relaxed text-ink [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:4]">
-                            {promptPreview}
-                        </p>
+                        <textarea
+                            readOnly
+                            rows={5}
+                            aria-label="Prompt"
+                            spellCheck={false}
+                            value={promptPreview}
+                            className="ui-focus-ring block max-h-48 min-h-28 w-full resize-y rounded-token-md border border-line bg-surface-muted px-3 py-2 text-sm leading-relaxed text-ink outline-none"
+                            onFocus={(event) => {
+                                event.currentTarget.select();
+                            }}
+                        />
                     </section>
 
                     <section
@@ -188,9 +196,17 @@ export const CollectionCard = ({
                                 Copy
                             </Button>
                         </div>
-                        <p className="overflow-hidden whitespace-pre-wrap text-xs leading-relaxed text-ink-muted [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:2]">
-                            {negativePromptPreview}
-                        </p>
+                        <textarea
+                            readOnly
+                            rows={3}
+                            aria-label="Negative prompt"
+                            spellCheck={false}
+                            value={negativePromptPreview}
+                            className="ui-focus-ring block max-h-36 min-h-20 w-full resize-y rounded-token-md border border-line bg-surface-muted px-3 py-2 text-xs leading-relaxed text-ink-muted outline-none"
+                            onFocus={(event) => {
+                                event.currentTarget.select();
+                            }}
+                        />
                     </section>
                 </div>
             </div>
