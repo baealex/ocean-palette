@@ -28,9 +28,9 @@ const PADDING_CLASS: Record<CardPadding, string> = {
 };
 
 const EMPHASIS_CLASS: Record<CardEmphasis, string> = {
-    none: 'border border-line shadow-surface',
-    flat: 'border border-line',
-    brand: 'border-2 border-brand-200 shadow-surface',
+    none: 'border border-line/70',
+    flat: 'border border-line/60',
+    brand: 'border border-brand-200',
     brandGlow: 'border-2 border-brand-200 shadow-surface shadow-brand-300/50',
 };
 
@@ -52,7 +52,7 @@ export const Card = forwardRef<HTMLElement, CardProps>(
             <Component
                 ref={ref as never}
                 className={cn(
-                    'rounded-token-lg bg-clip-padding',
+                    'rounded-token-md bg-clip-padding',
                     TONE_CLASS[tone],
                     PADDING_CLASS[padding],
                     EMPHASIS_CLASS[emphasis],

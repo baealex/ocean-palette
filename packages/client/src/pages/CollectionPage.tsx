@@ -4,6 +4,7 @@ import { CollectionRealtimeControl } from '~/components/domain/CollectionRealtim
 import { CollectionSearchBar } from '~/components/domain/CollectionSearchBar';
 import { CollectionShowcaseShortcut } from '~/components/domain/CollectionShowcaseShortcut';
 import { PageFrame } from '~/components/domain/PageFrame';
+import { Card } from '~/components/ui/Card';
 import {
     DEFAULT_COLLECTION_DATE_FIELD,
     DEFAULT_COLLECTION_SEARCH_BY,
@@ -105,9 +106,11 @@ export const CollectionPage = () => {
 
     return (
         <PageFrame title={COLLECTION_PAGE_META.title}>
-            <section
+            <Card
+                as="section"
                 aria-label="Collection search and filters"
-                className="mb-3 overflow-hidden rounded-token-lg border border-line-strong bg-surface-raised shadow-surface"
+                padding="none"
+                className="mb-3 overflow-hidden"
             >
                 <div className="p-3">
                     <CollectionSearchBar
@@ -140,7 +143,7 @@ export const CollectionPage = () => {
                     onDateQuickPreset={handleDateQuickPreset}
                     embedded
                 />
-            </section>
+            </Card>
             <div className="mb-3">
                 <CollectionRealtimeControl />
             </div>

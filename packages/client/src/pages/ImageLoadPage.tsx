@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { Link } from '@tanstack/react-router';
 
+import { GeneratedMetadataPanel } from '~/components/domain/GeneratedMetadataPanel';
 import { PageFrame } from '~/components/domain/PageFrame';
+import { PromptTextField } from '~/components/domain/PromptTextField';
 import { Button } from '~/components/ui/Button';
 import { Card } from '~/components/ui/Card';
 import { FileInput } from '~/components/ui/FileInput';
@@ -27,38 +29,69 @@ export const ImageLoadPage = () => {
         saveToCollection,
     } = useImageLoad();
 
-    const canSaveToCollection = Boolean(parsedPrompt && (parsedPrompt.prompt || parsedPrompt.negativePrompt));
+    const canSaveToCollection = Boolean(
+        parsedPrompt && (parsedPrompt.prompt || parsedPrompt.negativePrompt),
+    );
     const metadataRows = parsedPrompt
         ? [
-            { label: 'Source Type', value: parsedPrompt.sourceType },
-            { label: 'Model', value: parsedPrompt.model },
-            { label: 'Model Hash', value: parsedPrompt.modelHash },
-            { label: 'Base Sampler', value: parsedPrompt.baseSampler },
-            { label: 'Base Scheduler', value: parsedPrompt.baseScheduler },
-            { label: 'Base Steps', value: parsedPrompt.baseSteps?.toString() },
-            { label: 'Base CFG', value: parsedPrompt.baseCfgScale?.toString() },
-            { label: 'Base Seed', value: parsedPrompt.baseSeed },
-            { label: 'Upscale Sampler', value: parsedPrompt.upscaleSampler },
-            { label: 'Upscale Scheduler', value: parsedPrompt.upscaleScheduler },
-            { label: 'Upscale Steps', value: parsedPrompt.upscaleSteps?.toString() },
-            { label: 'Upscale CFG', value: parsedPrompt.upscaleCfgScale?.toString() },
-            { label: 'Upscale Seed', value: parsedPrompt.upscaleSeed },
-            { label: 'Upscale Factor', value: parsedPrompt.upscaleFactor?.toString() },
-            { label: 'Upscaler', value: parsedPrompt.upscaler },
-            {
-                label: 'Size',
-                value:
-                    parsedPrompt.sizeWidth && parsedPrompt.sizeHeight
-                        ? `${parsedPrompt.sizeWidth} x ${parsedPrompt.sizeHeight}`
-                        : undefined,
-            },
-            { label: 'Clip Skip', value: parsedPrompt.clipSkip?.toString() },
-            { label: 'VAE', value: parsedPrompt.vae },
-            { label: 'Denoise Strength', value: parsedPrompt.denoiseStrength?.toString() },
-            { label: 'File Modified (Local)', value: formatDateTime(selectedFileModifiedAt || undefined) },
-            { label: 'Generated At', value: formatDateTime(uploadedImage?.generatedAt || undefined) },
-            { label: 'Parse Version', value: parsedPrompt.parseVersion },
-        ].filter((item) => Boolean(item.value))
+              { label: 'Source Type', value: parsedPrompt.sourceType },
+              { label: 'Model', value: parsedPrompt.model },
+              { label: 'Model Hash', value: parsedPrompt.modelHash },
+              { label: 'Base Sampler', value: parsedPrompt.baseSampler },
+              { label: 'Base Scheduler', value: parsedPrompt.baseScheduler },
+              {
+                  label: 'Base Steps',
+                  value: parsedPrompt.baseSteps?.toString(),
+              },
+              {
+                  label: 'Base CFG',
+                  value: parsedPrompt.baseCfgScale?.toString(),
+              },
+              { label: 'Base Seed', value: parsedPrompt.baseSeed },
+              { label: 'Upscale Sampler', value: parsedPrompt.upscaleSampler },
+              {
+                  label: 'Upscale Scheduler',
+                  value: parsedPrompt.upscaleScheduler,
+              },
+              {
+                  label: 'Upscale Steps',
+                  value: parsedPrompt.upscaleSteps?.toString(),
+              },
+              {
+                  label: 'Upscale CFG',
+                  value: parsedPrompt.upscaleCfgScale?.toString(),
+              },
+              { label: 'Upscale Seed', value: parsedPrompt.upscaleSeed },
+              {
+                  label: 'Upscale Factor',
+                  value: parsedPrompt.upscaleFactor?.toString(),
+              },
+              { label: 'Upscaler', value: parsedPrompt.upscaler },
+              {
+                  label: 'Size',
+                  value:
+                      parsedPrompt.sizeWidth && parsedPrompt.sizeHeight
+                          ? `${parsedPrompt.sizeWidth} x ${parsedPrompt.sizeHeight}`
+                          : undefined,
+              },
+              { label: 'Clip Skip', value: parsedPrompt.clipSkip?.toString() },
+              { label: 'VAE', value: parsedPrompt.vae },
+              {
+                  label: 'Denoise Strength',
+                  value: parsedPrompt.denoiseStrength?.toString(),
+              },
+              {
+                  label: 'File Modified (Local)',
+                  value: formatDateTime(selectedFileModifiedAt || undefined),
+              },
+              {
+                  label: 'Generated At',
+                  value: formatDateTime(
+                      uploadedImage?.generatedAt || undefined,
+                  ),
+              },
+              { label: 'Parse Version', value: parsedPrompt.parseVersion },
+          ].filter((item) => Boolean(item.value))
         : [];
 
     return (
@@ -78,9 +111,12 @@ export const ImageLoadPage = () => {
                     />
 
                     <section className="rounded-token-md border border-brand-200 bg-brand-50/60 p-3">
-                        <p className="text-xs font-semibold uppercase tracking-wide text-brand-800">Next Step</p>
+                        <p className="text-xs font-semibold uppercase tracking-wide text-brand-800">
+                            Next Step
+                        </p>
                         <p className="mt-1 text-xs text-ink-muted">
-                            Create a collection item from parsed prompt metadata.
+                            Create a collection item from parsed prompt
+                            metadata.
                         </p>
                         <Button
                             variant="primary"
@@ -96,88 +132,61 @@ export const ImageLoadPage = () => {
 
                 <div className="space-y-4">
                     {parsedPrompt ? (
-                        <Card className="text-sm text-ink-muted">
-                            <div className="mb-3 flex items-center justify-between gap-3">
-                                <h2 className="text-base font-semibold text-ink">Prompt</h2>
-                                <Button
-                                    variant="secondary"
-                                    size="sm"
-                                    onClick={() => {
-                                        void copyToClipboard(parsedPrompt.prompt, { label: 'Prompt' });
-                                    }}
-                                >
-                                    Copy
-                                </Button>
-                            </div>
-                            <p className="whitespace-pre-wrap break-words rounded-token-md border border-line bg-surface-muted px-3 py-2 text-sm leading-relaxed text-ink">
-                                {parsedPrompt.prompt || 'No prompt found in metadata.'}
-                            </p>
+                        <Card className="space-y-4 text-sm text-ink-muted">
+                            <PromptTextField
+                                title="Prompt"
+                                value={parsedPrompt.prompt}
+                                rows={8}
+                                size="detail"
+                                labelStyle="title"
+                                copyTone="control"
+                                emptyValue="No prompt found in metadata."
+                                onCopy={() => {
+                                    void copyToClipboard(parsedPrompt.prompt, {
+                                        label: 'Prompt',
+                                    });
+                                }}
+                            />
 
-                            <div className="mb-3 mt-5 flex items-center justify-between gap-3">
-                                <h2 className="text-base font-semibold text-ink">Negative Prompt</h2>
-                                <Button
-                                    variant="secondary"
-                                    size="sm"
-                                    onClick={() => {
-                                        void copyToClipboard(parsedPrompt.negativePrompt, { label: 'Negative prompt' });
-                                    }}
-                                >
-                                    Copy
-                                </Button>
-                            </div>
-                            <p className="whitespace-pre-wrap break-words rounded-token-md border border-line bg-surface-muted px-3 py-2 text-sm leading-relaxed text-ink">
-                                {parsedPrompt.negativePrompt || 'No negative prompt found in metadata.'}
-                            </p>
+                            <PromptTextField
+                                title="Negative Prompt"
+                                value={parsedPrompt.negativePrompt}
+                                rows={5}
+                                size="detail"
+                                labelStyle="title"
+                                copyTone="control"
+                                muted
+                                emptyValue="No negative prompt found in metadata."
+                                onCopy={() => {
+                                    void copyToClipboard(
+                                        parsedPrompt.negativePrompt,
+                                        { label: 'Negative prompt' },
+                                    );
+                                }}
+                            />
 
-                            <div className="mb-3 mt-5 flex items-center justify-between gap-3">
-                                <h2 className="text-base font-semibold text-ink">Generated Metadata</h2>
-                                <Button
-                                    variant="secondary"
-                                    size="sm"
-                                    onClick={() => {
-                                        void copyToClipboard(JSON.stringify(parsedPrompt, null, 2), { label: 'Metadata JSON' });
-                                    }}
-                                >
-                                    Copy JSON
-                                </Button>
-                            </div>
-                            {metadataRows.length > 0 ? (
-                                <>
-                                    <div className="space-y-2 rounded-token-md border border-line bg-surface-muted p-3">
-                                        {metadataRows.map((item) => (
-                                            <div key={item.label} className="flex flex-wrap items-start justify-between gap-2 text-xs">
-                                                <p className="font-semibold text-ink">{item.label}</p>
-                                                <p className="max-w-[72%] text-right text-ink-muted break-words">{item.value}</p>
-                                            </div>
-                                        ))}
-                                    </div>
-                                    {!uploadedImage ? (
-                                        <p className="mt-2 text-xs text-ink-subtle">
-                                            Generated timestamp appears after saving to collection.
-                                        </p>
-                                    ) : null}
-                                </>
-                            ) : (
-                                <p className="rounded-token-md border border-line bg-surface-muted px-3 py-2 text-sm text-ink-muted">
-                                    No structured metadata fields were found.
-                                </p>
-                            )}
-
-                            {parsedPrompt.parseWarnings.length > 0 ? (
-                                <div className="mt-3 rounded-token-md border border-warning-200 bg-warning-50 px-3 py-2">
-                                    <p className="text-xs font-semibold text-warning-700">Parse Warnings</p>
-                                    <ul className="mt-1 space-y-1 text-xs text-warning-700">
-                                        {parsedPrompt.parseWarnings.map((warning) => (
-                                            <li key={warning}>- {warning}</li>
-                                        ))}
-                                    </ul>
-                                </div>
-                            ) : null}
+                            <GeneratedMetadataPanel
+                                rows={metadataRows}
+                                emptyMessage="No structured metadata fields were found."
+                                warnings={parsedPrompt.parseWarnings}
+                                note={
+                                    uploadedImage
+                                        ? null
+                                        : 'Generated timestamp appears after saving to collection.'
+                                }
+                                onCopyJson={() => {
+                                    void copyToClipboard(
+                                        JSON.stringify(parsedPrompt, null, 2),
+                                        { label: 'Metadata JSON' },
+                                    );
+                                }}
+                            />
                         </Card>
                     ) : (
                         <Card tone="muted" className="text-sm text-ink-muted">
                             <p className="text-ink-muted">
-                                Prompt metadata will appear here after you select an image.
+                                Prompt metadata will appear here after you
+                                select an image.
                             </p>
                         </Card>
                     )}
@@ -195,9 +204,7 @@ export const ImageLoadPage = () => {
                         </Notice>
                     ) : null}
 
-                    {error ? (
-                        <Notice variant="error">{error}</Notice>
-                    ) : null}
+                    {error ? <Notice variant="error">{error}</Notice> : null}
                 </div>
             </div>
 

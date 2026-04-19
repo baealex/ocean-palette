@@ -2,16 +2,9 @@ import { Button } from '~/components/ui/Button';
 import { Card } from '~/components/ui/Card';
 import { Image } from '~/components/ui/Image';
 import { Notice } from '~/components/ui/Notice';
+import { PromptTextField } from '~/components/domain/PromptTextField';
 
 import type { CollectionBrowseItem } from './collection-browse-types';
-
-interface PromptPreviewFieldProps {
-    label: string;
-    value: string;
-    rows: number;
-    muted?: boolean;
-    onCopy: () => void;
-}
 
 interface CollectionBrowsePreviewPanelProps {
     selectedItem: CollectionBrowseItem | null;
@@ -21,48 +14,6 @@ interface CollectionBrowsePreviewPanelProps {
     onOpenRename: () => void;
     onOpenDelete: () => void;
 }
-
-const PromptPreviewField = ({
-    label,
-    value,
-    rows,
-    muted = false,
-    onCopy,
-}: PromptPreviewFieldProps) => {
-    const displayValue = value || '-';
-
-    return (
-        <section className="min-w-0">
-            <div className="mb-1.5 flex items-center justify-between gap-2">
-                <h3 className="text-[11px] font-semibold uppercase text-ink-subtle">
-                    {label}
-                </h3>
-                <Button
-                    variant="text"
-                    size="compact"
-                    className="h-7 px-1.5 text-xs"
-                    onClick={onCopy}
-                >
-                    Copy
-                </Button>
-            </div>
-            <textarea
-                readOnly
-                rows={rows}
-                aria-label={label}
-                spellCheck={false}
-                value={displayValue}
-                className={[
-                    'ui-focus-ring block max-h-56 min-h-24 w-full resize-y rounded-token-md border border-line bg-surface-muted px-3 py-2 text-sm leading-relaxed outline-none',
-                    muted ? 'text-ink-muted' : 'text-ink',
-                ].join(' ')}
-                onFocus={(event) => {
-                    event.currentTarget.select();
-                }}
-            />
-        </section>
-    );
-};
 
 export const CollectionBrowsePreviewPanel = ({
     selectedItem,
@@ -133,17 +84,19 @@ export const CollectionBrowsePreviewPanel = ({
                     </div>
 
                     <div className="mt-3 grid gap-3 border-t border-line pt-3">
-                        <PromptPreviewField
-                            label="Prompt"
+                        <PromptTextField
+                            title="Prompt"
                             value={selectedItem.prompt}
                             rows={6}
+                            size="preview"
                             onCopy={onCopyPrompt}
                         />
 
-                        <PromptPreviewField
-                            label="Negative"
+                        <PromptTextField
+                            title="Negative"
                             value={selectedItem.negativePrompt}
                             rows={4}
+                            size="preview"
                             muted
                             onCopy={onCopyNegativePrompt}
                         />

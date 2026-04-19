@@ -10,6 +10,7 @@ import { IconButton } from '~/components/ui/IconButton';
 import { Image } from '~/components/ui/Image';
 import { ArrowRightIcon, MoreIcon } from '~/icons';
 import type { Collection } from '~/models/types';
+import { PromptTextField } from './PromptTextField';
 
 interface CollectionCardProps {
     collection: Collection;
@@ -31,8 +32,6 @@ export const CollectionCard = ({
     removing = false,
 }: CollectionCardProps) => {
     const displayTitle = collection.title || '(untitled)';
-    const promptPreview = collection.prompt || '-';
-    const negativePromptPreview = collection.negativePrompt || '-';
 
     return (
         <Card as="article" padding="none" className="mb-3 overflow-hidden">
@@ -145,69 +144,30 @@ export const CollectionCard = ({
                         </div>
                     </header>
 
-                    <section aria-label="Prompt preview" className="min-w-0">
-                        <div className="mb-1 flex items-center justify-between gap-2">
-                            <h3 className="text-[11px] font-semibold uppercase text-ink-subtle">
-                                Prompt
-                            </h3>
-                            <Button
-                                variant="text"
-                                size="compact"
-                                className="h-7 px-1.5 text-xs"
-                                onClick={() =>
-                                    onClickCopy(collection.prompt, 'Prompt')
-                                }
-                            >
-                                Copy
-                            </Button>
-                        </div>
-                        <textarea
-                            readOnly
-                            rows={5}
-                            aria-label="Prompt"
-                            spellCheck={false}
-                            value={promptPreview}
-                            className="ui-focus-ring block max-h-48 min-h-28 w-full resize-y rounded-token-md border border-line bg-surface-muted px-3 py-2 text-sm leading-relaxed text-ink outline-none"
-                            onFocus={(event) => {
-                                event.currentTarget.select();
-                            }}
-                        />
-                    </section>
+                    <PromptTextField
+                        title="Prompt"
+                        value={collection.prompt}
+                        rows={5}
+                        size="standard"
+                        onCopy={() => {
+                            onClickCopy(collection.prompt, 'Prompt');
+                        }}
+                    />
 
-                    <section
-                        aria-label="Negative prompt preview"
-                        className="min-w-0 border-t border-line/70 pt-2"
-                    >
-                        <div className="mb-1 flex items-center justify-between gap-2">
-                            <h3 className="text-[11px] font-semibold uppercase text-ink-subtle">
-                                Negative
-                            </h3>
-                            <Button
-                                variant="text"
-                                size="compact"
-                                className="h-7 px-1.5 text-xs"
-                                onClick={() =>
-                                    onClickCopy(
-                                        collection.negativePrompt,
-                                        'Negative prompt',
-                                    )
-                                }
-                            >
-                                Copy
-                            </Button>
-                        </div>
-                        <textarea
-                            readOnly
-                            rows={3}
-                            aria-label="Negative prompt"
-                            spellCheck={false}
-                            value={negativePromptPreview}
-                            className="ui-focus-ring block max-h-36 min-h-20 w-full resize-y rounded-token-md border border-line bg-surface-muted px-3 py-2 text-xs leading-relaxed text-ink-muted outline-none"
-                            onFocus={(event) => {
-                                event.currentTarget.select();
-                            }}
-                        />
-                    </section>
+                    <PromptTextField
+                        title="Negative"
+                        value={collection.negativePrompt}
+                        rows={3}
+                        size="compact"
+                        muted
+                        className="border-t border-line/70 pt-2"
+                        onCopy={() => {
+                            onClickCopy(
+                                collection.negativePrompt,
+                                'Negative prompt',
+                            );
+                        }}
+                    />
                 </div>
             </div>
         </Card>
