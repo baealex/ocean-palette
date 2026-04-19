@@ -1,3 +1,4 @@
+import { Field, FieldLabel, FieldMessage } from '~/components/ui/Field';
 import { Select, type SelectOption } from '~/components/ui/Select';
 import type { CollectionSort } from '~/features/collection/view-filter';
 
@@ -34,13 +35,10 @@ export const CollectionPrimaryFiltersSection = ({
             <h3 id="collection-primary-filter-group-label" className="sr-only">
                 Primary filters
             </h3>
-            <div>
-                <label
-                    id="collection-model-filter-label"
-                    className="mb-1 block text-[11px] font-semibold uppercase text-ink-subtle"
-                >
+            <Field>
+                <FieldLabel id="collection-model-filter-label">
                     Model
-                </label>
+                </FieldLabel>
                 <Select
                     id="collection-model-filter"
                     ariaLabelledBy="collection-model-filter-label"
@@ -58,19 +56,14 @@ export const CollectionPrimaryFiltersSection = ({
                     }
                 />
                 {modelOptionsError ? (
-                    <p className="mt-1 text-xs font-medium text-warning-700">
+                    <FieldMessage tone="warning">
                         Model options could not be loaded. You can still browse
                         all models.
-                    </p>
+                    </FieldMessage>
                 ) : null}
-            </div>
-            <div>
-                <label
-                    id="collection-sort-filter-label"
-                    className="mb-1 block text-[11px] font-semibold uppercase text-ink-subtle"
-                >
-                    Sort
-                </label>
+            </Field>
+            <Field>
+                <FieldLabel id="collection-sort-filter-label">Sort</FieldLabel>
                 <Select
                     id="collection-sort-filter"
                     ariaLabelledBy="collection-sort-filter-label"
@@ -80,7 +73,7 @@ export const CollectionPrimaryFiltersSection = ({
                     options={sortSelectOptions}
                     onValueChange={onSortChange}
                 />
-            </div>
+            </Field>
         </section>
     );
 };

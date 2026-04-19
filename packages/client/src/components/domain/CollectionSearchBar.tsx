@@ -1,6 +1,8 @@
 import { useId, useMemo } from 'react';
 
+import { ActionGroup } from '~/components/ui/ActionGroup';
 import { Button } from '~/components/ui/Button';
+import { Field, FieldLabel } from '~/components/ui/Field';
 import { Input } from '~/components/ui/Input';
 import { Select } from '~/components/ui/Select';
 import { cn } from '~/components/ui/cn';
@@ -55,13 +57,10 @@ export const CollectionSearchBar = ({
             >
                 <div className="grid gap-2 md:grid-cols-[minmax(0,1fr)_auto] md:items-end">
                     <div className="grid gap-2 sm:grid-cols-[184px_minmax(0,1fr)]">
-                        <div>
-                            <label
-                                id="collection-search-field-label"
-                                className="mb-1 block text-[11px] font-semibold uppercase text-ink-subtle"
-                            >
+                        <Field>
+                            <FieldLabel id="collection-search-field-label">
                                 Field
-                            </label>
+                            </FieldLabel>
                             <Select
                                 id={searchById}
                                 ariaLabelledBy="collection-search-field-label"
@@ -82,14 +81,9 @@ export const CollectionSearchBar = ({
                                     );
                                 }}
                             />
-                        </div>
-                        <div>
-                            <label
-                                htmlFor={inputId}
-                                className="mb-1 block text-[11px] font-semibold uppercase text-ink-subtle"
-                            >
-                                Keyword
-                            </label>
+                        </Field>
+                        <Field>
+                            <FieldLabel htmlFor={inputId}>Keyword</FieldLabel>
                             <div className="relative min-w-0">
                                 <SearchIcon className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-subtle" />
                                 <Input
@@ -121,13 +115,13 @@ export const CollectionSearchBar = ({
                                     </Button>
                                 ) : null}
                             </div>
-                        </div>
+                        </Field>
                     </div>
-                    <div className="flex items-center justify-end gap-2">
+                    <ActionGroup>
                         {onReset ? (
                             <Button
                                 type="button"
-                                variant="ghost"
+                                variant="text"
                                 size="control"
                                 className="min-w-[72px]"
                                 disabled={!canReset}
@@ -145,7 +139,7 @@ export const CollectionSearchBar = ({
                         >
                             Search
                         </Button>
-                    </div>
+                    </ActionGroup>
                 </div>
             </div>
         </form>

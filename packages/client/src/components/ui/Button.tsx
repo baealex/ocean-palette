@@ -8,7 +8,9 @@ type ButtonVariant =
     | 'danger'
     | 'ghost'
     | 'soft'
-    | 'control';
+    | 'control'
+    | 'text'
+    | 'tab';
 type ButtonSize =
     | 'sm'
     | 'md'
@@ -16,7 +18,8 @@ type ButtonSize =
     | 'icon'
     | 'control'
     | 'compact'
-    | 'compactIcon';
+    | 'compactIcon'
+    | 'tab';
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
     variant?: ButtonVariant;
@@ -36,6 +39,8 @@ const VARIANT_CLASS: Record<ButtonVariant, string> = {
     soft: 'border border-brand-200 bg-brand-50 text-brand-800 shadow-surface hover:bg-brand-100',
     control:
         'border border-line bg-surface-base text-ink shadow-none tracking-normal hover:bg-surface-raised',
+    text: 'border border-transparent bg-transparent text-ink-muted shadow-none tracking-normal hover:text-ink',
+    tab: 'border border-transparent bg-transparent text-ink-muted shadow-none tracking-normal hover:bg-surface-base/60 hover:text-ink aria-pressed:bg-transparent aria-pressed:text-brand-500 aria-pressed:hover:bg-transparent aria-pressed:hover:text-brand-600',
 };
 
 const SIZE_CLASS: Record<ButtonSize, string> = {
@@ -46,6 +51,7 @@ const SIZE_CLASS: Record<ButtonSize, string> = {
     control: 'h-10 px-4 text-sm',
     compact: 'h-10 px-3 text-xs',
     compactIcon: 'h-8 w-8',
+    tab: 'h-10 px-2.5 text-sm',
 };
 
 export const Button = ({
