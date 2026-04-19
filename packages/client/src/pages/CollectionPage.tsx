@@ -107,7 +107,7 @@ export const CollectionPage = () => {
         <PageFrame title={COLLECTION_PAGE_META.title}>
             <section
                 aria-label="Collection search and filters"
-                className="mb-3 overflow-hidden rounded-token-lg border border-line/80 bg-surface-base/95"
+                className="mb-3 overflow-hidden rounded-token-lg border border-line-strong bg-surface-raised shadow-surface"
             >
                 <div className="p-3">
                     <CollectionSearchBar

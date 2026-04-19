@@ -161,7 +161,7 @@ export const CollectionFilterBar = ({
             className={cn(
                 'grid gap-2',
                 embedded
-                    ? 'border-t border-line/80 p-3'
+                    ? 'border-t border-line/80 bg-surface-base p-3'
                     : 'rounded-token-lg border border-line bg-surface-raised p-4',
                 className,
             )}

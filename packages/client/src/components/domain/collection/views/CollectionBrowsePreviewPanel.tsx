@@ -1,15 +1,7 @@
 import { Button } from '~/components/ui/Button';
 import { Card } from '~/components/ui/Card';
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-} from '~/components/ui/DropdownMenu';
-import { IconButton } from '~/components/ui/IconButton';
 import { Image } from '~/components/ui/Image';
 import { Notice } from '~/components/ui/Notice';
-import { MoreIcon } from '~/icons';
 
 import type { CollectionBrowseItem } from './collection-browse-types';
 
@@ -30,8 +22,11 @@ export const CollectionBrowsePreviewPanel = ({
         <Card className="order-1 h-fit xl:order-2 xl:sticky xl:top-20 xl:self-start xl:min-h-[68vh]">
             {selectedItem ? (
                 <>
-                    <div className="mb-3 flex flex-wrap items-start justify-between gap-2">
+                    <div className="mb-3 flex flex-wrap items-start justify-between gap-3">
                         <div>
+                            <p className="text-xs font-medium text-ink-subtle">
+                                Selected
+                            </p>
                             <h2 className="text-lg font-semibold text-ink">
                                 {selectedItem.title || '(untitled)'}
                             </h2>
@@ -39,7 +34,7 @@ export const CollectionBrowsePreviewPanel = ({
                                 Collection #{selectedItem.id}
                             </p>
                         </div>
-                        <div className="flex flex-wrap gap-2">
+                        <div className="flex flex-wrap justify-end gap-2">
                             <Button
                                 variant="primary"
                                 size="sm"
@@ -49,30 +44,21 @@ export const CollectionBrowsePreviewPanel = ({
                             >
                                 Open detail
                             </Button>
-
-                            <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                    <IconButton
-                                        icon={<MoreIcon width={16} height={16} />}
-                                        label="Browse actions"
-                                        variant="secondary"
-                                        size="md"
-                                    />
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end" sideOffset={8}>
-                                    <DropdownMenuItem
-                                        onSelect={onOpenRename}
-                                    >
-                                        Rename
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem
-                                        className="text-danger-700 data-[highlighted]:bg-danger-50 data-[highlighted]:text-danger-700"
-                                        onSelect={onOpenDelete}
-                                    >
-                                        Delete
-                                    </DropdownMenuItem>
-                                </DropdownMenuContent>
-                            </DropdownMenu>
+                            <Button
+                                variant="control"
+                                size="sm"
+                                onClick={onOpenRename}
+                            >
+                                Rename
+                            </Button>
+                            <Button
+                                variant="text"
+                                size="sm"
+                                className="text-danger-700 hover:text-danger-700"
+                                onClick={onOpenDelete}
+                            >
+                                Delete
+                            </Button>
                         </div>
                     </div>
 

@@ -44,18 +44,12 @@ export const CollectionBrowseGalleryPanel = ({
         <Card className="order-2 h-fit xl:order-1 xl:sticky xl:top-20 xl:self-start">
             <div className="mb-3 flex items-center justify-between gap-2">
                 <div className="flex items-center gap-2">
-                    <h2 className="text-base font-semibold text-ink">
-                        Gallery
-                    </h2>
+                    <h2 className="text-base font-semibold text-ink">Browse</h2>
                     <Badge variant="neutral">
                         Page {currentPage}/{totalPages}
                     </Badge>
                 </div>
             </div>
-            <p className="mb-3 text-xs text-ink-muted xl:hidden">
-                Tap a thumbnail to update the preview card above.
-            </p>
-
             {loading && items.length === 0 ? (
                 <Notice variant="neutral">Loading collections...</Notice>
             ) : null}
@@ -81,6 +75,7 @@ export const CollectionBrowseGalleryPanel = ({
                                 type="button"
                                 variant="ghost"
                                 size="sm"
+                                aria-pressed={selectedId === item.id}
                                 onClick={() => {
                                     onSelectedChange(item.id);
                                 }}

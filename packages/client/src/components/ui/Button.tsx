@@ -27,20 +27,20 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const BASE_CLASS =
-    'ui-focus-ring inline-flex items-center justify-center gap-2 rounded-token-md font-semibold tracking-[0.01em] transition-colors disabled:cursor-not-allowed disabled:opacity-55';
+    'ui-focus-ring inline-flex items-center justify-center gap-2 rounded-token-md font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-55';
 
 const VARIANT_CLASS: Record<ButtonVariant, string> = {
     primary:
-        'border border-brand-700 bg-gradient-to-b from-brand-600 to-brand-700 text-white shadow-surface hover:from-brand-700 hover:to-brand-800',
+        'border border-brand-700 bg-brand-700 text-white shadow-surface hover:bg-brand-800',
     secondary:
         'border border-line-strong bg-surface-base text-ink-muted shadow-surface hover:bg-surface-muted',
-    danger: 'border border-danger-700 bg-gradient-to-b from-danger-700 to-danger-800 text-white shadow-surface hover:from-danger-800 hover:to-danger-800',
+    danger: 'border border-danger-700 bg-danger-700 text-white shadow-surface hover:bg-danger-800',
     ghost: 'border border-transparent bg-transparent text-ink-muted hover:bg-surface-muted',
     soft: 'border border-brand-200 bg-brand-50 text-brand-800 shadow-surface hover:bg-brand-100',
     control:
         'border border-line bg-surface-base text-ink shadow-none tracking-normal hover:bg-surface-raised',
     text: 'border border-transparent bg-transparent text-ink-muted shadow-none tracking-normal hover:text-ink',
-    tab: 'border border-transparent bg-transparent text-ink-muted shadow-none tracking-normal hover:bg-surface-base/60 hover:text-ink aria-pressed:bg-transparent aria-pressed:text-brand-500 aria-pressed:hover:bg-transparent aria-pressed:hover:text-brand-600',
+    tab: 'border border-transparent bg-transparent text-ink-muted shadow-none tracking-normal hover:bg-surface-base/60 hover:text-ink aria-pressed:bg-transparent aria-pressed:text-brand-700 aria-pressed:underline aria-pressed:decoration-2 aria-pressed:underline-offset-8 aria-pressed:hover:bg-transparent aria-pressed:hover:text-brand-800',
 };
 
 const SIZE_CLASS: Record<ButtonSize, string> = {
