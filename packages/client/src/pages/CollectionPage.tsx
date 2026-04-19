@@ -4,6 +4,11 @@ import { CollectionRealtimeControl } from '~/components/domain/CollectionRealtim
 import { CollectionSearchBar } from '~/components/domain/CollectionSearchBar';
 import { CollectionShowcaseShortcut } from '~/components/domain/CollectionShowcaseShortcut';
 import { PageFrame } from '~/components/domain/PageFrame';
+import {
+    DEFAULT_COLLECTION_DATE_FIELD,
+    DEFAULT_COLLECTION_SEARCH_BY,
+    DEFAULT_COLLECTION_SORT,
+} from '~/features/collection/view-filter';
 import { useCollectionPageContent } from '~/features/collection/use-collection-page-content';
 import { useCollectionPageData } from '~/features/collection/use-collection-page-data';
 import { useCollectionPageFilters } from '~/features/collection/use-collection-page-filters';
@@ -89,6 +94,14 @@ export const CollectionPage = () => {
         onSelectedChange: handleBrowseSelectedChange,
         onRefresh: refreshCollections,
     });
+    const canResetFilters =
+        draftQuery.trim().length > 0 ||
+        draftModel.length > 0 ||
+        searchBy !== DEFAULT_COLLECTION_SEARCH_BY ||
+        sort !== DEFAULT_COLLECTION_SORT ||
+        dateFrom.length > 0 ||
+        dateTo.length > 0 ||
+        dateField !== DEFAULT_COLLECTION_DATE_FIELD;
 
     return (
         <PageFrame title={COLLECTION_PAGE_META.title}>
@@ -100,16 +113,16 @@ export const CollectionPage = () => {
                     <CollectionSearchBar
                         value={draftQuery}
                         searchBy={searchBy}
+                        canReset={canResetFilters}
                         onChange={setDraftQuery}
                         onSearchByChange={handleSearchByChange}
                         onSubmit={applySearch}
+                        onReset={resetFilters}
                         placeholder={COLLECTION_PAGE_META.searchPlaceholder}
                         embedded
                     />
                 </div>
                 <CollectionFilterBar
-                    query={draftQuery}
-                    searchBy={searchBy}
                     sort={sort}
                     model={draftModel}
                     dateField={dateField}
@@ -125,16 +138,15 @@ export const CollectionPage = () => {
                     onDateToChange={handleDateToChange}
                     onDateRangeChange={handleDateRangeChange}
                     onDateQuickPreset={handleDateQuickPreset}
-                    onReset={resetFilters}
                     embedded
                 />
             </section>
-            <div className="mb-3 flex flex-wrap items-center justify-between gap-2 px-1">
+            <div className="mb-3">
+                <CollectionRealtimeControl />
+            </div>
+            <div className="mb-4 flex flex-wrap items-center justify-between gap-2 px-1">
                 <CollectionNav view={view} onViewChange={handleViewChange} />
                 <CollectionShowcaseShortcut />
-            </div>
-            <div className="mb-4">
-                <CollectionRealtimeControl />
             </div>
 
             {content}

@@ -5,13 +5,11 @@ import { cn } from '~/components/ui/cn';
 import { CollectionDateFiltersSection } from '~/features/collection/filter-bar/CollectionDateFiltersSection';
 import { CollectionPrimaryFiltersSection } from '~/features/collection/filter-bar/CollectionPrimaryFiltersSection';
 import { isSameCalendarDay } from '~/features/collection/filter-bar/date-utils';
-import type { CollectionDateField, CollectionSearchBy } from '~/api';
+import type { CollectionDateField } from '~/api';
 import {
     COLLECTION_DATE_FIELD_OPTIONS,
     COLLECTION_SORT_OPTIONS,
     DEFAULT_COLLECTION_DATE_FIELD,
-    DEFAULT_COLLECTION_SEARCH_BY,
-    DEFAULT_COLLECTION_SORT,
     parseCollectionSort,
     type CollectionDateQuickPreset,
     type CollectionSort,
@@ -21,8 +19,6 @@ import type { SelectOption } from '~/components/ui/Select';
 const MODEL_ALL_VALUE = '__collection_model_all__';
 
 interface CollectionFilterBarProps {
-    query: string;
-    searchBy: CollectionSearchBy;
     sort: CollectionSort;
     model: string;
     dateField: CollectionDateField;
@@ -40,12 +36,9 @@ interface CollectionFilterBarProps {
     onDateToChange: (value: string) => void;
     onDateRangeChange: (dateFrom: string, dateTo: string) => void;
     onDateQuickPreset: (preset: CollectionDateQuickPreset) => void;
-    onReset: () => void;
 }
 
 export const CollectionFilterBar = ({
-    query,
-    searchBy,
     sort,
     model,
     dateField,
@@ -63,18 +56,10 @@ export const CollectionFilterBar = ({
     onDateToChange,
     onDateRangeChange,
     onDateQuickPreset,
-    onReset,
 }: CollectionFilterBarProps) => {
     const hasDateRange = dateFrom.length > 0 || dateTo.length > 0;
     const hasActiveDateFilter =
         hasDateRange || dateField !== DEFAULT_COLLECTION_DATE_FIELD;
-    const canReset =
-        query.trim().length > 0 ||
-        model.length > 0 ||
-        searchBy !== DEFAULT_COLLECTION_SEARCH_BY ||
-        sort !== DEFAULT_COLLECTION_SORT ||
-        hasDateRange ||
-        dateField !== DEFAULT_COLLECTION_DATE_FIELD;
 
     const resolvedModelOptions = useMemo(() => {
         const normalized = modelOptions
@@ -176,7 +161,7 @@ export const CollectionFilterBar = ({
             className={cn(
                 'grid gap-2',
                 embedded
-                    ? 'border-t border-line/80 bg-surface-muted/60 p-3'
+                    ? 'border-t border-line/80 p-3'
                     : 'rounded-token-lg border border-line bg-surface-raised p-4',
                 className,
             )}
@@ -184,7 +169,6 @@ export const CollectionFilterBar = ({
             <CollectionPrimaryFiltersSection
                 model={model}
                 sort={sort}
-                canReset={canReset}
                 loadingModelOptions={loadingModelOptions}
                 modelOptionsError={modelOptionsError}
                 resolvedModelOptions={resolvedModelOptions}
@@ -195,7 +179,6 @@ export const CollectionFilterBar = ({
                 onSortChange={(nextValue) => {
                     onSortChange(parseCollectionSort(nextValue));
                 }}
-                onReset={onReset}
             />
 
             <CollectionDateFiltersSection

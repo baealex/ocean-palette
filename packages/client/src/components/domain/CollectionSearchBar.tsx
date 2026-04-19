@@ -11,23 +11,27 @@ import { CrossIcon, SearchIcon } from '~/icons';
 interface CollectionSearchBarProps {
     value: string;
     searchBy: CollectionSearchBy;
+    canReset?: boolean;
     placeholder?: string;
     className?: string;
     embedded?: boolean;
     onChange: (value: string) => void;
     onSearchByChange: (nextSearchBy: CollectionSearchBy) => void;
     onSubmit: () => void;
+    onReset?: () => void;
 }
 
 export const CollectionSearchBar = ({
     value,
     searchBy,
+    canReset = false,
     placeholder = 'Search',
     className,
     embedded = false,
     onChange,
     onSearchByChange,
     onSubmit,
+    onReset,
 }: CollectionSearchBarProps) => {
     const hasQuery = useMemo(() => value.trim().length > 0, [value]);
     const inputId = useId();
@@ -119,7 +123,19 @@ export const CollectionSearchBar = ({
                             </div>
                         </div>
                     </div>
-                    <div className="flex items-center justify-end">
+                    <div className="flex items-center justify-end gap-2">
+                        {onReset ? (
+                            <Button
+                                type="button"
+                                variant="ghost"
+                                size="control"
+                                className="min-w-[72px]"
+                                disabled={!canReset}
+                                onClick={onReset}
+                            >
+                                Reset
+                            </Button>
+                        ) : null}
                         <Button
                             type="submit"
                             variant="control"

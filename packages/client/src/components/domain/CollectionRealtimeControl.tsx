@@ -115,9 +115,8 @@ export const CollectionRealtimeControl = () => {
                     </div>
                     <div className="flex items-center gap-1.5">
                         <Button
-                            variant="secondary"
-                            size="sm"
-                            className="shadow-none"
+                            variant="control"
+                            size="compact"
                             onClick={() => {
                                 void handleCollectNow();
                             }}
@@ -127,7 +126,7 @@ export const CollectionRealtimeControl = () => {
                         </Button>
                         <Button
                             variant="ghost"
-                            size="sm"
+                            size="compact"
                             onClick={handleOpenSettings}
                         >
                             Settings

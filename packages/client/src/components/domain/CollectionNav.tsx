@@ -4,8 +4,8 @@ import type { CollectionView } from '~/features/collection/view-filter';
 
 const BASE_CLASS_NAME =
     'ui-focus-ring inline-flex h-10 items-center gap-1.5 rounded-token-md px-2.5 text-sm transition-colors';
-const ACTIVE_CLASS_NAME = `${BASE_CLASS_NAME} border border-line bg-surface-raised font-semibold text-ink`;
-const IDLE_CLASS_NAME = `${BASE_CLASS_NAME} border border-transparent bg-transparent font-medium text-ink-muted hover:text-ink`;
+const ACTIVE_CLASS_NAME = `${BASE_CLASS_NAME} border border-transparent bg-transparent font-semibold text-brand-500 hover:text-brand-600`;
+const IDLE_CLASS_NAME = `${BASE_CLASS_NAME} border border-transparent bg-transparent font-medium text-ink-muted hover:bg-surface-base/60 hover:text-ink`;
 
 interface CollectionNavProps {
     view: CollectionView;

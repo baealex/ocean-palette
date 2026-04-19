@@ -1,11 +1,9 @@
-import { Button } from '~/components/ui/Button';
 import { Select, type SelectOption } from '~/components/ui/Select';
 import type { CollectionSort } from '~/features/collection/view-filter';
 
 interface CollectionPrimaryFiltersSectionProps {
     model: string;
     sort: CollectionSort;
-    canReset: boolean;
     loadingModelOptions: boolean;
     modelOptionsError: string | null;
     resolvedModelOptions: string[];
@@ -14,13 +12,11 @@ interface CollectionPrimaryFiltersSectionProps {
     modelAllValue: string;
     onModelChange: (value: string) => void;
     onSortChange: (value: string) => void;
-    onReset: () => void;
 }
 
 export const CollectionPrimaryFiltersSection = ({
     model,
     sort,
-    canReset,
     loadingModelOptions,
     modelOptionsError,
     resolvedModelOptions,
@@ -29,12 +25,11 @@ export const CollectionPrimaryFiltersSection = ({
     modelAllValue,
     onModelChange,
     onSortChange,
-    onReset,
 }: CollectionPrimaryFiltersSectionProps) => {
     return (
         <section
             aria-labelledby="collection-primary-filter-group-label"
-            className="grid gap-2 sm:grid-cols-2 md:grid-cols-[repeat(2,minmax(0,1fr))_auto] md:items-end"
+            className="grid gap-2 sm:grid-cols-2 md:grid-cols-[repeat(2,minmax(220px,260px))] md:items-end md:justify-start"
         >
             <h3 id="collection-primary-filter-group-label" className="sr-only">
                 Primary filters
@@ -86,17 +81,6 @@ export const CollectionPrimaryFiltersSection = ({
                     onValueChange={onSortChange}
                 />
             </div>
-
-            <Button
-                type="button"
-                variant="ghost"
-                size="compact"
-                className="sm:justify-self-start md:justify-self-end"
-                disabled={!canReset}
-                onClick={onReset}
-            >
-                Reset
-            </Button>
         </section>
     );
 };
