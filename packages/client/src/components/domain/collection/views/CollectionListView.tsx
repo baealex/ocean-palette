@@ -1,4 +1,3 @@
-import { useNavigate } from '@tanstack/react-router';
 import { memo, useState } from 'react';
 
 import { deleteCollection, updateCollection } from '~/api';
@@ -36,7 +35,6 @@ const CollectionListViewComponent = ({
     onPageChange,
     onRefresh,
 }: CollectionListViewProps) => {
-    const navigate = useNavigate();
     const { copyToClipboard } = useClipboardToast();
     const [mutationError, setMutationError] = useState<string | null>(null);
     const [renamingId, setRenamingId] = useState<number | null>(null);
@@ -47,13 +45,6 @@ const CollectionListViewComponent = ({
     const [removeTarget, setRemoveTarget] = useState<CollectionListItem | null>(
         null,
     );
-
-    const handleOpenDetail = (id: number) => {
-        void navigate({
-            to: '/collection/$id',
-            params: { id: String(id) },
-        });
-    };
 
     const handleRename = async (nextTitle: string) => {
         if (!renameTarget || !nextTitle.trim()) {
@@ -135,9 +126,6 @@ const CollectionListViewComponent = ({
                         collection={item}
                         onClickCopy={(text, label = 'Prompt') => {
                             void copyToClipboard(text, { label });
-                        }}
-                        onClickOpenDetail={() => {
-                            handleOpenDetail(item.id);
                         }}
                         onClickRename={() => {
                             setRenameTarget(item);

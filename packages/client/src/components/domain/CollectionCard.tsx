@@ -1,4 +1,5 @@
-import { Button } from '~/components/ui/Button';
+import { Link } from '@tanstack/react-router';
+
 import { Card } from '~/components/ui/Card';
 import {
     DropdownMenu,
@@ -15,7 +16,6 @@ import { PromptTextField } from './PromptTextField';
 interface CollectionCardProps {
     collection: Collection;
     onClickCopy: (text: string, label?: string) => void;
-    onClickOpenDetail?: () => void;
     onClickRename?: () => void;
     onClickDelete: () => void;
     renaming?: boolean;
@@ -25,85 +25,64 @@ interface CollectionCardProps {
 export const CollectionCard = ({
     collection,
     onClickCopy,
-    onClickOpenDetail,
     onClickRename,
     onClickDelete,
     renaming = false,
     removing = false,
 }: CollectionCardProps) => {
     const displayTitle = collection.title || '(untitled)';
+    const detailParams = { id: String(collection.id) };
 
     return (
         <Card as="article" padding="none" className="mb-3 overflow-hidden">
             <div className="grid grid-cols-1 md:grid-cols-[280px_minmax(0,1fr)] xl:grid-cols-[320px_minmax(0,1fr)]">
-                {onClickOpenDetail ? (
-                    <Button
-                        type="button"
-                        variant="ghost"
-                        size="compact"
-                        className="group !h-auto aspect-[4/3] w-full !justify-start gap-0 overflow-hidden rounded-none border-0 bg-surface-muted p-0 text-left font-normal shadow-none hover:bg-surface-muted md:aspect-auto md:h-full md:min-h-[232px]"
-                        onClick={onClickOpenDetail}
-                    >
-                        <Image
-                            className="block h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
-                            alt={displayTitle}
-                            src={collection.image.url}
-                            width={collection.image.width}
-                            height={collection.image.height}
-                        />
-                    </Button>
-                ) : (
-                    <div className="aspect-[4/3] w-full overflow-hidden bg-surface-muted md:aspect-auto md:h-full md:min-h-[232px]">
-                        <Image
-                            className="block h-full w-full object-cover"
-                            alt={displayTitle}
-                            src={collection.image.url}
-                            width={collection.image.width}
-                            height={collection.image.height}
-                        />
-                    </div>
-                )}
+                <Link
+                    to="/collection/$id"
+                    params={detailParams}
+                    className="ui-focus-ring group block aspect-[4/3] w-full overflow-hidden bg-surface-muted md:aspect-auto md:h-full md:min-h-[232px]"
+                    aria-label={`Open ${displayTitle}`}
+                >
+                    <Image
+                        className="block h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+                        alt={displayTitle}
+                        src={collection.image.url}
+                        width={collection.image.width}
+                        height={collection.image.height}
+                    />
+                </Link>
 
                 <div className="grid min-w-0 content-start gap-3 border-t border-line p-3 md:border-l md:border-t-0 sm:p-4">
                     <header className="flex min-w-0 items-start justify-between gap-3">
                         <div className="min-w-0">
-                            <p className="text-[11px] font-medium text-ink-subtle">
-                                #{collection.id}
-                            </p>
-                            {onClickOpenDetail ? (
-                                <Button
-                                    type="button"
-                                    variant="text"
-                                    size="compact"
-                                    className="mt-0.5 !h-auto max-w-full justify-start p-0 text-left text-base font-semibold text-ink hover:text-brand-700"
-                                    onClick={onClickOpenDetail}
+                            <h2 className="min-w-0">
+                                <Link
+                                    to="/collection/$id"
+                                    params={detailParams}
+                                    className="ui-focus-ring group block w-full min-w-0 rounded-token-sm text-left"
                                 >
-                                    <span className="block truncate">
+                                    <span className="block truncate text-base font-semibold text-ink transition-colors group-hover:text-brand-700">
                                         {displayTitle}
                                     </span>
-                                </Button>
-                            ) : (
-                                <h2 className="mt-0.5 truncate text-base font-semibold text-ink">
-                                    {displayTitle}
-                                </h2>
-                            )}
+                                </Link>
+                            </h2>
+                            <p className="mt-1 flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1 text-[11px] font-medium text-ink-subtle">
+                                <span>#{collection.id}</span>
+                                <span aria-hidden="true">/</span>
+                                <span>
+                                    {collection.image.width} x{' '}
+                                    {collection.image.height}
+                                </span>
+                            </p>
                         </div>
                         <div className="flex shrink-0 items-center gap-1">
-                            {onClickOpenDetail ? (
-                                <IconButton
-                                    icon={
-                                        <ArrowRightIcon
-                                            width={14}
-                                            height={14}
-                                        />
-                                    }
-                                    label="Open detail"
-                                    variant="ghost"
-                                    size="sm"
-                                    className="h-9 w-9"
-                                    onClick={onClickOpenDetail}
-                                />
-                            ) : null}
+                            <Link
+                                to="/collection/$id"
+                                params={detailParams}
+                                aria-label="Open detail"
+                                className="ui-focus-ring inline-flex h-9 w-9 items-center justify-center rounded-token-md border border-transparent text-ink-muted transition-colors hover:bg-surface-muted hover:text-ink"
+                            >
+                                <ArrowRightIcon width={14} height={14} />
+                            </Link>
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
                                     <IconButton
@@ -158,7 +137,7 @@ export const CollectionCard = ({
                         title="Negative"
                         value={collection.negativePrompt}
                         rows={3}
-                        size="compact"
+                        size="standard"
                         muted
                         className="border-t border-line/70 pt-2"
                         onCopy={() => {

@@ -1,4 +1,3 @@
-import { useNavigate } from '@tanstack/react-router';
 import { memo, useEffect, useMemo, useRef, useState } from 'react';
 
 import { deleteCollection, updateCollection } from '~/api';
@@ -36,7 +35,6 @@ const CollectionBrowseViewComponent = ({
     onSelectedChange,
     onRefresh,
 }: CollectionBrowseViewProps) => {
-    const navigate = useNavigate();
     const { pushToast } = useToast();
     const { copyToClipboard } = useClipboardToast();
     const [renameDialogOpen, setRenameDialogOpen] = useState(false);
@@ -81,13 +79,6 @@ const CollectionBrowseViewComponent = ({
         }
         return items.find((item) => item.id === selectedId) ?? null;
     }, [items, selectedId]);
-
-    const openDetail = (collectionId: number) => {
-        void navigate({
-            to: '/collection/$id',
-            params: { id: String(collectionId) },
-        });
-    };
 
     const handleRename = async (nextTitle: string) => {
         if (!selectedItem || renaming) {
@@ -167,7 +158,6 @@ const CollectionBrowseViewComponent = ({
 
                 <CollectionBrowsePreviewPanel
                     selectedItem={selectedItem}
-                    onOpenDetail={openDetail}
                     onCopyPrompt={() => {
                         if (!selectedItem) {
                             return;
