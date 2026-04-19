@@ -70,32 +70,42 @@ export const CollectionBrowseGalleryPanel = ({
                         className="grid gap-1.5"
                         columnClassName="space-y-1.5"
                         getItemKey={(item) => item.id}
-                        renderItem={(item) => (
-                            <Button
-                                type="button"
-                                variant="ghost"
-                                size="sm"
-                                aria-pressed={selectedId === item.id}
-                                onClick={() => {
-                                    onSelectedChange(item.id);
-                                }}
-                                className={`!h-auto w-full !justify-start gap-0 border p-1.5 text-left transition-colors ${
-                                    selectedId === item.id
-                                        ? 'border-brand-400 bg-brand-50 shadow-surface'
-                                        : 'border-line bg-surface-raised hover:border-brand-200 hover:bg-surface-muted'
-                                }`}
-                            >
-                                <div className="w-full overflow-hidden rounded-token-sm border border-line bg-surface-muted">
-                                    <Image
-                                        src={item.image.url}
-                                        alt={item.title || '(untitled)'}
-                                        width={item.image.width}
-                                        height={item.image.height}
-                                        className="block h-auto w-full"
-                                    />
-                                </div>
-                            </Button>
-                        )}
+                        renderItem={(item) => {
+                            const selected = selectedId === item.id;
+
+                            return (
+                                <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="sm"
+                                    aria-pressed={selected}
+                                    onClick={() => {
+                                        onSelectedChange(item.id);
+                                    }}
+                                    className={`!h-auto w-full !justify-start gap-0 border p-1 text-left transition-colors ${
+                                        selected
+                                            ? 'border-brand-500 bg-surface-raised'
+                                            : 'border-line bg-surface-raised hover:border-line-strong hover:bg-surface-muted'
+                                    }`}
+                                >
+                                    <div
+                                        className={`relative w-full overflow-hidden rounded-token-sm border bg-surface-muted ${
+                                            selected
+                                                ? 'border-brand-500 after:pointer-events-none after:absolute after:inset-0 after:rounded-token-sm after:ring-2 after:ring-inset after:ring-brand-500'
+                                                : 'border-line'
+                                        }`}
+                                    >
+                                        <Image
+                                            src={item.image.url}
+                                            alt={item.title || '(untitled)'}
+                                            width={item.image.width}
+                                            height={item.image.height}
+                                            className="block h-auto w-full"
+                                        />
+                                    </div>
+                                </Button>
+                            );
+                        }}
                     />
                 </div>
             ) : null}

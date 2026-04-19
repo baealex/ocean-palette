@@ -5,6 +5,7 @@ import { deleteCollection, updateCollection } from '~/api';
 import { ConfirmDialog } from '~/components/ui/ConfirmDialog';
 import { PromptDialog } from '~/components/ui/PromptDialog';
 import { useToast } from '~/components/ui/ToastProvider';
+import { useClipboardToast } from '~/components/ui/use-clipboard-toast';
 
 import { CollectionBrowseGalleryPanel } from './CollectionBrowseGalleryPanel';
 import { CollectionBrowsePreviewPanel } from './CollectionBrowsePreviewPanel';
@@ -37,6 +38,7 @@ const CollectionBrowseViewComponent = ({
 }: CollectionBrowseViewProps) => {
     const navigate = useNavigate();
     const { pushToast } = useToast();
+    const { copyToClipboard } = useClipboardToast();
     const [renameDialogOpen, setRenameDialogOpen] = useState(false);
     const [removeDialogOpen, setRemoveDialogOpen] = useState(false);
     const [renaming, setRenaming] = useState(false);
@@ -166,6 +168,22 @@ const CollectionBrowseViewComponent = ({
                 <CollectionBrowsePreviewPanel
                     selectedItem={selectedItem}
                     onOpenDetail={openDetail}
+                    onCopyPrompt={() => {
+                        if (!selectedItem) {
+                            return;
+                        }
+                        void copyToClipboard(selectedItem.prompt, {
+                            label: 'Prompt',
+                        });
+                    }}
+                    onCopyNegativePrompt={() => {
+                        if (!selectedItem) {
+                            return;
+                        }
+                        void copyToClipboard(selectedItem.negativePrompt, {
+                            label: 'Negative prompt',
+                        });
+                    }}
                     onOpenRename={() => {
                         setRenameDialogOpen(true);
                     }}
