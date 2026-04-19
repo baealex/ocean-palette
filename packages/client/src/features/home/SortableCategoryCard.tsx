@@ -115,21 +115,27 @@ export const SortableCategoryCard = ({
     return (
         <Card
             as="article"
-            padding="md"
+            padding="none"
             ref={setNodeRef}
             style={style}
-            className={isDragging ? 'z-10 opacity-80' : ''}
+            className={
+                isDragging
+                    ? 'z-10 overflow-hidden opacity-80'
+                    : 'overflow-hidden'
+            }
         >
-            <header className="mb-3 flex items-center justify-between gap-3 sm:mb-4">
+            <header className="flex items-center justify-between gap-3 border-b border-line p-3 sm:p-4">
                 <div className="flex min-w-0 items-center gap-2">
                     <IconButton
                         ref={setActivatorNodeRef}
                         label={`Drag ${category.name}`}
                         icon={<DragHandleIcon width={14} height={14} />}
+                        variant="ghost"
+                        size="sm"
                         className={
                             saving
-                                ? 'cursor-default'
-                                : 'cursor-grab active:cursor-grabbing'
+                                ? 'h-9 w-9 cursor-default'
+                                : 'h-9 w-9 cursor-grab active:cursor-grabbing'
                         }
                         disabled={saving}
                         {...attributes}
@@ -139,8 +145,8 @@ export const SortableCategoryCard = ({
                         <h3 className="truncate text-base font-semibold text-ink">
                             {category.name}
                         </h3>
-                        <p className="text-xs text-ink-subtle">
-                            Order #{category.order}
+                        <p className="mt-0.5 text-[11px] font-medium text-ink-subtle">
+                            {category.keywords.length} keywords
                         </p>
                     </div>
                 </div>
@@ -155,6 +161,9 @@ export const SortableCategoryCard = ({
                             <IconButton
                                 label={`${category.name} actions`}
                                 icon={<MoreIcon width={14} height={14} />}
+                                variant="ghost"
+                                size="sm"
+                                className="h-9 w-9"
                                 disabled={saving}
                             />
                         </DropdownMenuTrigger>
@@ -186,59 +195,79 @@ export const SortableCategoryCard = ({
                 </div>
             </header>
 
-            <hr className="-mx-3 mb-3 border-line sm:-mx-4 sm:mb-4" />
-
-            <DndContext
-                sensors={keywordSensors}
-                collisionDetection={closestCenter}
-                onDragEnd={(event: DragEndEvent) => onKeywordDragEnd(category.id, event)}
-            >
-                <SortableContext
-                    items={category.keywords.map((keyword) =>
-                        makeKeywordSortableId(category.id, keyword.id),
-                    )}
-                    strategy={rectSortingStrategy}
+            <div className="p-3 sm:p-4">
+                <DndContext
+                    sensors={keywordSensors}
+                    collisionDetection={closestCenter}
+                    onDragEnd={(event: DragEndEvent) =>
+                        onKeywordDragEnd(category.id, event)
+                    }
                 >
-                    <ul className="flex flex-wrap gap-2">
-                        {category.keywords.map((keyword) => (
-                            <SortableKeywordItem
-                                key={keyword.id}
-                                categoryId={category.id}
-                                keyword={keyword}
-                                disabled={saving}
-                                onCopyKeyword={onCopyKeyword}
-                                onViewCollection={onViewCollection}
-                                onRemoveKeyword={(keywordId) =>
-                                    onRemoveKeyword(category.id, keywordId)
-                                }
-                                onAddSampleImage={onAddKeywordSampleImage}
-                                onRemoveSampleImage={onRemoveKeywordSampleImage}
-                            />
-                        ))}
-                    </ul>
-                </SortableContext>
-            </DndContext>
+                    <SortableContext
+                        items={category.keywords.map((keyword) =>
+                            makeKeywordSortableId(category.id, keyword.id),
+                        )}
+                        strategy={rectSortingStrategy}
+                    >
+                        {category.keywords.length > 0 ? (
+                            <ul className="flex flex-wrap gap-2">
+                                {category.keywords.map((keyword) => (
+                                    <SortableKeywordItem
+                                        key={keyword.id}
+                                        categoryId={category.id}
+                                        keyword={keyword}
+                                        disabled={saving}
+                                        onCopyKeyword={onCopyKeyword}
+                                        onViewCollection={onViewCollection}
+                                        onRemoveKeyword={(keywordId) =>
+                                            onRemoveKeyword(
+                                                category.id,
+                                                keywordId,
+                                            )
+                                        }
+                                        onAddSampleImage={
+                                            onAddKeywordSampleImage
+                                        }
+                                        onRemoveSampleImage={
+                                            onRemoveKeywordSampleImage
+                                        }
+                                    />
+                                ))}
+                            </ul>
+                        ) : (
+                            <p className="text-sm text-ink-muted">
+                                No keywords yet.
+                            </p>
+                        )}
+                    </SortableContext>
+                </DndContext>
 
-            <form
-                onSubmit={handleAddKeywordSubmit}
-                className="mt-3 flex flex-wrap gap-2"
-            >
-                <Input
-                    value={keywordInput}
-                    onChange={(event) => setKeywordInput(event.target.value)}
-                    placeholder="keyword1, keyword2"
-                    className="min-w-[220px] flex-1 text-xs"
-                    disabled={saving}
-                />
-                <Button
-                    type="submit"
-                    variant="primary"
-                    size="sm"
-                    disabled={saving}
+                <form
+                    onSubmit={handleAddKeywordSubmit}
+                    className="mt-3 flex gap-2 border-t border-line/70 pt-3"
                 >
-                    Add Keyword
-                </Button>
-            </form>
+                    <Input
+                        value={keywordInput}
+                        onChange={(event) =>
+                            setKeywordInput(event.target.value)
+                        }
+                        placeholder="keyword1, keyword2"
+                        inputSize="control"
+                        tone="control"
+                        className="min-w-0 flex-1 text-xs"
+                        disabled={saving}
+                    />
+                    <Button
+                        type="submit"
+                        variant="control"
+                        size="control"
+                        className="shrink-0"
+                        disabled={saving}
+                    >
+                        Add
+                    </Button>
+                </form>
+            </div>
         </Card>
     );
 };

@@ -33,9 +33,12 @@
     --radius-md: 12px;
     --radius-lg: 20px;
 
-    --shadow-surface: 0 1px 0 rgba(18, 30, 45, 0.04), 0 3px 12px rgba(18, 30, 45, 0.09);
-    --shadow-raised: 0 10px 30px rgba(18, 30, 45, 0.14), 0 5px 14px rgba(18, 30, 45, 0.09);
-    --shadow-overlay: 0 22px 46px rgba(7, 11, 17, 0.3);
+    --shadow-surface:
+        0 1px 0 rgba(18, 30, 45, 0.04), 0 3px 12px rgba(18, 30, 45, 0.09);
+    --shadow-raised:
+        0 8px 22px rgba(18, 30, 45, 0.08), 0 2px 8px rgba(18, 30, 45, 0.06);
+    --shadow-overlay:
+        0 18px 40px rgba(7, 11, 17, 0.18), 0 6px 16px rgba(7, 11, 17, 0.1);
 }
 
 body {

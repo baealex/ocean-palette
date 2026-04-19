@@ -3,6 +3,7 @@ import { Notice } from '~/components/ui/Notice';
 import { HomeCategoryBoard } from '~/features/home/HomeCategoryBoard';
 import { HomeCategoryCreateForm } from '~/features/home/HomeCategoryCreateForm';
 import { HomePageDialogs } from '~/features/home/HomePageDialogs';
+import { HomeSampleImageInput } from '~/features/home/HomeSampleImageInput';
 import { useHomePageController } from '~/features/home/use-home-page-controller';
 
 export const HomePage = () => {
@@ -38,18 +39,40 @@ export const HomePage = () => {
         handleRemoveKeywordSampleImage,
         reorderCategory,
     } = useHomePageController();
+    const keywordCount = categories.reduce(
+        (count, category) => count + category.keywords.length,
+        0,
+    );
 
     return (
-        <PageFrame
-            title="Home"
-            description="Manage categories and keywords with drag ordering and quick copy."
-        >
-            <HomeCategoryCreateForm
-                value={categoryName}
-                saving={saving}
-                onValueChange={setCategoryName}
-                onSubmit={handleCreateCategory}
-            />
+        <PageFrame>
+            <section className="mb-4 border-b border-line pb-4">
+                <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
+                    <div className="min-w-0">
+                        <h1 className="text-xl font-semibold tracking-tight text-ink sm:text-2xl">
+                            Prompt Palette
+                        </h1>
+                        <p className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs font-medium text-ink-subtle">
+                            <span>{categories.length} categories</span>
+                            <span aria-hidden="true">/</span>
+                            <span>{keywordCount} keywords</span>
+                            {saving ? (
+                                <>
+                                    <span aria-hidden="true">/</span>
+                                    <span>Saving</span>
+                                </>
+                            ) : null}
+                        </p>
+                    </div>
+
+                    <HomeCategoryCreateForm
+                        value={categoryName}
+                        saving={saving}
+                        onValueChange={setCategoryName}
+                        onSubmit={handleCreateCategory}
+                    />
+                </div>
+            </section>
 
             {loading ? (
                 <Notice variant="neutral">Loading categories...</Notice>
@@ -80,11 +103,8 @@ export const HomePage = () => {
                 onRemoveKeywordSampleImage={handleRemoveKeywordSampleImage}
             />
 
-            <input
-                ref={sampleImageInputRef}
-                type="file"
-                accept="image/*"
-                className="hidden"
+            <HomeSampleImageInput
+                inputRef={sampleImageInputRef}
                 onChange={handleSampleImageChange}
             />
 

@@ -17,18 +17,24 @@ export const HomeCategoryCreateForm = ({
     onSubmit,
 }: HomeCategoryCreateFormProps) => {
     return (
-        <form
-            onSubmit={onSubmit}
-            className="mb-4 flex flex-wrap gap-2"
-        >
+        <form onSubmit={onSubmit} className="flex w-full gap-2 lg:w-[420px]">
             <Input
                 value={value}
                 onChange={(event) => onValueChange(event.target.value)}
                 placeholder="Enter a category"
-                className="min-w-[240px] flex-1"
+                aria-label="Category name"
+                inputSize="control"
+                tone="control"
+                className="min-w-0 flex-1"
                 disabled={saving}
             />
-            <Button type="submit" variant="primary" disabled={saving}>
+            <Button
+                type="submit"
+                variant="primary"
+                size="control"
+                className="shrink-0"
+                disabled={saving}
+            >
                 Add Category
             </Button>
         </form>

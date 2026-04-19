@@ -102,7 +102,7 @@ export const SortableKeywordItem = ({
             style={style}
             emphasis="flat"
             className={cn(
-                'group relative list-none rounded-token-md py-1 pl-2.5 pr-0.5 text-sm select-none',
+                'group relative list-none rounded-token-sm bg-surface-muted py-1 pl-2.5 pr-0.5 text-sm select-none',
                 isDragging ? 'z-10 opacity-70' : '',
             )}
         >
@@ -134,7 +134,7 @@ export const SortableKeywordItem = ({
                         <DropdownMenuTrigger asChild>
                             <button
                                 type="button"
-                                className="ui-focus-ring inline-flex h-8 w-8 items-center justify-center rounded-token-sm text-ink-subtle transition-colors hover:bg-surface-muted hover:text-ink-muted"
+                                className="ui-focus-ring inline-flex h-7 w-7 items-center justify-center rounded-token-sm text-ink-subtle transition-colors hover:bg-surface-base hover:text-ink-muted"
                                 disabled={disabled}
                                 aria-label={`${keyword.name} actions`}
                             >
