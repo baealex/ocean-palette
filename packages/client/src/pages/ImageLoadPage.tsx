@@ -93,103 +93,139 @@ export const ImageLoadPage = () => {
               { label: 'Parse Version', value: parsedPrompt.parseVersion },
           ].filter((item) => Boolean(item.value))
         : [];
+    const statusLabel = loading
+        ? 'Reading image'
+        : parsedPrompt
+          ? `${metadataRows.length} metadata fields`
+          : 'No prompt loaded';
 
     return (
-        <PageFrame
-            title="Stable Diffusion Prompt Info"
-            description="Load PNG/JPG/WEBP files to read generation metadata and save it to collection."
-        >
+        <PageFrame>
+            <section className="mb-4 border-b border-line pb-4">
+                <div className="min-w-0">
+                    <h1 className="text-xl font-semibold tracking-tight text-ink sm:text-2xl">
+                        Prompt Info
+                    </h1>
+                    <p className="mt-1 text-xs font-medium text-ink-subtle">
+                        {statusLabel}
+                    </p>
+                </div>
+            </section>
+
             <div className="grid gap-4 xl:grid-cols-[minmax(340px,420px)_minmax(0,1fr)]">
                 <div className="space-y-4">
                     <FileInput
                         accept="image/png,image/jpeg,image/webp"
                         disabled={loading}
-                        helperText="Select an image file to extract prompt metadata and preview before saving."
+                        title="Source Image"
+                        chooseLabel="Choose Image"
+                        helperText="PNG, JPG, WEBP"
                         onSelect={(file) => {
                             void onFile(file);
                         }}
                     />
 
-                    <section className="rounded-token-md border border-brand-200 bg-brand-50/60 p-3">
-                        <p className="text-xs font-semibold uppercase tracking-wide text-brand-800">
-                            Next Step
-                        </p>
-                        <p className="mt-1 text-xs text-ink-muted">
-                            Create a collection item from parsed prompt
-                            metadata.
-                        </p>
-                        <Button
-                            variant="primary"
-                            className="mt-3 w-full"
-                            onClick={() => setSaveDialogOpen(true)}
-                            disabled={loading || !canSaveToCollection}
-                        >
-                            <HeartIcon width={14} height={14} />
-                            Save Prompt to Collection
-                        </Button>
-                    </section>
+                    {error ? <Notice variant="error">{error}</Notice> : null}
                 </div>
 
                 <div className="space-y-4">
-                    {parsedPrompt ? (
-                        <Card className="space-y-4 text-sm text-ink-muted">
-                            <PromptTextField
-                                title="Prompt"
-                                value={parsedPrompt.prompt}
-                                rows={8}
-                                size="detail"
-                                labelStyle="title"
-                                copyTone="control"
-                                emptyValue="No prompt found in metadata."
-                                onCopy={() => {
-                                    void copyToClipboard(parsedPrompt.prompt, {
-                                        label: 'Prompt',
-                                    });
-                                }}
-                            />
+                    <Card
+                        padding="none"
+                        className="min-h-[520px] overflow-hidden"
+                    >
+                        <div className="flex flex-col gap-3 border-b border-line p-3 sm:flex-row sm:items-center sm:justify-between">
+                            <div className="min-w-0">
+                                <h2 className="text-sm font-semibold text-ink">
+                                    Parsed Prompt
+                                </h2>
+                                <p className="mt-1 text-xs font-medium text-ink-subtle">
+                                    {statusLabel}
+                                </p>
+                            </div>
 
-                            <PromptTextField
-                                title="Negative Prompt"
-                                value={parsedPrompt.negativePrompt}
-                                rows={5}
-                                size="detail"
-                                labelStyle="title"
-                                copyTone="control"
-                                muted
-                                emptyValue="No negative prompt found in metadata."
-                                onCopy={() => {
-                                    void copyToClipboard(
-                                        parsedPrompt.negativePrompt,
-                                        { label: 'Negative prompt' },
-                                    );
-                                }}
-                            />
+                            {parsedPrompt ? (
+                                <Button
+                                    variant="primary"
+                                    size="control"
+                                    onClick={() => setSaveDialogOpen(true)}
+                                    disabled={loading || !canSaveToCollection}
+                                >
+                                    <HeartIcon width={14} height={14} />
+                                    Save to Collection
+                                </Button>
+                            ) : null}
+                        </div>
 
-                            <GeneratedMetadataPanel
-                                rows={metadataRows}
-                                emptyMessage="No structured metadata fields were found."
-                                warnings={parsedPrompt.parseWarnings}
-                                note={
-                                    uploadedImage
-                                        ? null
-                                        : 'Generated timestamp appears after saving to collection.'
-                                }
-                                onCopyJson={() => {
-                                    void copyToClipboard(
-                                        JSON.stringify(parsedPrompt, null, 2),
-                                        { label: 'Metadata JSON' },
-                                    );
-                                }}
-                            />
-                        </Card>
-                    ) : (
-                        <Card tone="muted" className="text-sm text-ink-muted">
-                            <p className="text-ink-muted">
-                                Prompt metadata will appear here after you
-                                select an image.
-                            </p>
-                        </Card>
-                    )}
+                        <div className="p-4">
+                            {parsedPrompt ? (
+                                <div className="space-y-4">
+                                    <PromptTextField
+                                        title="Prompt"
+                                        value={parsedPrompt.prompt}
+                                        rows={8}
+                                        size="detail"
+                                        labelStyle="title"
+                                        emptyValue="No prompt found in metadata."
+                                        onCopy={() => {
+                                            void copyToClipboard(
+                                                parsedPrompt.prompt,
+                                                {
+                                                    label: 'Prompt',
+                                                },
+                                            );
+                                        }}
+                                    />
+
+                                    <PromptTextField
+                                        title="Negative Prompt"
+                                        value={parsedPrompt.negativePrompt}
+                                        rows={8}
+                                        size="detail"
+                                        labelStyle="title"
+                                        surface="muted"
+                                        emptyValue="No negative prompt found in metadata."
+                                        onCopy={() => {
+                                            void copyToClipboard(
+                                                parsedPrompt.negativePrompt,
+                                                { label: 'Negative prompt' },
+                                            );
+                                        }}
+                                    />
+
+                                    <div className="border-t border-line pt-4">
+                                        <GeneratedMetadataPanel
+                                            rows={metadataRows}
+                                            emptyMessage="No structured metadata fields were found."
+                                            warnings={
+                                                parsedPrompt.parseWarnings
+                                            }
+                                            note={
+                                                uploadedImage
+                                                    ? null
+                                                    : 'Generated timestamp appears after saving to collection.'
+                                            }
+                                            onCopyJson={() => {
+                                                void copyToClipboard(
+                                                    JSON.stringify(
+                                                        parsedPrompt,
+                                                        null,
+                                                        2,
+                                                    ),
+                                                    { label: 'Metadata JSON' },
+                                                );
+                                            }}
+                                        />
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="grid min-h-[380px] place-items-center">
+                                    <p className="text-sm text-ink-subtle">
+                                        No prompt loaded
+                                    </p>
+                                </div>
+                            )}
+                        </div>
+                    </Card>
 
                     {savedCollectionId ? (
                         <Notice variant="success">
@@ -203,8 +239,6 @@ export const ImageLoadPage = () => {
                             </Link>
                         </Notice>
                     ) : null}
-
-                    {error ? <Notice variant="error">{error}</Notice> : null}
                 </div>
             </div>
 
