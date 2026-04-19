@@ -18,7 +18,11 @@ export interface SearchRequest {
     dateTo?: string;
 }
 
-export type CollectionSearchBy = 'title' | 'prompt' | 'negative_prompt';
+export type CollectionSearchBy =
+    | 'title_prompt'
+    | 'title'
+    | 'prompt'
+    | 'negative_prompt';
 export type CollectionDateField = 'collection_added' | 'generated_at';
 
 export interface PaginationRequest {
@@ -34,7 +38,10 @@ export interface Pagination {
 }
 
 export function getCategories() {
-    return graphQLRequest<'allCategories', Pick<Category, 'id' | 'name' | 'keywords' | 'order'>[]>(`
+    return graphQLRequest<
+        'allCategories',
+        Pick<Category, 'id' | 'name' | 'keywords' | 'order'>[]
+    >(`
         query {
             allCategories {
                 id
@@ -58,7 +65,10 @@ export function getCategories() {
 }
 
 export function createCategory(data: { name: string }) {
-    return graphQLRequest<'createCategory', Pick<Category, 'id' | 'name' | 'order'>>(
+    return graphQLRequest<
+        'createCategory',
+        Pick<Category, 'id' | 'name' | 'order'>
+    >(
         `
         mutation($name: String!) {
             createCategory(name: $name) {
@@ -109,7 +119,10 @@ export function deleteCategory(data: { id: number }) {
 }
 
 export function createKeyword(data: { categoryId: number; name: string }) {
-    return graphQLRequest<'createKeyword', Pick<Keyword, 'id' | 'name' | 'categories'>>(
+    return graphQLRequest<
+        'createKeyword',
+        Pick<Keyword, 'id' | 'name' | 'categories'>
+    >(
         `
         mutation($categoryId: ID!, $name: String!) {
             createKeyword(categoryId: $categoryId, name: $name) {
@@ -126,7 +139,11 @@ export function createKeyword(data: { categoryId: number; name: string }) {
     );
 }
 
-export function updateKeywordOrder(data: { keywordId: number; categoryId: number; order: number }) {
+export function updateKeywordOrder(data: {
+    keywordId: number;
+    categoryId: number;
+    order: number;
+}) {
     return graphQLRequest<'updateKeywordOrder', boolean>(
         `
         mutation($keywordId: ID!, $categoryId: ID!, $order: Int!) {
@@ -156,7 +173,19 @@ export function deleteKeyword(data: { keywordId: number; categoryId: number }) {
 }
 
 export function getCollection(data: { id: number }) {
-    return graphQLRequest<'collection', Pick<Collection, 'id' | 'title' | 'prompt' | 'negativePrompt' | 'image' | 'generatedMetadata' | 'generatedAt'>>(
+    return graphQLRequest<
+        'collection',
+        Pick<
+            Collection,
+            | 'id'
+            | 'title'
+            | 'prompt'
+            | 'negativePrompt'
+            | 'image'
+            | 'generatedMetadata'
+            | 'generatedAt'
+        >
+    >(
         `
         query($id: ID!) {
             collection(id: $id) {
@@ -213,13 +242,19 @@ export function getCollectionModelOptions() {
     `);
 }
 
-interface GetCollectionsRequestData extends OrderRequest, PaginationRequest, SearchRequest {
+interface GetCollectionsRequestData
+    extends OrderRequest,
+        PaginationRequest,
+        SearchRequest {
     page?: number;
     limit?: number;
 }
 
 interface GetCollectionsResponse {
-    collections: Pick<Collection, 'id' | 'image' | 'title' | 'prompt' | 'negativePrompt'>[];
+    collections: Pick<
+        Collection,
+        'id' | 'image' | 'title' | 'prompt' | 'negativePrompt'
+    >[];
     pagination: Pagination;
 }
 
@@ -229,7 +264,7 @@ export function getCollections(data: GetCollectionsRequestData = {}) {
         limit = 10,
         query = '',
         model = '',
-        searchBy = 'title',
+        searchBy = 'title_prompt',
         dateField = 'collection_added',
         dateFrom = '',
         dateTo = '',
@@ -299,8 +334,16 @@ export function getCollections(data: GetCollectionsRequestData = {}) {
     );
 }
 
-export function createCollection(data: { title: string; prompt: string; negativePrompt: string; imageId: number }) {
-    return graphQLRequest<'createCollection', Pick<Collection, 'id' | 'prompt' | 'negativePrompt' | 'image'>>(
+export function createCollection(data: {
+    title: string;
+    prompt: string;
+    negativePrompt: string;
+    imageId: number;
+}) {
+    return graphQLRequest<
+        'createCollection',
+        Pick<Collection, 'id' | 'prompt' | 'negativePrompt' | 'image'>
+    >(
         `
         mutation($title: String!, $prompt: String!, $negativePrompt: String!, $imageId: ID!) {
             createCollection(title: $title, prompt: $prompt, negativePrompt: $negativePrompt, imageId: $imageId) {
@@ -353,7 +396,10 @@ export function deleteCollection(data: { id: number }) {
     );
 }
 
-export function createSampleImage(data: { imageId: number; keywordId: number }) {
+export function createSampleImage(data: {
+    imageId: number;
+    keywordId: number;
+}) {
     return graphQLRequest<'createSampleImage', boolean>(
         `
         mutation($imageId: ID!, $keywordId: ID!) {

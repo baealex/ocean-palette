@@ -7,7 +7,11 @@ import { liveImagesService } from '~/modules/live-images';
 import { toParsedMetadata } from '~/modules/live-images.metadata';
 
 type AllCollectionsOrder = 'asc' | 'desc';
-type AllCollectionsSearchBy = 'title' | 'prompt' | 'negative_prompt';
+type AllCollectionsSearchBy =
+    | 'title_prompt'
+    | 'title'
+    | 'prompt'
+    | 'negative_prompt';
 type AllCollectionsDateField = 'collection_added' | 'generated_at';
 
 const DEFAULT_COLLECTION_LIMIT = 60;
@@ -84,11 +88,6 @@ const resolveCollectionQueryFilter = (
             },
             {
                 prompt: {
-                    contains: query,
-                },
-            },
-            {
-                negativePrompt: {
                     contains: query,
                 },
             },
@@ -179,7 +178,12 @@ function normalizeOrder(input: string | undefined): AllCollectionsOrder {
 function normalizeSearchBy(
     input: string | undefined,
 ): AllCollectionsSearchBy | undefined {
-    if (input === 'title' || input === 'prompt' || input === 'negative_prompt') {
+    if (
+        input === 'title_prompt' ||
+        input === 'title' ||
+        input === 'prompt' ||
+        input === 'negative_prompt'
+    ) {
         return input;
     }
     return undefined;
@@ -564,7 +568,9 @@ export const CollectionResolvers: IResolvers = {
                 },
             });
         },
-        generatedAt: async (collection: Collection | CollectionWithImageMeta) => {
+        generatedAt: async (
+            collection: Collection | CollectionWithImageMeta,
+        ) => {
             const loadedImage = resolveLoadedImage(collection);
             if (loadedImage) {
                 return loadedImage.generatedAt?.toISOString?.() || null;

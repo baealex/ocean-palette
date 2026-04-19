@@ -61,7 +61,7 @@ export interface CollectionRouteSearch extends CollectionFilterState {
 
 export const DEFAULT_COLLECTION_SORT: CollectionSort = 'collection_added_desc';
 export const DEFAULT_COLLECTION_VIEW: CollectionView = 'list';
-export const DEFAULT_COLLECTION_SEARCH_BY: CollectionSearchBy = 'title';
+export const DEFAULT_COLLECTION_SEARCH_BY: CollectionSearchBy = 'title_prompt';
 export const DEFAULT_COLLECTION_DATE_FIELD: CollectionDateField =
     'collection_added';
 
@@ -85,6 +85,7 @@ const COLLECTION_VIEW_VALUES = new Set<CollectionView>([
     'browse',
 ]);
 const COLLECTION_SEARCH_BY_VALUES = new Set<CollectionSearchBy>([
+    'title_prompt',
     'title',
     'prompt',
     'negative_prompt',
@@ -115,7 +116,9 @@ export const parseCollectionSearchBy = (input: unknown): CollectionSearchBy => {
     return DEFAULT_COLLECTION_SEARCH_BY;
 };
 
-export const parseCollectionDateField = (input: unknown): CollectionDateField => {
+export const parseCollectionDateField = (
+    input: unknown,
+): CollectionDateField => {
     if (
         typeof input === 'string' &&
         COLLECTION_DATE_FIELD_VALUES.has(input as CollectionDateField)
@@ -253,7 +256,9 @@ export const parseCollectionRouteSearch = (
 export const parseCollectionSearchParams = (
     search: Record<string, unknown>,
 ): CollectionSearchParams => {
-    const normalized = parseCollectionRouteSearch(search as CollectionSearchParams);
+    const normalized = parseCollectionRouteSearch(
+        search as CollectionSearchParams,
+    );
     const normalizedDateRange = normalizeCollectionDateRange(
         normalized.dateFrom,
         normalized.dateTo,
@@ -273,7 +278,10 @@ export const parseCollectionSearchParams = (
     if (normalized.searchBy !== DEFAULT_COLLECTION_SEARCH_BY) {
         nextSearch.searchBy = normalized.searchBy;
     }
-    if (hasDateFilter && normalized.dateField !== DEFAULT_COLLECTION_DATE_FIELD) {
+    if (
+        hasDateFilter &&
+        normalized.dateField !== DEFAULT_COLLECTION_DATE_FIELD
+    ) {
         nextSearch.dateField = normalized.dateField;
     }
     if (normalizedDateRange.dateFrom) {
@@ -449,20 +457,18 @@ export const applyCollectionViewSearch = (
     }
 };
 
-export const buildCollectionPath = (
-    next: {
-        view: CollectionView;
-        query: string;
-        model: string;
-        searchBy: CollectionSearchBy;
-        dateField: CollectionDateField;
-        dateFrom: string;
-        dateTo: string;
-        sort: CollectionSort;
-        page: number;
-        selected?: number | null;
-    },
-) => {
+export const buildCollectionPath = (next: {
+    view: CollectionView;
+    query: string;
+    model: string;
+    searchBy: CollectionSearchBy;
+    dateField: CollectionDateField;
+    dateFrom: string;
+    dateTo: string;
+    sort: CollectionSort;
+    page: number;
+    selected?: number | null;
+}) => {
     const params = new URLSearchParams();
     if (next.query) {
         params.set('query', next.query);
@@ -480,10 +486,7 @@ export const buildCollectionPath = (
     const hasDateFilter =
         normalizedDateRange.dateFrom.length > 0 ||
         normalizedDateRange.dateTo.length > 0;
-    if (
-        hasDateFilter &&
-        next.dateField !== DEFAULT_COLLECTION_DATE_FIELD
-    ) {
+    if (hasDateFilter && next.dateField !== DEFAULT_COLLECTION_DATE_FIELD) {
         params.set('dateField', next.dateField);
     }
     if (normalizedDateRange.dateFrom) {

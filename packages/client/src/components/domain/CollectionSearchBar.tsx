@@ -75,6 +75,10 @@ export const CollectionSearchBar = ({
                                     size="control"
                                     tone="control"
                                     options={[
+                                        {
+                                            value: 'title_prompt',
+                                            label: 'Title + Prompt',
+                                        },
                                         { value: 'title', label: 'Title' },
                                         { value: 'prompt', label: 'Prompt' },
                                         {

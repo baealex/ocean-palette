@@ -165,9 +165,9 @@ describe('Collection Schema', () => {
         expect(response.body.errors).toBeUndefined();
         expect(response.body.data.allCollections.pagination.limit).toBe(1);
         expect(response.body.data.allCollections.pagination.offset).toBe(0);
-        expect(response.body.data.allCollections.pagination.total).toBeGreaterThanOrEqual(
-            2,
-        );
+        expect(
+            response.body.data.allCollections.pagination.total,
+        ).toBeGreaterThanOrEqual(2);
         expect(response.body.data.allCollections.collections).toHaveLength(1);
 
         const [firstItem] = response.body.data.allCollections.collections;
@@ -204,6 +204,66 @@ describe('Collection Schema', () => {
         expect(response.body.data.allCollections.collections).toHaveLength(1);
         expect(response.body.data.allCollections.collections[0].title).toBe(
             'Portrait A',
+        );
+    });
+
+    it('filters collections by title or prompt query', async () => {
+        const titleResponse = await runGraphql(`
+            query {
+                allCollections(
+                    query: "City B"
+                    searchBy: "title_prompt"
+                    model: "model-b"
+                ) {
+                    collections {
+                        title
+                    }
+                }
+            }
+        `);
+        const promptResponse = await runGraphql(`
+            query {
+                allCollections(
+                    query: "skyline"
+                    searchBy: "title_prompt"
+                    model: "model-b"
+                ) {
+                    collections {
+                        title
+                    }
+                }
+            }
+        `);
+        const negativeResponse = await runGraphql(`
+            query {
+                allCollections(
+                    query: "noise"
+                    searchBy: "title_prompt"
+                    model: "model-b"
+                ) {
+                    collections {
+                        title
+                    }
+                }
+            }
+        `);
+
+        expect(titleResponse.status).toBe(200);
+        expect(titleResponse.body.errors).toBeUndefined();
+        expect(titleResponse.body.data.allCollections.collections).toEqual([
+            { title: 'City B' },
+        ]);
+
+        expect(promptResponse.status).toBe(200);
+        expect(promptResponse.body.errors).toBeUndefined();
+        expect(promptResponse.body.data.allCollections.collections).toEqual([
+            { title: 'City B' },
+        ]);
+
+        expect(negativeResponse.status).toBe(200);
+        expect(negativeResponse.body.errors).toBeUndefined();
+        expect(negativeResponse.body.data.allCollections.collections).toEqual(
+            [],
         );
     });
 });
