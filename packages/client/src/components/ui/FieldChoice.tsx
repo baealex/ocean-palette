@@ -2,7 +2,11 @@ import type { InputHTMLAttributes, ReactNode } from 'react';
 
 import { cn } from './cn';
 
-interface FieldChoiceProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'type' | 'checked' | 'onChange'> {
+interface FieldChoiceProps
+    extends Omit<
+        InputHTMLAttributes<HTMLInputElement>,
+        'type' | 'checked' | 'onChange'
+    > {
     type: 'checkbox' | 'radio';
     checked: boolean;
     label: ReactNode;
@@ -19,7 +23,13 @@ export const FieldChoice = ({
     ...props
 }: FieldChoiceProps) => {
     return (
-        <label className={cn('inline-flex items-center gap-2 text-sm text-ink-muted', disabled ? 'opacity-55' : '', className)}>
+        <label
+            className={cn(
+                'inline-flex items-center gap-2 text-sm text-ink-muted',
+                disabled ? 'opacity-55' : '',
+                className,
+            )}
+        >
             <input
                 type={type}
                 checked={checked}
@@ -27,11 +37,10 @@ export const FieldChoice = ({
                 onChange={(event) => {
                     onChange(event.target.checked);
                 }}
-                className="ui-focus-ring h-4 w-4"
+                className="ui-focus-ring h-4 w-4 accent-brand-700"
                 {...props}
             />
             {label}
         </label>
     );
 };
-

@@ -7,10 +7,16 @@ import {
     screen,
     waitFor,
 } from '@testing-library/react';
+import type { AnchorHTMLAttributes, ReactNode } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import type { LiveStatusResponse } from '~/api';
-import { getLiveConfig, syncLiveImages, updateLiveConfig } from '~/api';
+import {
+    getLiveConfig,
+    listLiveDirectories,
+    syncLiveImages,
+    updateLiveConfig,
+} from '~/api';
 import { ToastProvider } from '~/components/ui/ToastProvider';
 import { useLiveCollectionsRealtime } from '~/features/collection/use-live-collections-realtime';
 
@@ -27,7 +33,23 @@ vi.mock('~/features/collection/use-live-collections-realtime', () => ({
     useLiveCollectionsRealtime: vi.fn(),
 }));
 
+vi.mock('@tanstack/react-router', () => ({
+    Link: ({
+        to,
+        children,
+        ...props
+    }: {
+        to: string;
+        children: ReactNode;
+    } & AnchorHTMLAttributes<HTMLAnchorElement>) => (
+        <a href={to} {...props}>
+            {children}
+        </a>
+    ),
+}));
+
 const mockedGetLiveConfig = vi.mocked(getLiveConfig);
+const mockedListLiveDirectories = vi.mocked(listLiveDirectories);
 const mockedSyncLiveImages = vi.mocked(syncLiveImages);
 const mockedUpdateLiveConfig = vi.mocked(updateLiveConfig);
 const mockedUseLiveCollectionsRealtime = vi.mocked(useLiveCollectionsRealtime);
@@ -100,6 +122,15 @@ beforeEach(() => {
     mockedSyncLiveImages.mockResolvedValue({
         data: { ok: true, scanned: 0 },
     } as never);
+    mockedListLiveDirectories.mockResolvedValue({
+        data: {
+            ok: true,
+            currentPath: 'D:\\',
+            parentPath: null,
+            roots: ['D:\\'],
+            directories: [{ name: 'watch', path: 'D:\\watch' }],
+        },
+    } as never);
 });
 
 describe('CollectionRealtimeControl', () => {
@@ -119,9 +150,10 @@ describe('CollectionRealtimeControl', () => {
                 'Set a Watch Folder before enabling Auto Collect.',
             ),
         ).toBeInTheDocument();
-        expect(
-            await screen.findByText('Auto Collect Settings'),
-        ).toBeInTheDocument();
+        expect(screen.getByRole('link', { name: 'Settings' })).toHaveAttribute(
+            'href',
+            '/collection/auto-collect',
+        );
         expect(mockedUpdateLiveConfig).not.toHaveBeenCalled();
     });
 

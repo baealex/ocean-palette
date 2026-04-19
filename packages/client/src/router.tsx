@@ -25,6 +25,10 @@ const CollectionPage = lazy(async () => {
     const module = await import('~/pages/CollectionPage');
     return { default: module.CollectionPage };
 });
+const AutoCollectPage = lazy(async () => {
+    const module = await import('~/pages/AutoCollectPage');
+    return { default: module.AutoCollectPage };
+});
 const CollectionDetailPage = lazy(async () => {
     const module = await import('~/pages/CollectionDetailPage');
     return { default: module.CollectionDetailPage };
@@ -40,10 +44,7 @@ const ShowcasePage = lazy(async () => {
 
 const RouteFallback = () => {
     return (
-        <section
-            aria-label="Page loading"
-            className="animate-pulse space-y-3"
-        >
+        <section aria-label="Page loading" className="animate-pulse space-y-3">
             <div className="h-5 w-36 rounded-token-sm bg-surface-muted" />
             <div className="h-10 rounded-token-md bg-surface-muted" />
             <div className="h-56 rounded-token-lg bg-surface-muted" />
@@ -111,6 +112,12 @@ const collectionRoute = createRoute({
     component: withRouteSuspense(CollectionPage),
 });
 
+const autoCollectRoute = createRoute({
+    getParentRoute: () => appLayoutRoute,
+    path: '/collection/auto-collect',
+    component: withRouteSuspense(AutoCollectPage),
+});
+
 const CollectionDetailRouteComponent = () => {
     const { id } = useParams({ from: '/app-layout/collection/$id' });
     return (
@@ -138,6 +145,7 @@ export const routeTree = rootRoute.addChildren([
         homeRoute,
         ideaRoute,
         collectionRoute,
+        autoCollectRoute,
         collectionDetailRoute,
         imageLoadRoute,
     ]),

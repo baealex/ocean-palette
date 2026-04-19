@@ -1,5 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import type { KeyboardEvent } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
 import type { LiveDirectoryEntry } from '~/api';
 import { Button } from '~/components/ui/Button';
@@ -13,6 +12,7 @@ interface AutoCollectDirectoryBrowserPanelProps {
     parentPath: string | null;
     roots: string[];
     entries: LiveDirectoryEntry[];
+    watchPath: string;
     onLoadDirectories: (targetPath?: string) => Promise<void>;
     onUsePath: (path: string) => void;
 }
@@ -23,16 +23,19 @@ export const AutoCollectDirectoryBrowserPanel = ({
     parentPath,
     roots,
     entries,
+    watchPath,
     onLoadDirectories,
     onUsePath,
 }: AutoCollectDirectoryBrowserPanelProps) => {
-    const [selectedPath, setSelectedPath] = useState<string | null>(null);
     const [entryQuery, setEntryQuery] = useState('');
     const [localNavigating, setLocalNavigating] = useState(false);
     const [navigatingPath, setNavigatingPath] = useState<string | null>(null);
     const busy = loading || localNavigating;
 
     const normalizedEntryQuery = entryQuery.trim().toLowerCase();
+    const isCurrentPathSelected = Boolean(
+        currentPath && watchPath && currentPath.trim() === watchPath.trim(),
+    );
     const visibleEntries = useMemo(() => {
         if (normalizedEntryQuery.length === 0) {
             return entries;
@@ -42,84 +45,6 @@ export const AutoCollectDirectoryBrowserPanel = ({
             entry.name.toLowerCase().includes(normalizedEntryQuery),
         );
     }, [entries, normalizedEntryQuery]);
-
-    useEffect(() => {
-        if (
-            !selectedPath ||
-            !visibleEntries.some((entry) => entry.path === selectedPath)
-        ) {
-            setSelectedPath(visibleEntries[0]?.path ?? null);
-        }
-    }, [currentPath, entries, selectedPath]);
-    const selectedIndex = useMemo(
-        () => entries.findIndex((entry) => entry.path === selectedPath),
-        [entries, selectedPath],
-    );
-    const activeOptionId =
-        selectedIndex >= 0
-            ? `auto-collect-folder-option-${selectedIndex}`
-            : undefined;
-
-    const selectByIndex = useCallback(
-        (nextIndex: number) => {
-            if (entries.length === 0) {
-                return;
-            }
-            const boundedIndex = Math.max(
-                0,
-                Math.min(nextIndex, entries.length - 1),
-            );
-            const nextEntry = entries[boundedIndex];
-            if (!nextEntry) {
-                return;
-            }
-            setSelectedPath(nextEntry.path);
-        },
-        [entries],
-    );
-
-    const handleListboxKeyDown = useCallback(
-        (event: KeyboardEvent<HTMLDivElement>) => {
-            if (loading || entries.length === 0) {
-                return;
-            }
-
-            switch (event.key) {
-                case 'ArrowDown':
-                    event.preventDefault();
-                    selectByIndex(selectedIndex < 0 ? 0 : selectedIndex + 1);
-                    break;
-                case 'ArrowUp':
-                    event.preventDefault();
-                    selectByIndex(selectedIndex < 0 ? 0 : selectedIndex - 1);
-                    break;
-                case 'Home':
-                    event.preventDefault();
-                    selectByIndex(0);
-                    break;
-                case 'End':
-                    event.preventDefault();
-                    selectByIndex(entries.length - 1);
-                    break;
-                case 'Enter':
-                    event.preventDefault();
-                    if (selectedPath) {
-                        onLoadDirectories(selectedPath);
-                    }
-                    break;
-                default:
-                    break;
-            }
-        },
-        [
-            entries.length,
-            loading,
-            onLoadDirectories,
-            selectByIndex,
-            selectedIndex,
-            selectedPath,
-        ],
-    );
 
     const breadcrumbs = useMemo(() => {
         if (!currentPath) {
@@ -180,59 +105,14 @@ export const AutoCollectDirectoryBrowserPanel = ({
     );
 
     return (
-        <div className="grid gap-3 rounded-token-md border border-line/70 bg-surface-base p-3">
-            <div className="grid gap-2">
-                <div className="text-xs font-semibold uppercase tracking-[0.06em] text-ink-muted">
-                    Current Folder
-                </div>
-                <div className="flex flex-wrap items-center gap-1 rounded-token-sm border border-line bg-surface-muted p-1">
-                    {breadcrumbs.length > 0 ? (
-                        breadcrumbs.map((crumb, index) => (
-                            <div
-                                key={`${crumb.path}-${crumb.label}`}
-                                className="flex items-center"
-                            >
-                                {index > 0 ? (
-                                    <span className="px-1 text-xs text-ink-subtle">
-                                        /
-                                    </span>
-                                ) : null}
-                                <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    className="!h-11 !px-2 text-xs"
-                                    onClick={() => {
-                                        void navigateToDirectory(crumb.path);
-                                    }}
-                                    disabled={busy}
-                                >
-                                    {crumb.label}
-                                </Button>
-                            </div>
-                        ))
-                    ) : (
-                        <span className="px-2 py-1 text-xs text-ink-muted">
-                            No folder selected
-                        </span>
-                    )}
-                </div>
-            </div>
-
-            <div className="flex flex-wrap items-end justify-between gap-2">
-                <div className="grid min-w-0 flex-1 gap-1">
-                    <span className="text-[11px] font-semibold uppercase tracking-[0.06em] text-ink-muted">
-                        Selected Folder
-                    </span>
-                    <p className="truncate rounded-token-sm border border-line bg-surface-muted px-2 py-1.5 text-xs text-ink-muted">
-                        {selectedPath || 'Select a folder from the list'}
-                    </p>
-                </div>
-                <div className="flex items-center gap-2">
+        <div className="grid h-full min-h-0 grid-rows-[auto_minmax(0,1fr)_auto] overflow-hidden rounded-token-md border border-line/70 bg-surface-base">
+            <div className="flex flex-col gap-2 border-b border-line p-2 sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex min-w-0 flex-1 items-center gap-2">
                     <Button
-                        variant="secondary"
-                        size="md"
+                        variant="control"
+                        size="compact"
                         onClick={() => {
-                            if (!parentPath || loading) {
+                            if (!parentPath) {
                                 return;
                             }
                             void navigateToDirectory(parentPath);
@@ -240,11 +120,46 @@ export const AutoCollectDirectoryBrowserPanel = ({
                         disabled={!parentPath || busy}
                     >
                         <ArrowUpIcon width={14} height={14} />
-                        Up One Level
                     </Button>
+                    <div className="flex min-w-0 flex-1 items-center overflow-x-auto rounded-token-sm border border-line bg-surface-base px-2 py-1">
+                        {breadcrumbs.length > 0 ? (
+                            breadcrumbs.map((crumb, index) => (
+                                <div
+                                    key={`${crumb.path}-${crumb.label}`}
+                                    className="flex shrink-0 items-center"
+                                >
+                                    {index > 0 ? (
+                                        <span className="px-1 text-xs text-ink-subtle">
+                                            /
+                                        </span>
+                                    ) : null}
+                                    <Button
+                                        variant="text"
+                                        size="compact"
+                                        className="h-8 px-1.5 text-xs"
+                                        onClick={() => {
+                                            void navigateToDirectory(
+                                                crumb.path,
+                                            );
+                                        }}
+                                        disabled={busy}
+                                    >
+                                        {crumb.label}
+                                    </Button>
+                                </div>
+                            ))
+                        ) : (
+                            <span className="truncate py-1 text-xs text-ink-muted">
+                                No folder selected
+                            </span>
+                        )}
+                    </div>
+                </div>
+
+                <div className="flex items-center gap-2">
                     <Button
-                        variant="secondary"
-                        size="md"
+                        variant="control"
+                        size="compact"
                         onClick={() => {
                             void navigateToDirectory(currentPath || undefined);
                         }}
@@ -255,10 +170,10 @@ export const AutoCollectDirectoryBrowserPanel = ({
                 </div>
             </div>
 
-            <div className="grid gap-3 md:grid-cols-[220px_minmax(0,1fr)] lg:grid-cols-[240px_minmax(0,1fr)]">
-                <aside className="rounded-token-sm border border-line bg-surface-muted p-2">
-                    <p className="mb-2 px-2 text-xs font-semibold uppercase tracking-[0.06em] text-ink-muted">
-                        Quick Access
+            <div className="grid min-h-0 md:grid-cols-[220px_minmax(0,1fr)]">
+                <aside className="min-h-0 overflow-auto border-b border-line bg-surface-muted/60 p-2 md:border-r md:border-b-0">
+                    <p className="mb-2 px-2 text-xs font-semibold text-ink-subtle">
+                        Locations
                     </p>
                     <div className="grid gap-1">
                         {roots.length > 0 ? (
@@ -267,11 +182,11 @@ export const AutoCollectDirectoryBrowserPanel = ({
                                     key={rootPath}
                                     variant={
                                         currentPath === rootPath
-                                            ? 'soft'
-                                            : 'ghost'
+                                            ? 'control'
+                                            : 'text'
                                     }
-                                    size="md"
-                                    className="w-full justify-start"
+                                    size="compact"
+                                    className="h-auto min-h-9 w-full justify-start px-2 py-1.5"
                                     onClick={() => {
                                         void navigateToDirectory(rootPath);
                                     }}
@@ -291,17 +206,11 @@ export const AutoCollectDirectoryBrowserPanel = ({
                     </div>
                 </aside>
 
-                <section className="rounded-token-sm border border-line bg-surface-muted p-2">
-                    <p className="mb-2 px-2 text-xs font-semibold uppercase tracking-[0.06em] text-ink-muted">
-                        Folders ({visibleEntries.length}
-                        {normalizedEntryQuery ? ` / ${entries.length}` : ''})
-                    </p>
-                    <p className="mb-2 px-2 text-xs text-ink-subtle">
-                        {busy
-                            ? `Opening ${navigatingPath || 'folder'}...`
-                            : 'Single click to select, double click to open.'}
-                    </p>
-                    <div className="mb-2 grid gap-2 sm:grid-cols-[1fr_auto]">
+                <section className="grid min-h-0 grid-rows-[auto_minmax(0,1fr)] bg-surface-base p-2">
+                    <div className="mb-2 grid gap-2 lg:grid-cols-[auto_minmax(0,1fr)_auto] lg:items-center">
+                        <p className="px-1 text-xs font-semibold text-ink-subtle">
+                            Folders
+                        </p>
                         <Input
                             value={entryQuery}
                             onChange={(event) =>
@@ -311,25 +220,18 @@ export const AutoCollectDirectoryBrowserPanel = ({
                             aria-label="Filter folders"
                         />
                         <Button
-                            variant="ghost"
-                            size="sm"
+                            variant="text"
+                            size="control"
                             onClick={() => setEntryQuery('')}
                             disabled={entryQuery.trim().length === 0}
                         >
                             Clear
                         </Button>
                     </div>
-                    <div
-                        role="listbox"
-                        aria-label="Folders"
-                        aria-activedescendant={activeOptionId}
-                        tabIndex={0}
-                        onKeyDown={handleListboxKeyDown}
-                        className="max-h-[36vh] min-h-[220px] overflow-auto rounded-token-sm border border-line bg-surface-raised p-2"
-                    >
+                    <div className="min-h-0 overflow-y-auto overscroll-contain rounded-token-sm border border-line bg-surface-base p-2">
                         {busy ? (
                             <Notice variant="neutral" className="text-center">
-                                Loading folders...
+                                Opening {navigatingPath || 'folder'}...
                             </Notice>
                         ) : null}
 
@@ -349,26 +251,13 @@ export const AutoCollectDirectoryBrowserPanel = ({
 
                         {!busy && visibleEntries.length > 0 ? (
                             <div className="grid gap-1">
-                                {entries.map((entry, index) => (
+                                {visibleEntries.map((entry) => (
                                     <Button
                                         key={entry.path}
-                                        id={`auto-collect-folder-option-${index}`}
-                                        role="option"
-                                        variant={
-                                            selectedPath === entry.path
-                                                ? 'soft'
-                                                : 'ghost'
-                                        }
-                                        size="md"
-                                        className="w-full justify-start"
-                                        aria-selected={
-                                            selectedPath === entry.path
-                                        }
-                                        tabIndex={-1}
+                                        variant="text"
+                                        size="control"
+                                        className="w-full justify-start px-2 text-left font-medium"
                                         onClick={() => {
-                                            setSelectedPath(entry.path);
-                                        }}
-                                        onDoubleClick={() => {
                                             void navigateToDirectory(
                                                 entry.path,
                                             );
@@ -386,58 +275,25 @@ export const AutoCollectDirectoryBrowserPanel = ({
                 </section>
             </div>
 
-            <div className="grid gap-2 rounded-token-sm border border-line bg-surface-muted p-3">
-                <div>
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.06em] text-ink-muted">
-                        Watch Folder Target
-                    </p>
-                    <p className="mt-1 truncate text-sm font-medium text-ink">
-                        {selectedPath ||
-                            currentPath ||
-                            'Select a folder from the list first'}
-                    </p>
-                </div>
-                <div className="flex flex-wrap justify-end gap-2">
-                    <Button
-                        variant="secondary"
-                        size="md"
-                        onClick={() => {
-                            if (!selectedPath) {
-                                return;
-                            }
-                            void navigateToDirectory(selectedPath);
-                        }}
-                        disabled={!selectedPath || busy}
-                    >
-                        Open Selected Folder
-                    </Button>
-                    <Button
-                        variant="secondary"
-                        size="md"
-                        onClick={() => {
-                            if (!currentPath) {
-                                return;
-                            }
-                            onUsePath(currentPath);
-                        }}
-                        disabled={!currentPath}
-                    >
-                        Use Current as Watch Folder
-                    </Button>
-                    <Button
-                        variant="primary"
-                        size="md"
-                        onClick={() => {
-                            if (!selectedPath) {
-                                return;
-                            }
-                            onUsePath(selectedPath);
-                        }}
-                        disabled={!selectedPath}
-                    >
-                        Use Selected as Watch Folder
-                    </Button>
-                </div>
+            <div className="flex flex-col gap-2 border-t border-line p-2 sm:flex-row sm:items-center sm:justify-between">
+                <p className="min-w-0 truncate text-xs text-ink-muted">
+                    {isCurrentPathSelected
+                        ? 'Current folder is selected'
+                        : currentPath || 'Open a folder to choose a watch path'}
+                </p>
+                <Button
+                    variant={isCurrentPathSelected ? 'control' : 'secondary'}
+                    size="control"
+                    onClick={() => {
+                        if (!currentPath || isCurrentPathSelected) {
+                            return;
+                        }
+                        onUsePath(currentPath);
+                    }}
+                    disabled={!currentPath || busy || isCurrentPathSelected}
+                >
+                    {isCurrentPathSelected ? 'Selected' : 'Use This Folder'}
+                </Button>
             </div>
         </div>
     );

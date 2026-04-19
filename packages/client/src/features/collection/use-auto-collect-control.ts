@@ -39,7 +39,6 @@ interface UseAutoCollectControlResult {
     statusSyncUpdatedAt: number | null;
     togglingEnabled: boolean;
     savingSettings: boolean;
-    settingsOpen: boolean;
     statusEnabled: boolean;
     statusLabel: 'On' | 'Off';
     statusTone: string;
@@ -51,7 +50,6 @@ interface UseAutoCollectControlResult {
     draftEnabled: boolean;
     normalizedDraftWatchDir: string;
     hasDraftChanges: boolean;
-    directoryBrowserVisible: boolean;
     directoryBrowserLoading: boolean;
     directoryCurrentPath: string;
     directoryParentPath: string | null;
@@ -62,10 +60,8 @@ interface UseAutoCollectControlResult {
     setDraftIngestMode: (value: 'copy' | 'move') => void;
     setDraftDeleteSourceOnDelete: (value: boolean) => void;
     setDraftEnabled: (value: boolean) => void;
-    setDirectoryBrowserVisible: (value: boolean) => void;
     loadServerDirectories: (targetPath?: string) => Promise<void>;
     handleOpenSettings: () => void;
-    handleSettingsOpenChange: (open: boolean) => void;
     handleToggleEnabled: () => Promise<void>;
     handleCollectNow: () => Promise<void>;
     handleSaveSettings: () => Promise<void>;
@@ -76,7 +72,7 @@ export const useAutoCollectControl = (): UseAutoCollectControlResult => {
 
     const [feedback, setFeedback] = useState<FeedbackState | null>(null);
     const [liveConfig, setLiveConfig] = useState<LiveConfig | null>(null);
-    const [loadingConfig, setLoadingConfig] = useState(false);
+    const [loadingConfig, setLoadingConfig] = useState(true);
     const [collectingNow, setCollectingNow] = useState(false);
     const [statusSyncing, setStatusSyncing] = useState(false);
     const [statusSyncReason, setStatusSyncReason] = useState<string | null>(
@@ -90,7 +86,6 @@ export const useAutoCollectControl = (): UseAutoCollectControlResult => {
     >(null);
     const [togglingEnabled, setTogglingEnabled] = useState(false);
     const [savingSettings, setSavingSettings] = useState(false);
-    const [settingsOpen, setSettingsOpen] = useState(false);
 
     const [draftWatchDir, setDraftWatchDir] = useState('');
     const [draftIngestMode, setDraftIngestMode] = useState<'copy' | 'move'>(
@@ -100,8 +95,6 @@ export const useAutoCollectControl = (): UseAutoCollectControlResult => {
         useState(false);
     const [draftEnabled, setDraftEnabled] = useState(false);
 
-    const [directoryBrowserVisible, setDirectoryBrowserVisible] =
-        useState(false);
     const [directoryBrowserLoading, setDirectoryBrowserLoading] =
         useState(false);
     const [directoryCurrentPath, setDirectoryCurrentPath] = useState('');
@@ -271,11 +264,12 @@ export const useAutoCollectControl = (): UseAutoCollectControlResult => {
         }
     }, []);
 
-    const handleOpenSettings = () => {
+    const handleOpenSettings = useCallback(() => {
         syncDraftFromLiveConfig(liveConfig);
-        setDirectoryBrowserVisible(false);
-        setSettingsOpen(true);
-    };
+        void loadServerDirectories(
+            normalizeWatchDir(liveConfig?.watchDir || '') || undefined,
+        );
+    }, [liveConfig, loadServerDirectories, syncDraftFromLiveConfig]);
 
     const runCollect = useCallback(async () => {
         setCollectingNow(true);
@@ -327,7 +321,6 @@ export const useAutoCollectControl = (): UseAutoCollectControlResult => {
 
         if (nextEnabled && !currentWatchDir) {
             syncDraftFromLiveConfig(liveConfig);
-            setSettingsOpen(true);
             setFeedback({
                 variant: 'warning',
                 message: 'Set a Watch Folder before enabling Auto Collect.',
@@ -396,8 +389,6 @@ export const useAutoCollectControl = (): UseAutoCollectControlResult => {
 
             setLiveConfig(response.data.config);
             syncDraftFromLiveConfig(response.data.config);
-            setSettingsOpen(false);
-            setDirectoryBrowserVisible(false);
             setFeedback({
                 variant: 'success',
                 message: 'Auto Collect settings saved.',
@@ -417,14 +408,6 @@ export const useAutoCollectControl = (): UseAutoCollectControlResult => {
 
     const handleCollectNow = async () => {
         await runCollect();
-    };
-
-    const handleSettingsOpenChange = (open: boolean) => {
-        setSettingsOpen(open);
-        if (!open) {
-            setDirectoryBrowserVisible(false);
-            syncDraftFromLiveConfig(liveConfig);
-        }
     };
 
     const statusEnabled = Boolean(liveConfig?.enabled);
@@ -459,7 +442,6 @@ export const useAutoCollectControl = (): UseAutoCollectControlResult => {
         statusSyncUpdatedAt,
         togglingEnabled,
         savingSettings,
-        settingsOpen,
         statusEnabled,
         statusLabel,
         statusTone,
@@ -471,7 +453,6 @@ export const useAutoCollectControl = (): UseAutoCollectControlResult => {
         draftEnabled,
         normalizedDraftWatchDir,
         hasDraftChanges,
-        directoryBrowserVisible,
         directoryBrowserLoading,
         directoryCurrentPath,
         directoryParentPath,
@@ -482,10 +463,8 @@ export const useAutoCollectControl = (): UseAutoCollectControlResult => {
         setDraftIngestMode,
         setDraftDeleteSourceOnDelete,
         setDraftEnabled,
-        setDirectoryBrowserVisible,
         loadServerDirectories,
         handleOpenSettings,
-        handleSettingsOpenChange,
         handleToggleEnabled,
         handleCollectNow,
         handleSaveSettings,
