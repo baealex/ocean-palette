@@ -28,7 +28,7 @@
         "test": "pnpm --filter @ocean-palette/server run test && pnpm --filter @ocean-palette/client run test"
     },
     "devDependencies": {
-        "@biomejs/biome": "^2.4.12",
+        "@biomejs/biome": "^2.4.13",
         "lefthook": "^2.1.6"
     },
     "pnpm": {
