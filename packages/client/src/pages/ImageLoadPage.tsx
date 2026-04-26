@@ -150,7 +150,7 @@ export const ImageLoadPage = () => {
                                     <HeartIcon
                                         width={14}
                                         height={14}
-                                        className="fill-danger-700 text-danger-700"
+                                        className="fill-red-700 text-red-700"
                                     />
                                     Save to Collection
                                 </Button>

@@ -32,8 +32,20 @@ export const createDatabase = async () => {
     runPrisma('migrate deploy');
 };
 
+const databaseFileSuffixes = ['', '-journal', '-wal', '-shm'];
+
+const getDatabaseFilePaths = (fileName: string) => [
+    path.resolve(packageRootPath, fileName),
+    path.resolve(prismaPath, fileName),
+];
+
 export const removeDatabase = async (fileName = 'db.sqlite3') => {
-    if (fs.existsSync(path.resolve(prismaPath, fileName))) {
-        fs.unlinkSync(path.resolve(prismaPath, fileName));
+    for (const databasePath of getDatabaseFilePaths(fileName)) {
+        for (const suffix of databaseFileSuffixes) {
+            const targetPath = `${databasePath}${suffix}`;
+            if (fs.existsSync(targetPath)) {
+                fs.unlinkSync(targetPath);
+            }
+        }
     }
 };

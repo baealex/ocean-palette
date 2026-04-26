@@ -11,7 +11,10 @@ pre-commit:
       run: pnpm guard:function-params {staged_files}
     ui-contract:
       run: pnpm guard:ui-contract {staged_files}
-    lint:
-      run: pnpm lint
-    typecheck:
-      run: pnpm typecheck:client
+    check:
+      run: |
+        if [ -s "$HOME/.nvm/nvm.sh" ]; then
+          . "$HOME/.nvm/nvm.sh"
+          nvm use --silent
+        fi
+        pnpm check

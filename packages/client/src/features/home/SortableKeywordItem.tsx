@@ -158,7 +158,7 @@ export const SortableKeywordItem = ({
                             </DropdownMenuItem>
                             {keyword.image ? (
                                 <DropdownMenuItem
-                                    className="text-warning-700 data-[highlighted]:bg-warning-50 data-[highlighted]:text-warning-700"
+                                    className="text-amber-700 data-[highlighted]:bg-orange-50 data-[highlighted]:text-amber-700"
                                     onSelect={() => {
                                         onRemoveSampleImage(keyword.id);
                                     }}
@@ -167,7 +167,7 @@ export const SortableKeywordItem = ({
                                 </DropdownMenuItem>
                             ) : (
                                 <DropdownMenuItem
-                                    className="text-success-700 data-[highlighted]:bg-success-50 data-[highlighted]:text-success-700"
+                                    className="text-green-700 data-[highlighted]:bg-emerald-50 data-[highlighted]:text-green-700"
                                     onSelect={() => {
                                         onAddSampleImage(keyword.id);
                                     }}
@@ -176,7 +176,7 @@ export const SortableKeywordItem = ({
                                 </DropdownMenuItem>
                             )}
                             <DropdownMenuItem
-                                className="text-danger-700 data-[highlighted]:bg-danger-50 data-[highlighted]:text-danger-700"
+                                className="text-red-700 data-[highlighted]:bg-red-50 data-[highlighted]:text-red-700"
                                 onSelect={() => {
                                     onRemoveKeyword(keyword.id);
                                 }}

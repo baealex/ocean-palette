@@ -21,27 +21,6 @@ const config: Config = {
                     DEFAULT: 'rgb(var(--color-line) / <alpha-value>)',
                     strong: 'rgb(var(--color-line-strong) / <alpha-value>)',
                 },
-                info: {
-                    50: 'rgb(var(--color-info-50) / <alpha-value>)',
-                    200: 'rgb(var(--color-info-200) / <alpha-value>)',
-                    700: 'rgb(var(--color-info-700) / <alpha-value>)',
-                },
-                success: {
-                    50: 'rgb(var(--color-success-50) / <alpha-value>)',
-                    200: 'rgb(var(--color-success-200) / <alpha-value>)',
-                    700: 'rgb(var(--color-success-700) / <alpha-value>)',
-                },
-                warning: {
-                    50: 'rgb(var(--color-warning-50) / <alpha-value>)',
-                    200: 'rgb(var(--color-warning-200) / <alpha-value>)',
-                    700: 'rgb(var(--color-warning-700) / <alpha-value>)',
-                },
-                danger: {
-                    50: 'rgb(var(--color-danger-50) / <alpha-value>)',
-                    200: 'rgb(var(--color-danger-200) / <alpha-value>)',
-                    700: 'rgb(var(--color-danger-700) / <alpha-value>)',
-                    800: 'rgb(var(--color-danger-800) / <alpha-value>)',
-                },
                 overlay: 'rgb(var(--color-overlay) / <alpha-value>)',
                 brand: {
                     50: '#effaf8',

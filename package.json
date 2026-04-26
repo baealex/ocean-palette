@@ -6,11 +6,13 @@
     "scripts": {
         "dev": "pnpm --parallel --stream --filter @ocean-palette/server --filter @ocean-palette/client run dev",
         "start": "pnpm build:client && pnpm start:server",
+        "build": "pnpm build:server && pnpm build:client",
         "dev:server": "pnpm --filter @ocean-palette/server run dev",
         "dev:client": "pnpm --filter @ocean-palette/client run dev",
         "build:server": "pnpm --filter @ocean-palette/server run build",
         "build:client": "pnpm --filter @ocean-palette/client run build",
         "start:server": "pnpm --filter @ocean-palette/server run start",
+        "check": "pnpm lint && pnpm type-check && pnpm build",
         "biome:format": "biome format --write",
         "lint:client": "pnpm --filter @ocean-palette/client run lint",
         "lint": "pnpm --filter @ocean-palette/server run lint && pnpm --filter @ocean-palette/client run lint",
@@ -18,6 +20,9 @@
         "guard:function-params": "node scripts/guardrails/check-function-params.mjs",
         "guard:ui-contract": "node scripts/guardrails/check-ui-contract.mjs",
         "hooks:install": "lefthook install",
+        "type-check": "pnpm --filter @ocean-palette/server run type-check && pnpm --filter @ocean-palette/client run type-check",
+        "type-check:client": "pnpm --filter @ocean-palette/client run type-check",
+        "type-check:server": "pnpm --filter @ocean-palette/server run type-check",
         "typecheck:client": "pnpm --filter @ocean-palette/client run typecheck",
         "test:client": "pnpm --filter @ocean-palette/client run test",
         "test": "pnpm --filter @ocean-palette/server run test && pnpm --filter @ocean-palette/client run test"
@@ -28,6 +33,7 @@
     },
     "pnpm": {
         "overrides": {
+            "@hono/node-server": "1.19.13",
             "esbuild": "0.25.12",
             "tar": "7.5.13"
         },
@@ -37,11 +43,11 @@
             "@prisma/engines",
             "@swc/core",
             "bcrypt",
+            "better-sqlite3",
             "esbuild",
             "lefthook",
             "prisma",
             "sharp",
-            "sqlite3",
             "unrs-resolver"
         ]
     }

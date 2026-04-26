@@ -1,9 +1,9 @@
-# Ocean Brain Dev Convention
+# Ocean Palette Dev Convention
 
-Updated: 2026-03-06
+Updated: 2026-04-26
 
 ## 1. Base Environment
-- Node.js: `22`
+- Node.js: `22.22.2` (`.nvmrc`)
 - Package manager: `pnpm@10.25.0`
 - Workspace: `packages/*` (pnpm workspace)
 
@@ -15,6 +15,7 @@ Updated: 2026-03-06
 - Server start: `pnpm start`
 
 ## 3. Standard Quality Checks
+- `pnpm check` (`lint + type-check + build`)
 - `pnpm lint`
 - `pnpm type-check`
 - `pnpm build`
@@ -30,10 +31,17 @@ Updated: 2026-03-06
 
 ## 5. Server and Release Linked Rules
 - Server start script includes `prisma migrate deploy`.
-- Use `node scripts/release/prepublish.mjs` for release artifact preparation.
-- CLI publish validation is covered by `CLI_SMOKE` CI.
+- Prisma uses `prisma.config.ts` for datasource URL resolution.
+- Server runtime Prisma client uses the `@prisma/adapter-better-sqlite3` driver adapter.
+- SQLite database URL remains `file:./prisma/data/db.sqlite3`.
+- Server domain code lives under `packages/server/src/features/*`; root `schema`,
+  `routes`, and `app.ts` should stay composition-only.
+- Client Radix/Sonner usage should go through `@baejino/react-ui` wrappers when
+  the shared package exposes the needed primitive.
+- React Query invalidation should use domain helpers near each query key factory.
 
 ## 6. Related Documents
 - Git rules: `docs/process/GIT_CONVENTION.md`
 - Query key rules: `docs/process/QUERY_KEY_CONVENTION.md`
+- Template alignment: `docs/process/TEMPLATE_ALIGNMENT.md`
 - Deployment/release: `docs/process/DEPLOYMENT_RELEASE_STRATEGY.md`

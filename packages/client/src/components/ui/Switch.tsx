@@ -26,7 +26,7 @@ export const Switch = ({
             className={cn(
                 'ui-focus-ring inline-flex h-6 w-11 shrink-0 items-center rounded-full border transition-colors disabled:cursor-not-allowed disabled:opacity-55',
                 checked
-                    ? 'border-success-700 bg-success-700'
+                    ? 'border-green-700 bg-green-700'
                     : 'border-line-strong bg-surface-muted',
                 className,
             )}

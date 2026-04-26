@@ -44,11 +44,11 @@ export const GeneratedMetadataPanel = ({
             </div>
 
             {warnings.length > 0 ? (
-                <div className="border-l-2 border-warning-200 pl-3">
-                    <p className="text-xs font-semibold text-warning-700">
+                <div className="border-l-2 border-orange-200 pl-3">
+                    <p className="text-xs font-semibold text-amber-700">
                         Parse Warnings
                     </p>
-                    <ul className="mt-1 space-y-1 text-xs text-warning-700">
+                    <ul className="mt-1 space-y-1 text-xs text-amber-700">
                         {warnings.map((warning) => (
                             <li key={warning}>- {warning}</li>
                         ))}

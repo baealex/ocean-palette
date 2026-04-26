@@ -18,7 +18,7 @@ const VARIANT_CLASS: Record<IconButtonVariant, string> = {
     secondary:
         'border-line-strong bg-surface-base text-ink-muted hover:bg-surface-muted',
     ghost: 'border-transparent bg-transparent text-ink-muted hover:bg-surface-muted',
-    danger: 'border-danger-200 bg-danger-50 text-danger-700 hover:bg-danger-200',
+    danger: 'border-red-200 bg-red-50 text-red-700 hover:bg-red-200',
 };
 
 const SIZE_CLASS: Record<IconButtonSize, string> = {

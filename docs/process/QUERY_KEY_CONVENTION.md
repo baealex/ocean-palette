@@ -1,36 +1,34 @@
-# Ocean Brain Query Key Convention
+# Ocean Palette Query Key Convention
 
-Updated: 2026-03-06
+Updated: 2026-04-26
 
 ## 1. Scope
 - Applies to all React Query `queryKey` and `invalidateQueries` usage in `packages/client`.
 
 ## 2. Required Rules
-1. Generate all keys only from `packages/client/src/modules/query-key-factory.ts`.
+1. Generate all keys only from domain query key factories such as
+   `packages/client/src/features/collection/query-keys.ts`.
 2. Use `as const` tuple keys from factory functions.
 3. Do not use nested array keys.
-   - Disallowed: `queryKey: [queryKeys.notes.pinned()]`
-   - Allowed: `queryKey: queryKeys.notes.pinned()`
+   - Disallowed: `queryKey: [collectionQueryKeys.modelOptions()]`
+   - Allowed: `queryKey: collectionQueryKeys.modelOptions()`
 4. Do not hardcode string array keys in component/hook/page files.
 5. Use object-based params for key payloads (stable shape), not positional spread patterns like `Object.values(...)`.
 
 ## 3. Invalidate Strategy
 - Use `exact: true` when invalidating one exact cache entry.
 - Use `exact: false` when invalidating a key namespace/prefix.
-- Prefix helpers (`*.listAll()`, `*.noteAllPages()`) must be used for broad invalidation.
+- Prefix helpers such as `*.listRoot()` and `*.showcaseRoot()` must be used for broad invalidation.
+- Domain invalidation helpers should live near the query key factory and include
+  explicit `exact` intent for every invalidated key.
 
-## 4. FE-002 Invalidate Policy Map
+## 4. Invalidate Policy Map
 | Domain | Trigger | Key | Match |
 | --- | --- | --- | --- |
-| Notes | pin/delete | `queryKeys.notes.listAll()` | prefix |
-| Notes | pin/delete | `queryKeys.notes.tagListAll()` | prefix |
-| Notes | pin/delete/reorder | `queryKeys.notes.pinned()` | exact |
-| Reminders | create/update/delete | `queryKeys.reminders.noteAllPages(noteId)` | prefix |
-| Reminders | create/update/delete | `queryKeys.reminders.upcomingAllPages()` | prefix |
-| Reminders | create/update/delete | `queryKeys.reminders.inDateRangeAll()` | prefix |
-| Images | delete | `queryKeys.images.listAll()` | prefix |
-| Placeholders | create/delete | `queryKeys.placeholders.listAll()` | prefix |
-| UI cache | hero banner set/remove | `queryKeys.ui.heroBanner()` | exact |
+| Collections | live image sync/ingest | `collectionQueryKeys.listRoot()` | prefix |
+| Collections | live image sync/ingest | `collectionQueryKeys.showcaseRoot()` | prefix |
+| Collections | live image sync/ingest | `collectionQueryKeys.modelOptions()` | exact |
+| Collections | current page refresh after edit/delete | active `collectionQueryKeys.list(...)` | exact |
 
 ## 5. Review Checklist
 - No `queryKey: [` hardcoded arrays outside factory.

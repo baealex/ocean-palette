@@ -35,7 +35,7 @@ const VARIANT_CLASS: Record<ButtonVariant, string> = {
         'border border-brand-700 bg-brand-700 text-white hover:bg-brand-800',
     secondary:
         'border border-line-strong bg-surface-base text-ink-muted hover:bg-surface-muted',
-    danger: 'border border-danger-700 bg-danger-700 text-white hover:bg-danger-800',
+    danger: 'border border-red-700 bg-red-700 text-white hover:bg-red-800',
     ghost: 'border border-transparent bg-transparent text-ink-muted hover:bg-surface-muted',
     soft: 'border border-brand-200 bg-brand-50 text-brand-800 hover:bg-brand-100',
     control:

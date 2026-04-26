@@ -9,6 +9,7 @@
         "dev": "cross-env PORT=7768 ts-node script/_dev.ts",
         "build": "pnpm run prisma:generate && tsc",
         "start": "cross-env PORT=7768 ts-node script/_start.ts",
+        "type-check": "tsc --noEmit",
         "lint": "biome lint src",
         "test": "cross-env DATABASE_URL=file:./test.sqlite3 ts-node script/_test.ts"
     },
@@ -23,7 +24,8 @@
     },
     "homepage": "https://github.com/baealex/ocean-palette#readme",
     "dependencies": {
-        "@prisma/client": "^6.19.3",
+        "@prisma/adapter-better-sqlite3": "^7.8.0",
+        "@prisma/client": "^7.8.0",
         "bcrypt": "^6.0.0",
         "chokidar": "^4.0.3",
         "dayjs": "^1.11.20",
@@ -31,10 +33,9 @@
         "express": "^5.2.1",
         "express-winston": "^4.2.0",
         "graphql-http": "^1.22.4",
-        "prisma": "^6.19.3",
+        "prisma": "^7.8.0",
         "sharp": "^0.34.5",
         "socket.io": "^4.8.3",
-        "sqlite3": "^6.0.1",
         "ts-node": "^10.9.2",
         "winston": "^3.19.0"
     },
@@ -43,6 +44,7 @@
         "@graphql-tools/schema": "^10.0.32",
         "@graphql-tools/utils": "^11.0.1",
         "@types/bcrypt": "^6.0.0",
+        "@types/better-sqlite3": "^7.6.13",
         "@types/express": "^5.0.6",
         "@types/jest": "^30.0.0",
         "@types/node": "22.19.17",

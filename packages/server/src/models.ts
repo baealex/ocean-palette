@@ -1,6 +1,23 @@
+import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3';
 import { PrismaClient } from '@prisma/client';
 
-export const models = new PrismaClient();
+export const createPrismaClient = (
+    url = process.env.DATABASE_URL ?? 'file:./prisma/data/db.sqlite3',
+) => {
+    const adapter = new PrismaBetterSqlite3({
+        url,
+    });
+
+    return new PrismaClient({
+        adapter,
+        log:
+            process.env.NODE_ENV === 'development'
+                ? ['query', 'error', 'warn']
+                : ['error'],
+    });
+};
+
+export const models = createPrismaClient();
 
 export interface Order {
     orderBy: string;

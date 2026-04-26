@@ -115,7 +115,7 @@ export const CollectionDetailCard = ({
                     <Button
                         variant="text"
                         size="sm"
-                        className="text-danger-700 hover:text-danger-700"
+                        className="text-red-700 hover:text-red-700"
                         onClick={onClickDelete}
                         disabled={removing}
                     >

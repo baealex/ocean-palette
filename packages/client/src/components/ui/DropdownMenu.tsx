@@ -1,17 +1,18 @@
-import * as DropdownMenuPrimitive from '@radix-ui/react-dropdown-menu';
+import * as DropdownMenuPrimitive from '@baejino/react-ui/dropdown-menu';
 import { forwardRef } from 'react';
-import type {
-    ComponentPropsWithoutRef,
-    ElementRef,
-} from 'react';
+import type { ComponentPropsWithoutRef, ElementRef } from 'react';
 
 import { cn } from './cn';
 
 export const DropdownMenu = DropdownMenuPrimitive.Root;
 export const DropdownMenuTrigger = DropdownMenuPrimitive.Trigger;
 
-type DropdownMenuContentElement = ElementRef<typeof DropdownMenuPrimitive.Content>;
-type DropdownMenuContentProps = ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Content>;
+type DropdownMenuContentElement = ElementRef<
+    typeof DropdownMenuPrimitive.Content
+>;
+type DropdownMenuContentProps = ComponentPropsWithoutRef<
+    typeof DropdownMenuPrimitive.Content
+>;
 
 export const DropdownMenuContent = forwardRef<
     DropdownMenuContentElement,
@@ -34,7 +35,9 @@ export const DropdownMenuContent = forwardRef<
 DropdownMenuContent.displayName = DropdownMenuPrimitive.Content.displayName;
 
 type DropdownMenuItemElement = ElementRef<typeof DropdownMenuPrimitive.Item>;
-type DropdownMenuItemProps = ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Item>;
+type DropdownMenuItemProps = ComponentPropsWithoutRef<
+    typeof DropdownMenuPrimitive.Item
+>;
 
 export const DropdownMenuItem = forwardRef<
     DropdownMenuItemElement,
@@ -52,8 +55,12 @@ export const DropdownMenuItem = forwardRef<
 
 DropdownMenuItem.displayName = DropdownMenuPrimitive.Item.displayName;
 
-type DropdownMenuSeparatorElement = ElementRef<typeof DropdownMenuPrimitive.Separator>;
-type DropdownMenuSeparatorProps = ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Separator>;
+type DropdownMenuSeparatorElement = ElementRef<
+    typeof DropdownMenuPrimitive.Separator
+>;
+type DropdownMenuSeparatorProps = ComponentPropsWithoutRef<
+    typeof DropdownMenuPrimitive.Separator
+>;
 
 export const DropdownMenuSeparator = forwardRef<
     DropdownMenuSeparatorElement,

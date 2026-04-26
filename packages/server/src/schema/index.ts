@@ -1,8 +1,14 @@
 import { makeExecutableSchema } from '@graphql-tools/schema';
-import { categoryResolvers, categoryTypeDefs } from './category';
-import { CollectionResolvers, CollectionTypeDefs } from './collection';
-import { keywordResolvers, keywordTypeDefs } from './keyword';
-import { userResolvers, userTypeDefs } from './user';
+import {
+    categoryResolvers,
+    categoryTypeDefs,
+} from '~/features/category/graphql';
+import {
+    CollectionResolvers,
+    CollectionTypeDefs,
+} from '~/features/collection/graphql';
+import { keywordResolvers, keywordTypeDefs } from '~/features/keyword/graphql';
+import { userResolvers, userTypeDefs } from '~/features/user/graphql';
 
 const schema = makeExecutableSchema({
     typeDefs: [

@@ -2,7 +2,7 @@ import { app } from './app';
 import http from 'http';
 import { Server as SocketIOServer } from 'socket.io';
 
-import { liveImagesService } from './modules/live-images';
+import { liveImagesService } from './features/live';
 import { logger } from './modules/logger';
 import { models } from './models';
 

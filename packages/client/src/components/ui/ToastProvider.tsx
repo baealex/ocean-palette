@@ -1,11 +1,11 @@
-import {
-    createContext,
-    useCallback,
-    useContext,
-    useMemo,
-} from 'react';
+import { createContext, useCallback, useContext, useMemo } from 'react';
 import type { ReactNode } from 'react';
-import { Toaster, toast } from 'sonner';
+import {
+    createToast,
+    ToastProvider as BaseToastProvider,
+} from '@baejino/react-ui/toast';
+
+import { STATUS_INTENT_CLASS } from './status-styles';
 
 type ToastVariant = 'info' | 'success' | 'warning' | 'error' | 'neutral';
 
@@ -25,12 +25,10 @@ interface ToastContextValue {
 }
 
 const ToastContext = createContext<ToastContextValue | null>(null);
+const toast = createToast();
 
 const VARIANT_CLASS: Record<ToastVariant, string> = {
-    info: 'border-info-200 bg-info-50 text-info-700',
-    success: 'border-success-200 bg-success-50 text-success-700',
-    warning: 'border-warning-200 bg-warning-50 text-warning-700',
-    error: 'border-danger-200 bg-danger-50 text-danger-700',
+    ...STATUS_INTENT_CLASS,
     neutral: 'border-line bg-surface-muted text-ink-muted',
 };
 
@@ -84,7 +82,7 @@ export const ToastProvider = ({ children }: ToastProviderProps) => {
     return (
         <ToastContext.Provider value={contextValue}>
             {children}
-            <Toaster
+            <BaseToastProvider
                 closeButton
                 position="bottom-right"
                 expand

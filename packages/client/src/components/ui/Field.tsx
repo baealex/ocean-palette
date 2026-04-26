@@ -22,8 +22,8 @@ const LABEL_TONE_CLASS: Record<FieldLabelTone, string> = {
 
 const MESSAGE_TONE_CLASS: Record<FieldMessageTone, string> = {
     muted: 'text-ink-subtle',
-    warning: 'text-warning-700',
-    danger: 'text-danger-700',
+    warning: 'text-amber-700',
+    danger: 'text-red-700',
 };
 
 export const Field = ({ className, ...props }: FieldProps) => {

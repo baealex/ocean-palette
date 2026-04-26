@@ -110,7 +110,7 @@ export const CollectionCard = ({
                                         </DropdownMenuItem>
                                     ) : null}
                                     <DropdownMenuItem
-                                        className="text-danger-700 data-[highlighted]:bg-danger-50 data-[highlighted]:text-danger-700"
+                                        className="text-red-700 data-[highlighted]:bg-red-50 data-[highlighted]:text-red-700"
                                         onSelect={() => {
                                             onClickDelete();
                                         }}

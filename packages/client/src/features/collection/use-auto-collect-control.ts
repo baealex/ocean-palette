@@ -13,7 +13,7 @@ import type {
     LiveDirectoryEntry,
     LiveStatusResponse,
 } from '~/api';
-import { collectionQueryKeys } from '~/features/collection/query-keys';
+import { invalidateCollectionCatalogQueries } from '~/features/collection/query-invalidation';
 import { useLiveCollectionsRealtime } from '~/features/collection/use-live-collections-realtime';
 
 import {
@@ -275,20 +275,7 @@ export const useAutoCollectControl = (): UseAutoCollectControlResult => {
         setCollectingNow(true);
         try {
             const response = await syncLiveImages();
-            await Promise.all([
-                queryClient.invalidateQueries({
-                    queryKey: collectionQueryKeys.listRoot(),
-                    exact: false,
-                }),
-                queryClient.invalidateQueries({
-                    queryKey: collectionQueryKeys.showcaseRoot(),
-                    exact: false,
-                }),
-                queryClient.invalidateQueries({
-                    queryKey: collectionQueryKeys.modelOptions(),
-                    exact: true,
-                }),
-            ]);
+            await invalidateCollectionCatalogQueries(queryClient);
             setFeedback({
                 variant: 'success',
                 message: `Collect completed (${response.data.scanned} scanned)`,
@@ -412,7 +399,7 @@ export const useAutoCollectControl = (): UseAutoCollectControlResult => {
 
     const statusEnabled = Boolean(liveConfig?.enabled);
     const statusLabel: 'On' | 'Off' = statusEnabled ? 'On' : 'Off';
-    const statusTone = statusEnabled ? 'bg-success-700' : 'bg-danger-700';
+    const statusTone = statusEnabled ? 'bg-green-700' : 'bg-red-700';
     const watchDirLabel = normalizeWatchDir(liveConfig?.watchDir || '') || '-';
     const modeLabel: 'Copy' | 'Move' =
         liveConfig?.ingestMode === 'move' ? 'Move' : 'Copy';

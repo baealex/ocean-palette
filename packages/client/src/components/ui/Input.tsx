@@ -42,7 +42,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
                 className={cn(
                     INPUT_BASE_CLASS,
                     INPUT_SIZE_CLASS[inputSize],
-                    invalid ? 'border-danger-700' : INPUT_TONE_CLASS[tone],
+                    invalid ? 'border-red-700' : INPUT_TONE_CLASS[tone],
                     className,
                 )}
                 {...props}
