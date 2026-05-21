@@ -79,7 +79,7 @@ Changes in the files below are treated as release-impacting.
 Release-impact PRs must include:
 1. expected release version
 2. tag plan (`vX.Y.Z`)
-3. verification result (`CLI_SMOKE` pass)
+3. verification result (`pnpm test:e2e` app/server smoke pass, or the reason it could not be run locally)
 
 ### 3-6. Merge Policy
 - Default: merge commit
