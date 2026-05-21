@@ -1,7 +1,7 @@
 import express, { type RequestHandler } from 'express';
 import path from 'path';
 
-const clientDistDir = path.resolve('../client/dist');
+const clientDistDir = path.resolve(__dirname, '../../../client/dist');
 
 export const clientStaticRouter = express.Router().use(
     express.static(clientDistDir, {
@@ -16,5 +16,5 @@ export const clientFallbackHandler: RequestHandler = (req, res) => {
         });
     }
 
-    return res.sendFile(path.resolve(clientDistDir, 'index.html'));
+    return res.sendFile('index.html', { root: clientDistDir });
 };

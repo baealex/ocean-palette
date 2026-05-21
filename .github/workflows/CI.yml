@@ -60,3 +60,9 @@ jobs:
 
     - name: Build (Client React)
       run: pnpm --filter @ocean-palette/client run build
+
+    - name: Install Playwright browsers
+      run: pnpm exec playwright install --with-deps chromium
+
+    - name: E2E Smoke
+      run: pnpm test:e2e
