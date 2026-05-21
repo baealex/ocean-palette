@@ -22,6 +22,7 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build and push
+        id: build-and-push
         uses: docker/build-push-action@v7
         with:
           context: .
@@ -31,3 +32,12 @@ jobs:
           tags: baealex/ocean-palette:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+      - name: Report image digest
+        run: |
+          echo "Image digest: ${{ steps.build-and-push.outputs.digest }}"
+          {
+            echo "### Docker image"
+            echo '- Image: `baealex/ocean-palette:latest`'
+            echo "- Digest: \`${{ steps.build-and-push.outputs.digest }}\`"
+          } >> "$GITHUB_STEP_SUMMARY"
