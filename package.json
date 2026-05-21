@@ -25,10 +25,12 @@
         "type-check:server": "pnpm --filter @ocean-palette/server run type-check",
         "typecheck:client": "pnpm --filter @ocean-palette/client run typecheck",
         "test:client": "pnpm --filter @ocean-palette/client run test",
-        "test": "pnpm --filter @ocean-palette/server run test && pnpm --filter @ocean-palette/client run test"
+        "test": "pnpm --filter @ocean-palette/server run test && pnpm --filter @ocean-palette/client run test",
+        "test:e2e": "playwright test"
     },
     "devDependencies": {
         "@biomejs/biome": "^2.4.15",
+        "@playwright/test": "^1.60.0",
         "lefthook": "^2.1.6"
     },
     "pnpm": {
