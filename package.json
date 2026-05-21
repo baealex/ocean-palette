@@ -35,8 +35,7 @@
         "overrides": {
             "@hono/node-server": "1.19.13",
             "esbuild": "0.25.12",
-            "tar": "7.5.13",
-            "ws": "8.20.1"
+            "tar": "7.5.13"
         },
         "onlyBuiltDependencies": [
             "@parcel/watcher",
