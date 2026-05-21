@@ -1,6 +1,6 @@
 # Ocean Palette Deployment and Release Strategy
 
-Updated: 2026-03-08
+Updated: 2026-05-21
 
 ## 1. Scope
 - This document defines deployment and operational release rules for `ocean-palette`.
@@ -10,6 +10,7 @@ Updated: 2026-03-08
 1. DockerHub image (primary)
 - Image: `baealex/ocean-palette`
 - Active tag policy: `latest` only
+- `latest` publishing is manual through the `BUILD IMAGE` workflow gate.
 - Architectures: `linux/amd64`, `linux/arm64/v8`
 
 2. Source-based run (local or self-managed host)
@@ -30,13 +31,14 @@ Updated: 2026-03-08
 
 2. Image build workflow
 - File: `.github/workflows/BUILD_IMAGE.yml`
-- Trigger: `workflow_run` after `CI` on `main` with `success`
-- Action: build and push Docker image from `packages/server/Dockerfile`
+- Trigger: manual `workflow_dispatch`
+- Action: build and push Docker image from `packages/server/Dockerfile` after an operator intentionally starts the workflow
 - Published tag: `baealex/ocean-palette:latest`
 
 3. Important implication
 - There is no `v*` tag-based release workflow.
-- Merging validated changes into `main` is the deploy trigger for `latest`.
+- Merging validated changes into `main` does not publish `latest` by itself.
+- Publishing `latest` requires an operator to run `BUILD IMAGE` after checking the release gate items in Section 7.
 
 ## 4. Runtime and Data Contracts
 1. App port
@@ -87,20 +89,38 @@ pnpm start
 1. Before merge to `main`
 - CI checks for changed scope must pass.
 - Confirm migration impact and data compatibility.
+- Run the manual `BUILD IMAGE` workflow only after release-impacting and data-impacting checks are explicitly resolved.
 
-2. Before applying new container in production-like host
-- Backup mounted `./data` volume.
+2. Release-impacting or data-impacting criteria
+- Require a manual deployment gate, or at minimum a checked PR item that explicitly marks the change as release-impacting, when any of the following changes are included:
+  - Database schema, Prisma migration, migration startup behavior, or database file path changes
+  - Authentication, authorization, session, token, or credential handling changes
+  - Runtime environment variable additions, removals, default changes, or required secret changes
+  - Persistent volume layout, mount path, writable path, asset storage path, or backup/restore expectation changes
+- The gate must name the operator action needed before `latest` is applied, such as backup, migration review, environment update, volume remount, or rollback digest capture.
+- Ordinary UI/code/docs changes may use the manual `latest` publishing flow after CI passes.
+
+3. Before applying new container in production-like host
+- Backup mounted `./data` volume when the change is data-impacting, migration-related, or storage-path-related.
 - Confirm writable mount permissions for `/data` and `/assets`.
+- Confirm required environment variables and secrets match the deployed image.
+- Record the published image digest before replacing the running container.
 
-3. After deployment
+4. After deployment
 - Verify container health and startup logs.
 - Open the service URL and confirm core user flows (home, collection, image metadata read).
 
-## 8. Required Secrets
+## 8. Runtime Environment Reference
+- Source run default: `packages/server/.env` sets `DATABASE_URL="file:./prisma/data/db.sqlite3"`.
+- Example file: `packages/server/.env.example`.
+- Container default: `packages/server/Dockerfile` sets `DATABASE_URL=file:./prisma/data/db.sqlite3`; `/data` is linked into that database directory at runtime.
+- Treat changes to required env vars, defaults, or secret names as release-impacting.
+
+## 9. Required Build Secrets
 - `DOCKERHUB_USERNAME`
 - `DOCKERHUB_TOKEN`
 
-## 9. Out of Scope (Current Policy)
+## 10. Out of Scope (Current Policy)
 - npm package publishing
 - npm trusted publishing / OIDC release pipeline
 - GitHub Releases auto-notes workflow
