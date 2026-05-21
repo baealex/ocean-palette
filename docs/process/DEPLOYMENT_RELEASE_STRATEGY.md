@@ -21,13 +21,14 @@ Updated: 2026-05-21
 1. CI workflow
 - File: `.github/workflows/CI.yml`
 - Triggers:
-  - `push` to `main` (path-filtered)
-  - `pull_request` to `main` (path-filtered)
+  - `push` to `main`
+  - `pull_request` to `main`
   - `workflow_dispatch`
-- Runtime: Node `21.x`
+- Runtime: Node from `.nvmrc`
 - Gates:
-  - Server: lint, test, build
+  - Server: lint, test, typecheck, build
   - Client: lint, typecheck, react-compiler healthcheck, test, build
+  - E2E smoke: Playwright Chromium smoke against the built client and production server start path
 
 2. Image build workflow
 - File: `.github/workflows/BUILD_IMAGE.yml`
@@ -110,17 +111,23 @@ pnpm start
 - Verify container health and startup logs.
 - Open the service URL and confirm core user flows (home, collection, image metadata read).
 
-## 8. Runtime Environment Reference
+## 8. Smoke Test Policy
+- The repository is an app/server deployment target, not an npm package distribution target.
+- Smoke tests should verify deployable behavior: built client assets, production server startup, migration path, and core HTTP/GraphQL UI flows.
+- The current CI smoke is `pnpm test:e2e`, backed by Playwright. It builds the server and client, starts the production server path with an isolated SQLite database, then checks the app shell and empty collection GraphQL flow.
+- Do not add `npm publish`, `npm pack`, `npx <published-cli>`, or CLI-package smoke checks unless the release policy changes to include npm distribution.
+
+## 9. Runtime Environment Reference
 - Source run default: `packages/server/.env` sets `DATABASE_URL="file:./prisma/data/db.sqlite3"`.
 - Example file: `packages/server/.env.example`.
 - Container default: `packages/server/Dockerfile` sets `DATABASE_URL=file:./prisma/data/db.sqlite3`; `/data` is linked into that database directory at runtime.
 - Treat changes to required env vars, defaults, or secret names as release-impacting.
 
-## 9. Required Build Secrets
+## 10. Required Build Secrets
 - `DOCKERHUB_USERNAME`
 - `DOCKERHUB_TOKEN`
 
-## 10. Out of Scope (Current Policy)
+## 11. Out of Scope (Current Policy)
 - npm package publishing
 - npm trusted publishing / OIDC release pipeline
 - GitHub Releases auto-notes workflow
