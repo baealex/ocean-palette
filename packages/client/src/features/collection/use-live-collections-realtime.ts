@@ -2,7 +2,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useEffect, useRef } from 'react';
 import { io } from 'socket.io-client';
 
-import type { LiveStatusResponse } from '~/api';
+import type { LiveStatusResponse } from '~/features/live/api';
 import { invalidateCollectionCatalogQueries } from '~/features/collection/query-invalidation';
 
 interface UseLiveCollectionsRealtimeOptions {

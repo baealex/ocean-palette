@@ -1,7 +1,7 @@
 import { useNavigate, useSearch } from '@tanstack/react-router';
 import { useCallback, useEffect, useState } from 'react';
 
-import type { CollectionDateField, CollectionSearchBy } from '~/api';
+import type { CollectionDateField, CollectionSearchBy } from './api';
 import {
     DEFAULT_COLLECTION_DATE_FIELD,
     DEFAULT_COLLECTION_SEARCH_BY,
@@ -67,7 +67,10 @@ export const useCollectionPageFilters = () => {
 
     const commitSearchState = useCallback(
         (nextState: CollectionRouteSearch, options?: UpdateOptions) => {
-            if (!options?.force && areRouteSearchEqual(nextState, searchState)) {
+            if (
+                !options?.force &&
+                areRouteSearchEqual(nextState, searchState)
+            ) {
                 return;
             }
 
@@ -202,7 +205,8 @@ export const useCollectionPageFilters = () => {
             const normalizedPage = Math.max(1, Math.trunc(nextPage));
             updateSearch({
                 page: normalizedPage,
-                selected: view === 'browse' ? undefined : selectedId ?? undefined,
+                selected:
+                    view === 'browse' ? undefined : (selectedId ?? undefined),
             });
         },
         [selectedId, updateSearch, view],

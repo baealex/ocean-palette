@@ -6,13 +6,13 @@ import {
     listLiveDirectories,
     syncLiveImages,
     updateLiveConfig,
-} from '~/api';
+} from '~/features/live/api';
 import type {
     LiveConfig,
     LiveDirectoriesResponse,
     LiveDirectoryEntry,
     LiveStatusResponse,
-} from '~/api';
+} from '~/features/live/api';
 import { invalidateCollectionCatalogQueries } from '~/features/collection/query-invalidation';
 import { useLiveCollectionsRealtime } from '~/features/collection/use-live-collections-realtime';
 

@@ -1,4 +1,4 @@
-import type { LiveConfig, LiveStatusResponse } from '~/api';
+import type { LiveConfig, LiveStatusResponse } from '~/features/live/api';
 
 export interface LiveConfigDraft {
     watchDir: string;
@@ -7,7 +7,9 @@ export interface LiveConfigDraft {
     enabled: boolean;
 }
 
-export const toLiveConfigDraft = (config: LiveConfig | null): LiveConfigDraft => {
+export const toLiveConfigDraft = (
+    config: LiveConfig | null,
+): LiveConfigDraft => {
     if (!config) {
         return {
             watchDir: '',
@@ -25,7 +27,10 @@ export const toLiveConfigDraft = (config: LiveConfig | null): LiveConfigDraft =>
     };
 };
 
-export const mergeLiveConfig = (current: LiveConfig | null, payload: Partial<LiveStatusResponse>): LiveConfig => {
+export const mergeLiveConfig = (
+    current: LiveConfig | null,
+    payload: Partial<LiveStatusResponse>,
+): LiveConfig => {
     const fallback: LiveConfig = current ?? {
         watchDir: '',
         ingestMode: 'copy',
@@ -36,12 +41,23 @@ export const mergeLiveConfig = (current: LiveConfig | null, payload: Partial<Liv
 
     return {
         watchDir: payload.watchDir ?? fallback.watchDir,
-        ingestMode: payload.ingestMode ? (payload.ingestMode === 'move' ? 'move' : 'copy') : fallback.ingestMode,
-        deleteSourceOnDelete: typeof payload.deleteSourceOnDelete === 'boolean'
-            ? payload.deleteSourceOnDelete
-            : fallback.deleteSourceOnDelete,
-        enabled: typeof payload.enabled === 'boolean' ? payload.enabled : fallback.enabled,
-        updatedAt: typeof payload.updatedAt === 'number' ? payload.updatedAt : fallback.updatedAt,
+        ingestMode: payload.ingestMode
+            ? payload.ingestMode === 'move'
+                ? 'move'
+                : 'copy'
+            : fallback.ingestMode,
+        deleteSourceOnDelete:
+            typeof payload.deleteSourceOnDelete === 'boolean'
+                ? payload.deleteSourceOnDelete
+                : fallback.deleteSourceOnDelete,
+        enabled:
+            typeof payload.enabled === 'boolean'
+                ? payload.enabled
+                : fallback.enabled,
+        updatedAt:
+            typeof payload.updatedAt === 'number'
+                ? payload.updatedAt
+                : fallback.updatedAt,
     };
 };
 

@@ -1,6 +1,6 @@
 import type { Collection } from '~/models/types';
 
-import { graphQLRequest } from './graphql-core';
+import { graphQLRequest } from '~/api/graphql-core';
 
 export interface OrderRequest {
     order?: 'asc' | 'desc';

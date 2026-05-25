@@ -1,6 +1,6 @@
 import type { Category } from '~/models/types';
 
-import { graphQLRequest } from './graphql-core';
+import { graphQLRequest } from '~/api/graphql-core';
 
 export function getCategories() {
     return graphQLRequest<

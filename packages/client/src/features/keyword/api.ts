@@ -1,6 +1,6 @@
 import type { Keyword } from '~/models/types';
 
-import { graphQLRequest } from './graphql-core';
+import { graphQLRequest } from '~/api/graphql-core';
 
 export function createKeyword(data: { categoryId: number; name: string }) {
     return graphQLRequest<

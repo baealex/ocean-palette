@@ -1,6 +1,6 @@
 import { memo, useEffect, useMemo, useRef, useState } from 'react';
 
-import { deleteCollection, updateCollection } from '~/api';
+import { deleteCollection, updateCollection } from '~/features/collection/api';
 import { ConfirmDialog } from '~/components/ui/ConfirmDialog';
 import { PromptDialog } from '~/components/ui/PromptDialog';
 import { useToast } from '~/components/ui/ToastProvider';

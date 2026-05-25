@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 import { useEffect, useMemo, useState } from 'react';
 
-import type { CollectionDateField } from '~/api';
+import type { CollectionDateField } from '~/features/collection/api';
 import { Button } from '~/components/ui/Button';
 import { Select, type SelectOption } from '~/components/ui/Select';
 import { cn } from '~/components/ui/cn';

@@ -1,4 +1,4 @@
-import type { CollectionDateField, CollectionSearchBy } from '~/api';
+import type { CollectionDateField, CollectionSearchBy } from './api';
 
 import type { CollectionSort } from './view-filter';
 

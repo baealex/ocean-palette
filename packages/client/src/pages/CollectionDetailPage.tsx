@@ -1,7 +1,11 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from '@tanstack/react-router';
 
-import { deleteCollection, getCollection, updateCollection } from '~/api';
+import {
+    deleteCollection,
+    getCollection,
+    updateCollection,
+} from '~/features/collection/api';
 import { CollectionDetailCard } from '~/components/domain/CollectionDetailCard';
 import { PageFrame } from '~/components/domain/PageFrame';
 import { ConfirmDialog } from '~/components/ui/ConfirmDialog';
@@ -22,7 +26,9 @@ export const CollectionDetailPage = ({ id }: CollectionDetailPageProps) => {
     const [removing, setRemoving] = useState(false);
     const [renameDialogOpen, setRenameDialogOpen] = useState(false);
     const [removeDialogOpen, setRemoveDialogOpen] = useState(false);
-    const [collection, setCollection] = useState<Awaited<ReturnType<typeof getCollection>>['data']['collection'] | null>(null);
+    const [collection, setCollection] = useState<
+        Awaited<ReturnType<typeof getCollection>>['data']['collection'] | null
+    >(null);
 
     const collectionId = useMemo(() => Number(id), [id]);
 
@@ -47,7 +53,11 @@ export const CollectionDetailPage = ({ id }: CollectionDetailPageProps) => {
                 if (cancelled) {
                     return;
                 }
-                setError(nextError instanceof Error ? nextError.message : 'Failed to load collection');
+                setError(
+                    nextError instanceof Error
+                        ? nextError.message
+                        : 'Failed to load collection',
+                );
             } finally {
                 if (!cancelled) {
                     setLoading(false);
@@ -69,11 +79,20 @@ export const CollectionDetailPage = ({ id }: CollectionDetailPageProps) => {
 
         setTitleSaving(true);
         try {
-            await updateCollection({ id: collection.id, title: nextTitle.trim() });
-            setCollection((prev) => (prev ? { ...prev, title: nextTitle.trim() } : prev));
+            await updateCollection({
+                id: collection.id,
+                title: nextTitle.trim(),
+            });
+            setCollection((prev) =>
+                prev ? { ...prev, title: nextTitle.trim() } : prev,
+            );
             setRenameDialogOpen(false);
         } catch (nextError) {
-            setError(nextError instanceof Error ? nextError.message : 'Failed to rename collection');
+            setError(
+                nextError instanceof Error
+                    ? nextError.message
+                    : 'Failed to rename collection',
+            );
         } finally {
             setTitleSaving(false);
         }
@@ -89,7 +108,11 @@ export const CollectionDetailPage = ({ id }: CollectionDetailPageProps) => {
             await deleteCollection({ id: collection.id });
             await navigate({ to: '/collection' });
         } catch (nextError) {
-            setError(nextError instanceof Error ? nextError.message : 'Failed to delete collection');
+            setError(
+                nextError instanceof Error
+                    ? nextError.message
+                    : 'Failed to delete collection',
+            );
         } finally {
             setRemoving(false);
         }
@@ -98,13 +121,17 @@ export const CollectionDetailPage = ({ id }: CollectionDetailPageProps) => {
     return (
         <PageFrame surface="plain">
             {loading ? (
-                <Notice variant="neutral" className="mb-4">Loading...</Notice>
+                <Notice variant="neutral" className="mb-4">
+                    Loading...
+                </Notice>
             ) : null}
             {!loading && collection ? (
                 <CollectionDetailCard
                     collection={collection}
                     onClickCopy={(text, label) => {
-                        void copyToClipboard(text, { label: label || 'Prompt' });
+                        void copyToClipboard(text, {
+                            label: label || 'Prompt',
+                        });
                     }}
                     onClickRename={() => setRenameDialogOpen(true)}
                     onClickDelete={() => {
@@ -115,9 +142,7 @@ export const CollectionDetailPage = ({ id }: CollectionDetailPageProps) => {
                 />
             ) : null}
 
-            {error ? (
-                <Notice variant="error">{error}</Notice>
-            ) : null}
+            {error ? <Notice variant="error">{error}</Notice> : null}
 
             <PromptDialog
                 open={renameDialogOpen}

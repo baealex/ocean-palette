@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import type { FormEvent } from 'react';
 
-import { getCategories } from '~/api';
+import { getCategories } from '~/features/category/api';
 import { Checkbox } from '~/components/ui/Checkbox';
 import { KeywordsList } from '~/components/domain/KeywordsList';
 import { PageFrame } from '~/components/domain/PageFrame';

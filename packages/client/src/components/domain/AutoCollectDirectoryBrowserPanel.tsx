@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useState } from 'react';
 
-import type { LiveDirectoryEntry } from '~/api';
+import type { LiveDirectoryEntry } from '~/features/live/api';
 import { Button } from '~/components/ui/Button';
 import { Input } from '~/components/ui/Input';
 import { Notice } from '~/components/ui/Notice';

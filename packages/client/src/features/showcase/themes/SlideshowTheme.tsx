@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link } from '@tanstack/react-router';
 import { useQuery } from '@tanstack/react-query';
 
-import { getCollections } from '~/api';
+import { getCollections } from '~/features/collection/api';
 import { collectionQueryKeys } from '~/features/collection/query-keys';
 import { toCollectionSummaryItems } from '~/entities/collection/mapper';
 import { resolveCollectionSortOrder } from '~/features/collection/view-filter';

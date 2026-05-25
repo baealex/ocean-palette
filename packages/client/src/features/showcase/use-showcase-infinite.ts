@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { useInfiniteQuery } from '@tanstack/react-query';
 
-import { getCollections } from '~/api';
+import { getCollections } from '~/features/collection/api';
 import { toCollectionSummaryItems } from '~/entities/collection/mapper';
 import { collectionQueryKeys } from '~/features/collection/query-keys';
 import { resolveCollectionSortOrder } from '~/features/collection/view-filter';
