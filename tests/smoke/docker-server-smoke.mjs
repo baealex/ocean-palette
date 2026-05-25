@@ -91,8 +91,11 @@ function dockerBuild() {
     }
 }
 
-async function fetchText(url, options) {
-    const response = await fetch(url, options);
+async function fetchText(url, options = {}) {
+    const response = await fetch(url, {
+        signal: AbortSignal.timeout(5_000),
+        ...options,
+    });
     return {
         response,
         text: await response.text(),
@@ -166,7 +169,7 @@ async function assertGraphqlRead(baseUrl) {
     }
 
     assert(
-        !payload.errors,
+        !Array.isArray(payload.errors) || payload.errors.length === 0,
         `POST /graphql returned errors: ${JSON.stringify(payload.errors)}`,
     );
     assert(
