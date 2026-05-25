@@ -18,7 +18,7 @@ This note records safe candidates for gradually splitting large API-facing files
 
 | Area | File | Size | Main responsibilities | Current import surface |
 | --- | --- | ---: | --- | --- |
-| Client GraphQL API | `packages/client/src/api/graphql.ts` | 436 lines | Category, keyword, collection GraphQL operations and shared collection request types | Re-exported by `packages/client/src/api/index.ts`; feature code imports from the `~/api` alias |
+| Client GraphQL API | `packages/client/src/api/graphql.ts` plus `category.ts`, `collection.ts`, `keyword.ts` | split | Compatibility barrel plus category, collection, and keyword GraphQL operations | Re-exported by `packages/client/src/api/index.ts`; feature code imports from the `~/api` alias |
 | Client live REST API | `packages/client/src/api/live.ts` | 175 lines | Live config/status/image REST response types and axios wrappers | Re-exported by `packages/client/src/api/index.ts`; mainly collection live-control code |
 | Server collection GraphQL | `packages/server/src/features/collection/graphql/index.ts` | 604 lines | Collection type definitions, query/mutation schema, filter/order/date helpers, metadata payload mapping, resolvers | Imported by `packages/server/src/schema/index.ts`; depends on the `~/features/live` alias metadata helpers |
 | Server keyword GraphQL | `packages/server/src/features/keyword/graphql/index.ts` | 351 lines | Keyword type definitions, order helper, resolvers | Imported by `packages/server/src/schema/index.ts`; `keywordType` also imported by category GraphQL |
@@ -56,24 +56,26 @@ Validation:
 
 ### 2. `packages/client/src/api/graphql.ts`
 
-Priority: high.
+Status: completed in the first split.
 
-Why next:
+What changed:
 
-- It is the largest client API wrapper at 436 lines.
-- It combines category, keyword, collection, pagination/search types, and legacy escaping in one public module.
-- Many callers import from the `~/api` alias, not from this file directly, so `packages/client/src/api/index.ts` can preserve the public path while domain files are introduced.
+- `packages/client/src/api/graphql.ts` is now a compatibility barrel.
+- Category operations moved to `packages/client/src/api/category.ts`.
+- Collection operations and collection filter/pagination types moved to `packages/client/src/api/collection.ts`.
+- Keyword and sample image operations moved to `packages/client/src/api/keyword.ts`.
+- `packages/client/src/api/index.ts` still re-exports the same public API surface through the `~/api` alias.
 
-Suggested first split:
+Remaining risk:
 
-1. Create future domain files for category, keyword, and collection GraphQL API modules.
-2. Keep `packages/client/src/api/graphql.ts` as a compatibility barrel during the first step.
-3. Keep `packages/client/src/api/index.ts` exports unchanged.
+- Type exports like `CollectionDateField` and `CollectionSearchBy` remain public through `~/api`; keep this stable while filters and query keys depend on it.
+- Tests mock the `~/api` alias, so future direct imports from domain files should be introduced deliberately, not mixed into unrelated changes.
 
-Risk:
+Next cleanup options:
 
-- Type exports like `CollectionDateField` and `CollectionSearchBy` are used by filters and query keys. Losing those exports would break compile-time contracts even if runtime behavior is unchanged.
-- Tests mock the `~/api` alias, so changing the top-level export shape can break tests.
+1. Decide whether feature code should continue importing from `~/api` or gradually import from domain modules.
+2. If direct domain imports are allowed, update one feature slice at a time and keep `~/api` as a compatibility layer.
+3. Add API export-shape tests only if later refactors start changing public imports.
 
 Validation:
 
