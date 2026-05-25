@@ -26,7 +26,8 @@
         "typecheck:client": "pnpm --filter @ocean-palette/client run typecheck",
         "test:client": "pnpm --filter @ocean-palette/client run test",
         "test": "pnpm --filter @ocean-palette/server run test && pnpm --filter @ocean-palette/client run test",
-        "test:e2e": "playwright test"
+        "test:e2e": "playwright test",
+        "smoke:docker": "node tests/smoke/docker-server-smoke.mjs"
     },
     "devDependencies": {
         "@biomejs/biome": "^2.4.15",
