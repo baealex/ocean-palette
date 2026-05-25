@@ -20,7 +20,7 @@ This note records safe candidates for gradually splitting large API-facing files
 | --- | --- | ---: | --- | --- |
 | Client GraphQL API | `packages/client/src/features/{category,collection,keyword}/api.ts` plus `packages/client/src/api/graphql.ts` | feature-based | Feature-owned category, collection, and keyword GraphQL operations with compatibility barrel | Feature code imports from feature API modules; `packages/client/src/api/index.ts` remains a compatibility layer |
 | Client live REST API | `packages/client/src/features/live/api.ts` | feature-based | Live config/status/image REST response types and axios wrappers | Feature code imports from `~/features/live/api`; `packages/client/src/api/index.ts` remains a compatibility layer |
-| Server collection GraphQL | `packages/server/src/features/collection/graphql/index.ts` | 604 lines | Collection type definitions, query/mutation schema, filter/order/date helpers, metadata payload mapping, resolvers | Imported by `packages/server/src/schema/index.ts`; depends on the `~/features/live` alias metadata helpers |
+| Server collection GraphQL | `packages/server/src/features/collection/graphql/index.ts` plus private helper modules | split | Collection type definitions, query/mutation schema, resolvers, query helpers, metadata payload mapping | Imported by `packages/server/src/schema/index.ts`; private helpers stay inside the collection GraphQL folder |
 | Server keyword GraphQL | `packages/server/src/features/keyword/graphql/index.ts` | 351 lines | Keyword type definitions, order helper, resolvers | Imported by `packages/server/src/schema/index.ts`; `keywordType` also imported by category GraphQL |
 | Server category GraphQL | `packages/server/src/features/category/graphql/index.ts` | 211 lines | Category type definitions, order helper, resolvers | Imported by `packages/server/src/schema/index.ts` |
 | Server live HTTP controllers | `packages/server/src/features/live/http.ts` | 403 lines | Request parsing, directory browsing, live config/status/image controllers | Imported through live router; tests exist in `packages/server/src/features/live/http.test.ts` |
@@ -30,29 +30,28 @@ This note records safe candidates for gradually splitting large API-facing files
 
 ### 1. `packages/server/src/features/collection/graphql/index.ts`
 
-Priority: highest.
+Status: first split completed.
 
-Why first:
+What changed:
 
-- It is the largest API boundary file found in GraphQL code at 604 lines.
-- The file mixes four responsibilities: GraphQL schema strings, resolver functions, query input normalization, and generated metadata payload mapping.
-- The import surface is small: the schema composer imports `CollectionTypeDefs` and `CollectionResolvers` from this directory. That makes it safe to keep `index.ts` as a barrel while moving private pieces.
+- Filter/order/date normalization helpers moved to `query-helpers.ts`.
+- `toGeneratedMetadataPayload` moved to `metadata-payload.ts`.
+- `CollectionTypeDefs` and `CollectionResolvers` remain exported from `index.ts`.
+- The schema composer import surface stays unchanged: `~/features/collection/graphql`.
 
-Suggested first split:
+Preserved behavior:
 
-1. Move filter/order/date helpers to `query-helpers.ts`.
-2. Move `toGeneratedMetadataPayload` to `metadata-payload.ts`.
-3. Keep `CollectionTypeDefs` and `CollectionResolvers` exported from `index.ts`.
-
-Risk:
-
-- Collection filtering and ordering are user-visible. Preserve defaults: limit `60`, max limit `200`, order `desc`, default order field `createdAt`, default date field behavior.
-- Metadata fields are shared with live image parsing. Check prompt/model fields after moving mapper code.
+- Default limit remains `60` and max limit remains `200`.
+- Default order remains `desc` and default order field remains `createdAt`.
+- Default date filtering still targets collection `createdAt`; `generated_at` still targets image `generatedAt`.
+- Metadata payload fields still come from the live image metadata parser.
 
 Validation:
 
+- `pnpm --filter @ocean-palette/server run test`
+- `pnpm --filter @ocean-palette/server run type-check`
+- `pnpm --filter @ocean-palette/server run lint`
 - `pnpm check`
-- If narrowing validation, run collection GraphQL tests plus type-check.
 
 ### 2. `packages/client/src/api/graphql.ts`
 
