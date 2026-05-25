@@ -18,8 +18,8 @@ This note records safe candidates for gradually splitting large API-facing files
 
 | Area | File | Size | Main responsibilities | Current import surface |
 | --- | --- | ---: | --- | --- |
-| Client GraphQL API | `packages/client/src/api/graphql.ts` plus `category.ts`, `collection.ts`, `keyword.ts` | split | Compatibility barrel plus category, collection, and keyword GraphQL operations | Re-exported by `packages/client/src/api/index.ts`; feature code imports from the `~/api` alias |
-| Client live REST API | `packages/client/src/api/live.ts` | 175 lines | Live config/status/image REST response types and axios wrappers | Re-exported by `packages/client/src/api/index.ts`; mainly collection live-control code |
+| Client GraphQL API | `packages/client/src/features/{category,collection,keyword}/api.ts` plus `packages/client/src/api/graphql.ts` | feature-based | Feature-owned category, collection, and keyword GraphQL operations with compatibility barrel | Feature code imports from feature API modules; `packages/client/src/api/index.ts` remains a compatibility layer |
+| Client live REST API | `packages/client/src/features/live/api.ts` | feature-based | Live config/status/image REST response types and axios wrappers | Feature code imports from `~/features/live/api`; `packages/client/src/api/index.ts` remains a compatibility layer |
 | Server collection GraphQL | `packages/server/src/features/collection/graphql/index.ts` | 604 lines | Collection type definitions, query/mutation schema, filter/order/date helpers, metadata payload mapping, resolvers | Imported by `packages/server/src/schema/index.ts`; depends on the `~/features/live` alias metadata helpers |
 | Server keyword GraphQL | `packages/server/src/features/keyword/graphql/index.ts` | 351 lines | Keyword type definitions, order helper, resolvers | Imported by `packages/server/src/schema/index.ts`; `keywordType` also imported by category GraphQL |
 | Server category GraphQL | `packages/server/src/features/category/graphql/index.ts` | 211 lines | Category type definitions, order helper, resolvers | Imported by `packages/server/src/schema/index.ts` |
@@ -61,21 +61,22 @@ Status: completed in the first split.
 What changed:
 
 - `packages/client/src/api/graphql.ts` is now a compatibility barrel.
-- Category operations moved to `packages/client/src/api/category.ts`.
-- Collection operations and collection filter/pagination types moved to `packages/client/src/api/collection.ts`.
-- Keyword and sample image operations moved to `packages/client/src/api/keyword.ts`.
-- `packages/client/src/api/index.ts` still re-exports the same public API surface through the `~/api` alias.
+- Category operations moved to `packages/client/src/features/category/api.ts`.
+- Collection operations and collection filter/pagination types moved to `packages/client/src/features/collection/api.ts`.
+- Keyword and sample image operations moved to `packages/client/src/features/keyword/api.ts`.
+- Image upload/metadata REST calls moved to `packages/client/src/features/image/api.ts`.
+- Live REST calls moved to `packages/client/src/features/live/api.ts`.
+- `packages/client/src/api/index.ts` still re-exports the same public API surface for compatibility, but client code should not add new `~/api` imports.
 
 Remaining risk:
 
-- Type exports like `CollectionDateField` and `CollectionSearchBy` remain public through `~/api`; keep this stable while filters and query keys depend on it.
-- Tests mock the `~/api` alias, so future direct imports from domain files should be introduced deliberately, not mixed into unrelated changes.
+- Type exports like `CollectionDateField` and `CollectionSearchBy` remain public through `~/features/collection/api`; keep this stable while filters and query keys depend on it.
+- Tests now mock the feature API modules directly. Keep mocks near the feature boundary instead of going through `~/api`.
 
 Next cleanup options:
 
-1. Decide whether feature code should continue importing from `~/api` or gradually import from domain modules.
-2. If direct domain imports are allowed, update one feature slice at a time and keep `~/api` as a compatibility layer.
-3. Add API export-shape tests only if later refactors start changing public imports.
+1. Keep `~/api` as a compatibility layer until external or older internal imports are no longer needed.
+2. Add API export-shape tests only if later refactors start changing compatibility exports.
 
 Validation:
 
@@ -150,7 +151,7 @@ Validation:
 
 ## Guardrails for future refactors
 
-- Keep existing public imports working, especially the `~/api` alias on the client and the `~/features/live` alias on the server.
+- Keep existing public imports working, but new client code should import from feature API modules instead of the `~/api` compatibility layer.
 - Prefer moving private helpers first. Move exported API functions only behind a barrel file.
 - Split one responsibility per pull request.
 - Add or keep tests around filtering, ordering, response shapes, and live image side effects.

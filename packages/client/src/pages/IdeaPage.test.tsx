@@ -1,13 +1,13 @@
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { getCategories } from '~/api';
+import { getCategories } from '~/features/category/api';
 import { ToastProvider } from '~/components/ui/ToastProvider';
 import { clearMemoStore } from '~/modules/memo';
 
 import { IdeaPage } from './IdeaPage';
 
-vi.mock('~/api', () => ({
+vi.mock('~/features/category/api', () => ({
     getCategories: vi.fn(),
 }));
 

@@ -10,19 +10,19 @@ import {
 import type { AnchorHTMLAttributes, ReactNode } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import type { LiveStatusResponse } from '~/api';
+import type { LiveStatusResponse } from '~/features/live/api';
 import {
     getLiveConfig,
     listLiveDirectories,
     syncLiveImages,
     updateLiveConfig,
-} from '~/api';
+} from '~/features/live/api';
 import { ToastProvider } from '~/components/ui/ToastProvider';
 import { useLiveCollectionsRealtime } from '~/features/collection/use-live-collections-realtime';
 
 import { CollectionRealtimeControl } from './CollectionRealtimeControl';
 
-vi.mock('~/api', () => ({
+vi.mock('~/features/live/api', () => ({
     getLiveConfig: vi.fn(),
     listLiveDirectories: vi.fn(),
     syncLiveImages: vi.fn(),

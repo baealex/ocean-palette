@@ -1,3 +1,3 @@
 export * from './graphql';
-export * from './image';
-export * from './live';
+export * from '~/features/image/api';
+export * from '~/features/live/api';

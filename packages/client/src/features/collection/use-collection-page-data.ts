@@ -1,10 +1,13 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useCallback, useMemo } from 'react';
 
-import { getCollectionModelOptions, getCollections } from '~/api';
+import { getCollectionModelOptions, getCollections } from './api';
 import { toCollectionSummaryItems } from '~/entities/collection/mapper';
 import { collectionQueryKeys } from '~/features/collection/query-keys';
-import { resolveCollectionSortOrder, type CollectionFilterState } from './view-filter';
+import {
+    resolveCollectionSortOrder,
+    type CollectionFilterState,
+} from './view-filter';
 
 import type { Collection } from '~/models/types';
 

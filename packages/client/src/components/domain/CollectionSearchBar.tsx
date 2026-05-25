@@ -6,7 +6,7 @@ import { Field, FieldLabel } from '~/components/ui/Field';
 import { Input } from '~/components/ui/Input';
 import { Select } from '~/components/ui/Select';
 import { cn } from '~/components/ui/cn';
-import type { CollectionSearchBy } from '~/api';
+import type { CollectionSearchBy } from '~/features/collection/api';
 import { parseCollectionSearchBy } from '~/features/collection/view-filter';
 import { CrossIcon, SearchIcon } from '~/icons';
 

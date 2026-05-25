@@ -5,7 +5,7 @@ import { cn } from '~/components/ui/cn';
 import { CollectionDateFiltersSection } from '~/features/collection/filter-bar/CollectionDateFiltersSection';
 import { CollectionPrimaryFiltersSection } from '~/features/collection/filter-bar/CollectionPrimaryFiltersSection';
 import { isSameCalendarDay } from '~/features/collection/filter-bar/date-utils';
-import type { CollectionDateField } from '~/api';
+import type { CollectionDateField } from '~/features/collection/api';
 import {
     COLLECTION_DATE_FIELD_OPTIONS,
     COLLECTION_SORT_OPTIONS,

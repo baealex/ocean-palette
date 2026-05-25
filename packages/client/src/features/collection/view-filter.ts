@@ -5,7 +5,7 @@ import type {
     CollectionDateField,
     CollectionSearchBy,
     OrderRequest,
-} from '~/api';
+} from './api';
 
 export type CollectionView = 'list' | 'gallery' | 'browse';
 export type CollectionSort =

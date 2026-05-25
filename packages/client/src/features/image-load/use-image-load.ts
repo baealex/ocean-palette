@@ -1,12 +1,12 @@
 import { useState } from 'react';
 
 import {
-    createCollection,
     imageUpload,
     parseImageMetadata,
     type ImageUploadResponse,
     type ParsedImageMetadataResponse,
-} from '~/api';
+} from '~/features/image/api';
+import { createCollection } from '~/features/collection/api';
 import { imageToBase64 } from '~/modules/image';
 
 type ParsedPrompt = ParsedImageMetadataResponse['metadata'];
@@ -15,9 +15,15 @@ type UploadedImage = ImageUploadResponse;
 export const useImageLoad = () => {
     const [base64, setBase64] = useState<string | null>(null);
     const [parsedPrompt, setParsedPrompt] = useState<ParsedPrompt | null>(null);
-    const [uploadedImage, setUploadedImage] = useState<UploadedImage | null>(null);
-    const [selectedFileModifiedAt, setSelectedFileModifiedAt] = useState<string | null>(null);
-    const [savedCollectionId, setSavedCollectionId] = useState<number | null>(null);
+    const [uploadedImage, setUploadedImage] = useState<UploadedImage | null>(
+        null,
+    );
+    const [selectedFileModifiedAt, setSelectedFileModifiedAt] = useState<
+        string | null
+    >(null);
+    const [savedCollectionId, setSavedCollectionId] = useState<number | null>(
+        null,
+    );
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
 
@@ -39,7 +45,11 @@ export const useImageLoad = () => {
         setLoading(true);
         setError(null);
         setUploadedImage(null);
-        setSelectedFileModifiedAt(Number.isFinite(file.lastModified) ? new Date(file.lastModified).toISOString() : null);
+        setSelectedFileModifiedAt(
+            Number.isFinite(file.lastModified)
+                ? new Date(file.lastModified).toISOString()
+                : null,
+        );
         setSavedCollectionId(null);
 
         try {
@@ -53,7 +63,11 @@ export const useImageLoad = () => {
             setError(null);
         } catch (uploadError) {
             clearLoadedState();
-            setError(uploadError instanceof Error ? uploadError.message : 'Failed to read image');
+            setError(
+                uploadError instanceof Error
+                    ? uploadError.message
+                    : 'Failed to read image',
+            );
         } finally {
             setLoading(false);
         }
@@ -69,7 +83,10 @@ export const useImageLoad = () => {
             setError('Please load an image first');
             return;
         }
-        if (!parsedPrompt || (!parsedPrompt.prompt && !parsedPrompt.negativePrompt)) {
+        if (
+            !parsedPrompt ||
+            (!parsedPrompt.prompt && !parsedPrompt.negativePrompt)
+        ) {
             setError('Please load an SD image with prompt metadata first');
             return;
         }
@@ -78,7 +95,8 @@ export const useImageLoad = () => {
         setError(null);
 
         try {
-            const image = uploadedImage ?? (await imageUpload({ image: base64 })).data;
+            const image =
+                uploadedImage ?? (await imageUpload({ image: base64 })).data;
             setUploadedImage(image);
 
             const createdCollection = await createCollection({
@@ -90,7 +108,11 @@ export const useImageLoad = () => {
 
             setSavedCollectionId(createdCollection.data.createCollection.id);
         } catch (saveError) {
-            setError(saveError instanceof Error ? saveError.message : 'Failed to save collection');
+            setError(
+                saveError instanceof Error
+                    ? saveError.message
+                    : 'Failed to save collection',
+            );
         } finally {
             setLoading(false);
         }

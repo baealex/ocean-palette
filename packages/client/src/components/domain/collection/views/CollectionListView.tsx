@@ -1,6 +1,6 @@
 import { memo, useState } from 'react';
 
-import { deleteCollection, updateCollection } from '~/api';
+import { deleteCollection, updateCollection } from '~/features/collection/api';
 import { CollectionCard } from '~/components/domain/CollectionCard';
 import { ConfirmDialog } from '~/components/ui/ConfirmDialog';
 import { Notice } from '~/components/ui/Notice';

@@ -2,6 +2,6 @@ export {
     graphQLRequest,
     escapeGraphQLString as escapeLegacyGraphQLString,
 } from './graphql-core';
-export * from './category';
-export * from './collection';
-export * from './keyword';
+export * from '~/features/category/api';
+export * from '~/features/collection/api';
+export * from '~/features/keyword/api';
