@@ -4,7 +4,7 @@ import { createDatabase } from './shared';
 const main = async () => {
     try {
         await createDatabase();
-        childProcess.execSync('nodemon --watch src --delay 1 --exec ts-node src/main.ts', {
+        childProcess.execSync('tsx watch src/main.ts', {
             stdio: 'inherit',
         });
     } catch (e) {

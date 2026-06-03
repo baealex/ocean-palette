@@ -2,6 +2,7 @@ import fs from 'fs';
 import os from 'os';
 import path from 'path';
 import exifr from 'exifr';
+import type { MockedFunction } from 'vitest';
 
 import {
     absolutePathFromImageUrl,
@@ -17,10 +18,10 @@ import {
 } from './live-images.utils';
 import { MAX_LIMIT } from './live-images.types';
 
-jest.mock('exifr', () => ({
+vi.mock('exifr', () => ({
     __esModule: true,
     default: {
-        parse: jest.fn(),
+        parse: vi.fn(),
     },
 }));
 
@@ -31,9 +32,7 @@ function withCode(message: string, code: string): NodeJS.ErrnoException {
 }
 
 describe('live-images.utils business logic', () => {
-    const mockedExifrParse = exifr.parse as jest.MockedFunction<
-        typeof exifr.parse
-    >;
+    const mockedExifrParse = exifr.parse as MockedFunction<typeof exifr.parse>;
 
     const createStatsLike = (input: {
         atime?: Date;
@@ -58,7 +57,7 @@ describe('live-images.utils business logic', () => {
     describe('timestamp resolution', () => {
         afterEach(() => {
             mockedExifrParse.mockReset();
-            jest.restoreAllMocks();
+            vi.restoreAllMocks();
         });
 
         it('prefers EXIF date for createdAt when available', async () => {
@@ -362,18 +361,18 @@ Steps: 25, Sampler: Euler a
 
     describe('cross-device move fallback', () => {
         afterEach(() => {
-            jest.restoreAllMocks();
+            vi.restoreAllMocks();
         });
 
         it('falls back to copy/unlink when rename fails with EXDEV', async () => {
             // Arrange
-            const renameSpy = jest
+            const renameSpy = vi
                 .spyOn(fs.promises, 'rename')
                 .mockRejectedValueOnce(withCode('cross-device move', 'EXDEV'));
-            const copySpy = jest
+            const copySpy = vi
                 .spyOn(fs.promises, 'copyFile')
                 .mockResolvedValueOnce();
-            const unlinkSpy = jest
+            const unlinkSpy = vi
                 .spyOn(fs.promises, 'unlink')
                 .mockResolvedValueOnce();
 
@@ -389,7 +388,7 @@ Steps: 25, Sampler: Euler a
         it('rethrows non-EXDEV rename errors', async () => {
             // Arrange
             const error = withCode('permission denied', 'EPERM');
-            jest.spyOn(fs.promises, 'rename').mockRejectedValueOnce(error);
+            vi.spyOn(fs.promises, 'rename').mockRejectedValueOnce(error);
 
             // Act / Assert
             await expect(moveFile('from-path', 'to-path')).rejects.toBe(error);

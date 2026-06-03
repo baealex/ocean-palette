@@ -1,4 +1,5 @@
 import type { Request, Response } from 'express';
+import type { Mock, MockedFunction } from 'vitest';
 
 import {
     parseUploadDataUrlImage,
@@ -7,23 +8,23 @@ import {
 } from '~/features/image';
 import { parseImageMetadata, uploadImage } from './http';
 
-jest.mock('~/features/image', () => ({
-    parseUploadDataUrlImage: jest.fn(),
-    readImageMetadataFromBuffer: jest.fn(),
-    uploadImageFromDataUrl: jest.fn(),
+vi.mock('~/features/image', () => ({
+    parseUploadDataUrlImage: vi.fn(),
+    readImageMetadataFromBuffer: vi.fn(),
+    uploadImageFromDataUrl: vi.fn(),
 }));
 
 type MockResponse = Response & {
-    status: jest.Mock;
-    json: jest.Mock;
-    end: jest.Mock;
+    status: Mock;
+    json: Mock;
+    end: Mock;
 };
 
 function createMockResponse(): MockResponse {
     const response = {} as MockResponse;
-    response.status = jest.fn().mockReturnValue(response);
-    response.json = jest.fn().mockReturnValue(response);
-    response.end = jest.fn().mockReturnValue(response);
+    response.status = vi.fn().mockReturnValue(response);
+    response.json = vi.fn().mockReturnValue(response);
+    response.end = vi.fn().mockReturnValue(response);
     return response;
 }
 
@@ -35,15 +36,13 @@ function createMockRequest(body: Record<string, unknown> = {}): Request {
 
 describe('image controllers', () => {
     const mockedUploadImageFromDataUrl =
-        uploadImageFromDataUrl as jest.MockedFunction<
-            typeof uploadImageFromDataUrl
-        >;
+        uploadImageFromDataUrl as MockedFunction<typeof uploadImageFromDataUrl>;
     const mockedParseUploadDataUrlImage =
-        parseUploadDataUrlImage as jest.MockedFunction<
+        parseUploadDataUrlImage as MockedFunction<
             typeof parseUploadDataUrlImage
         >;
     const mockedReadImageMetadataFromBuffer =
-        readImageMetadataFromBuffer as jest.MockedFunction<
+        readImageMetadataFromBuffer as MockedFunction<
             typeof readImageMetadataFromBuffer
         >;
 
