@@ -2,7 +2,7 @@ version: "2.1"
 
 services:
   app:
-    image: baealex/ocean-palette
+    image: baealex/ocean-palette:${OCEAN_PALETTE_VERSION:?Set OCEAN_PALETTE_VERSION to an exact version}
     ports:
       - 7768:7768
     volumes:

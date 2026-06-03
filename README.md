@@ -16,12 +16,15 @@ Manage prompts like a color palette, browse your generated images, extract metad
 
 ### Docker (Recommended)
 
+Choose an exact version from the GitHub Releases page. Do not rely on the
+floating `latest` tag for installs or upgrades.
+
 ```bash
 docker run \
     -v ./data:/data \
     -v ./assets:/assets \
     -p 7768:7768 \
-    baealex/ocean-palette
+    baealex/ocean-palette:<version>
 ```
 
 Open `http://localhost:7768` and start organizing.
