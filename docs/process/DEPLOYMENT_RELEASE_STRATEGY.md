@@ -115,6 +115,8 @@ pnpm start
 - The repository is an app/server deployment target, not an npm package distribution target.
 - Smoke tests should verify deployable behavior: built client assets, production server startup, migration path, and core HTTP/GraphQL UI flows.
 - The current CI smoke is `pnpm test:e2e`, backed by Playwright. It builds the server and client, starts the production server path with an isolated SQLite database, then checks the app shell and empty collection GraphQL flow.
+- Migration smoke is `pnpm smoke:migration`. It copies `packages/server/prisma/data/db.sqlite3` to `.tmp/migration-smoke/db.sqlite3` when the default DB exists, then runs `prisma migrate deploy` and `prisma migrate status` against the copy only.
+- To smoke-test a backup copy, run `MIGRATION_SMOKE_SOURCE_DB=/path/to/backup.sqlite3 pnpm smoke:migration`. On Windows PowerShell, use `$env:MIGRATION_SMOKE_SOURCE_DB="C:\path\backup.sqlite3"; pnpm smoke:migration`.
 - Do not add `npm publish`, `npm pack`, `npx <published-cli>`, or CLI-package smoke checks unless the release policy changes to include npm distribution.
 
 ## 9. Runtime Environment Reference

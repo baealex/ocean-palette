@@ -11,7 +11,7 @@
         "start": "cross-env PORT=7768 ts-node script/_start.ts",
         "type-check": "tsc --noEmit",
         "lint": "biome lint src",
-        "test": "cross-env DATABASE_URL=file:./test.sqlite3 ts-node script/_test.ts"
+        "test": "cross-env NODE_ENV=test ts-node script/_test.ts"
     },
     "repository": {
         "type": "git",

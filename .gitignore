@@ -5,4 +5,6 @@
 node_modules
 /docs/private/
 .tmp*
+test-results/
+playwright-report/
 .claude/settings.local.json
