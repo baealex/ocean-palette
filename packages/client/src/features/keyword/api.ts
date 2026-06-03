@@ -2,16 +2,47 @@ import type { Keyword } from '~/models/types';
 
 import { graphQLRequest } from '~/api/graphql-core';
 
-export function createKeyword(data: { categoryId: number; name: string }) {
+export interface KeywordFieldsInput {
+    name: string;
+    meaning?: string;
+    effect?: string;
+    note?: string;
+}
+
+const keywordFields = `
+    id
+    name
+    meaning
+    effect
+    note
+`;
+
+export function createKeyword(
+    data: { categoryId: number } & KeywordFieldsInput,
+) {
     return graphQLRequest<
         'createKeyword',
-        Pick<Keyword, 'id' | 'name' | 'categories'>
+        Pick<
+            Keyword,
+            'id' | 'name' | 'meaning' | 'effect' | 'note' | 'categories'
+        >
     >(
         `
-        mutation($categoryId: ID!, $name: String!) {
-            createKeyword(categoryId: $categoryId, name: $name) {
-                id
-                name
+        mutation(
+            $categoryId: ID!
+            $name: String!
+            $meaning: String
+            $effect: String
+            $note: String
+        ) {
+            createKeyword(
+                categoryId: $categoryId
+                name: $name
+                meaning: $meaning
+                effect: $effect
+                note: $note
+            ) {
+                ${keywordFields}
                 categories {
                     id
                     order
@@ -19,7 +50,47 @@ export function createKeyword(data: { categoryId: number; name: string }) {
             }
         }
         `,
-        { categoryId: data.categoryId, name: data.name },
+        {
+            categoryId: data.categoryId,
+            name: data.name,
+            meaning: data.meaning,
+            effect: data.effect,
+            note: data.note,
+        },
+    );
+}
+
+export function updateKeyword(data: { id: number } & KeywordFieldsInput) {
+    return graphQLRequest<
+        'updateKeyword',
+        Pick<Keyword, 'id' | 'name' | 'meaning' | 'effect' | 'note'>
+    >(
+        `
+        mutation(
+            $id: ID!
+            $name: String!
+            $meaning: String
+            $effect: String
+            $note: String
+        ) {
+            updateKeyword(
+                id: $id
+                name: $name
+                meaning: $meaning
+                effect: $effect
+                note: $note
+            ) {
+                ${keywordFields}
+            }
+        }
+        `,
+        {
+            id: data.id,
+            name: data.name,
+            meaning: data.meaning,
+            effect: data.effect,
+            note: data.note,
+        },
     );
 }
 
@@ -66,6 +137,9 @@ export function createSampleImage(data: {
             createSampleImage(imageId: $imageId, keywordId: $keywordId) {
                 id
                 name
+                meaning
+                effect
+                note
                 image {
                     id
                     url

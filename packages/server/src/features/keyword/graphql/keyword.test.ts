@@ -134,6 +134,9 @@ describe('Keyword Schema', () => {
                     allKeywords {
                         id
                         name
+                        meaning
+                        effect
+                        note
                         categories {
                             id
                             order
@@ -144,6 +147,9 @@ describe('Keyword Schema', () => {
             });
 
         expect(response.body.data.allKeywords).toHaveLength(4);
+        expect(response.body.data.allKeywords[0]).toHaveProperty('meaning');
+        expect(response.body.data.allKeywords[0]).toHaveProperty('effect');
+        expect(response.body.data.allKeywords[0]).toHaveProperty('note');
     });
 
     it('키워드를 생성한다.', async () => {
@@ -157,6 +163,9 @@ describe('Keyword Schema', () => {
                     createKeyword(name: "Green", categoryId: "${allCategories[0].id}") {
                         id
                         name
+                        meaning
+                        effect
+                        note
                         categories {
                             id
                             order
@@ -168,7 +177,175 @@ describe('Keyword Schema', () => {
 
         expect(response.body.data.createKeyword).toHaveProperty('id');
         expect(response.body.data.createKeyword).toHaveProperty('name');
+        expect(response.body.data.createKeyword.meaning).toBe('');
+        expect(response.body.data.createKeyword.effect).toBe('');
+        expect(response.body.data.createKeyword.note).toBe('');
         expect(response.body.data.createKeyword.categories).toHaveLength(1);
+    });
+
+    it('효과 카드 필드를 포함해 키워드를 생성한다.', async () => {
+        const allCategories = await getAllCategories();
+
+        const response = await request(app)
+            .post('/graphql')
+            .send({
+                query: `
+                mutation {
+                    createKeyword(
+                        name: "Soft light",
+                        categoryId: "${allCategories[0].id}",
+                        meaning: "부드러운 빛",
+                        effect: "Softens shadows around the subject",
+                        note: "Good for portrait prompts"
+                    ) {
+                        id
+                        name
+                        meaning
+                        effect
+                        note
+                    }
+                }
+            `,
+            });
+
+        expect(response.body.data.createKeyword).toMatchObject({
+            name: 'Soft light',
+            meaning: '부드러운 빛',
+            effect: 'Softens shadows around the subject',
+            note: 'Good for portrait prompts',
+        });
+    });
+
+    it('기존 키워드 상세 필드를 빈 생성 입력으로 덮어쓰지 않는다.', async () => {
+        const allCategories = await getAllCategories();
+        const keyword = await models.keyword.create({
+            data: {
+                name: 'Golden hour',
+                meaning: '해질녘 빛',
+                effect: 'Warms the scene',
+                note: 'Keep highlights soft',
+                categories: {
+                    create: {
+                        order: 997,
+                        category: {
+                            connect: {
+                                id: Number(allCategories[0].id),
+                            },
+                        },
+                    },
+                },
+            },
+        });
+
+        const response = await request(app)
+            .post('/graphql')
+            .send({
+                query: `
+                mutation {
+                    createKeyword(
+                        name: "Golden hour",
+                        categoryId: "${allCategories[1].id}",
+                        meaning: "",
+                        effect: "",
+                        note: ""
+                    ) {
+                        id
+                        name
+                        meaning
+                        effect
+                        note
+                    }
+                }
+            `,
+            });
+
+        expect(response.body.data.createKeyword).toMatchObject({
+            id: String(keyword.id),
+            name: 'Golden hour',
+            meaning: '해질녘 빛',
+            effect: 'Warms the scene',
+            note: 'Keep highlights soft',
+        });
+    });
+
+    it('키워드 효과 카드 필드를 수정한다.', async () => {
+        const keyword = await models.keyword.create({
+            data: {
+                name: 'Sharp focus',
+                meaning: '선명한 초점',
+                effect: 'Makes edges crisp',
+                note: 'Before update',
+            },
+        });
+
+        const response = await request(app)
+            .post('/graphql')
+            .send({
+                query: `
+                mutation {
+                    updateKeyword(
+                        id: "${keyword.id}",
+                        name: "Sharp focus",
+                        meaning: "또렷한 초점",
+                        effect: "Keeps the subject crisp",
+                        note: "Use with product shots"
+                    ) {
+                        id
+                        name
+                        meaning
+                        effect
+                        note
+                    }
+                }
+            `,
+            });
+
+        expect(response.body.data.updateKeyword).toMatchObject({
+            name: 'Sharp focus',
+            meaning: '또렷한 초점',
+            effect: 'Keeps the subject crisp',
+            note: 'Use with product shots',
+        });
+    });
+
+    it('키워드 효과 카드 필드를 빈 값으로 지운다.', async () => {
+        const keyword = await models.keyword.create({
+            data: {
+                name: 'Film grain',
+                meaning: '필름 입자',
+                effect: 'Adds texture',
+                note: 'Remove when clean render is needed',
+            },
+        });
+
+        const response = await request(app)
+            .post('/graphql')
+            .send({
+                query: `
+                mutation {
+                    updateKeyword(
+                        id: "${keyword.id}",
+                        name: "Film grain",
+                        meaning: "",
+                        effect: "",
+                        note: ""
+                    ) {
+                        id
+                        name
+                        meaning
+                        effect
+                        note
+                    }
+                }
+            `,
+            });
+
+        expect(response.body.data.updateKeyword).toMatchObject({
+            name: 'Film grain',
+            meaning: '',
+            effect: '',
+            note: '',
+        });
     });
 
     it('키워드를 삭제한다', async () => {

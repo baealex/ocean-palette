@@ -14,8 +14,10 @@ import {
     createSampleImage,
     deleteKeyword,
     deleteSampleImage,
+    updateKeyword,
     updateKeywordOrder,
 } from '~/features/keyword/api';
+import type { KeywordFieldsInput } from '~/features/keyword/api';
 import { imageToBase64 } from '~/modules/image';
 
 import type { HomeCategory } from './types';
@@ -30,6 +32,9 @@ const normalizeCategories = (categories: HomeCategory[]): HomeCategory[] =>
         keywords: category.keywords.map((keyword) => ({
             ...keyword,
             id: Number(keyword.id),
+            meaning: keyword.meaning ?? '',
+            effect: keyword.effect ?? '',
+            note: keyword.note ?? '',
             categories: keyword.categories?.map((link) => ({
                 ...link,
                 id: Number(link.id),
@@ -336,6 +341,54 @@ export const useHomeBoard = () => {
         [runMutation, setError],
     );
 
+    const addKeywordWithFields = useCallback(
+        async (
+            categoryId: number,
+            keyword: KeywordFieldsInput,
+        ): Promise<boolean> => {
+            const name = keyword.name.trim();
+            if (!name) {
+                setError('Keyword is required');
+                return false;
+            }
+
+            return runMutation(async () => {
+                await createKeyword({
+                    categoryId,
+                    name,
+                    meaning: keyword.meaning?.trim() ?? '',
+                    effect: keyword.effect?.trim() ?? '',
+                    note: keyword.note?.trim() ?? '',
+                });
+            }, 'Failed to add keyword details');
+        },
+        [runMutation, setError],
+    );
+
+    const editKeyword = useCallback(
+        async (
+            keywordId: number,
+            keyword: KeywordFieldsInput,
+        ): Promise<boolean> => {
+            const name = keyword.name.trim();
+            if (!name) {
+                setError('Keyword is required');
+                return false;
+            }
+
+            return runMutation(async () => {
+                await updateKeyword({
+                    id: keywordId,
+                    name,
+                    meaning: keyword.meaning?.trim() ?? '',
+                    effect: keyword.effect?.trim() ?? '',
+                    note: keyword.note?.trim() ?? '',
+                });
+            }, 'Failed to edit keyword');
+        },
+        [runMutation, setError],
+    );
+
     const removeKeyword = useCallback(
         async (categoryId: number, keywordId: number): Promise<boolean> => {
             return runMutation(async () => {
@@ -388,14 +441,18 @@ export const useHomeBoard = () => {
             renameCategory,
             removeCategory,
             addKeywords,
+            addKeywordWithFields,
+            editKeyword,
             removeKeyword,
             addKeywordSampleImage,
             removeKeywordSampleImage,
         }),
         [
             addKeywordSampleImage,
+            addKeywordWithFields,
             addKeywords,
             createCategoryByName,
+            editKeyword,
             refresh,
             removeCategory,
             removeKeyword,

@@ -5,14 +5,21 @@ import type { DragEndEvent } from '@dnd-kit/core';
 
 import { useToast } from '~/components/ui/ToastProvider';
 import { useClipboardToast } from '~/components/ui/use-clipboard-toast';
+import type { KeywordFieldsInput } from '~/features/keyword/api';
 import { parseKeywordSortableId } from '~/features/home/dnd-ids';
 import { useHomeSampleImageActions } from '~/features/home/use-home-sample-image-actions';
 import type { HomeCategory } from '~/features/home/types';
 import { useHomeBoard } from '~/features/home/use-home-board';
+import type { Keyword } from '~/models/types';
 
 interface KeywordRemoveTarget {
     categoryId: number;
     keywordId: number;
+}
+
+interface KeywordDetailsTarget {
+    categoryId: number;
+    keyword: Keyword | null;
 }
 
 export const useHomePageController = () => {
@@ -28,6 +35,8 @@ export const useHomePageController = () => {
     >(null);
     const [removeKeywordTarget, setRemoveKeywordTarget] =
         useState<KeywordRemoveTarget | null>(null);
+    const [keywordDetailsTarget, setKeywordDetailsTarget] =
+        useState<KeywordDetailsTarget | null>(null);
     const lastErrorRef = useRef<string | null>(null);
 
     const {
@@ -41,6 +50,8 @@ export const useHomePageController = () => {
         renameCategory,
         removeCategory,
         addKeywords,
+        addKeywordWithFields,
+        editKeyword,
         removeKeyword,
         addKeywordSampleImage,
         removeKeywordSampleImage,
@@ -97,6 +108,18 @@ export const useHomePageController = () => {
         );
         return targetKeyword?.name ?? null;
     }, [categories, removeKeywordTarget]);
+
+    const keywordDetailsCategory = useMemo(() => {
+        if (!keywordDetailsTarget) {
+            return null;
+        }
+
+        return (
+            categories.find(
+                (category) => category.id === keywordDetailsTarget.categoryId,
+            ) ?? null
+        );
+    }, [categories, keywordDetailsTarget]);
 
     const handleKeywordDragEnd = useCallback(
         (categoryId: number, event: DragEndEvent) => {
@@ -234,6 +257,47 @@ export const useHomePageController = () => {
         [addKeywords, pushToast],
     );
 
+    const handleAddKeywordDetailsRequest = useCallback((categoryId: number) => {
+        setKeywordDetailsTarget({ categoryId, keyword: null });
+    }, []);
+
+    const handleEditKeywordRequest = useCallback(
+        (categoryId: number, keyword: Keyword) => {
+            setKeywordDetailsTarget({ categoryId, keyword });
+        },
+        [],
+    );
+
+    const handleKeywordDetailsConfirm = useCallback(
+        (values: KeywordFieldsInput) => {
+            if (!keywordDetailsTarget) {
+                return;
+            }
+
+            void (async () => {
+                const saved = keywordDetailsTarget.keyword
+                    ? await editKeyword(keywordDetailsTarget.keyword.id, values)
+                    : await addKeywordWithFields(
+                          keywordDetailsTarget.categoryId,
+                          values,
+                      );
+
+                if (!saved) {
+                    return;
+                }
+
+                pushToast({
+                    message: keywordDetailsTarget.keyword
+                        ? 'Keyword updated'
+                        : 'Keyword added',
+                    variant: 'success',
+                });
+                setKeywordDetailsTarget(null);
+            })();
+        },
+        [addKeywordWithFields, editKeyword, keywordDetailsTarget, pushToast],
+    );
+
     const handleCopyKeyword = useCallback(
         (keywordName: string) => {
             void copyText(keywordName);
@@ -290,10 +354,13 @@ export const useHomePageController = () => {
         removeCategoryTarget,
         removeKeywordTarget,
         removeKeywordName,
+        keywordDetailsTarget,
+        keywordDetailsCategory,
         setCategoryName,
         setRenameCategoryTarget,
         setRemoveCategoryTargetId,
         setRemoveKeywordTarget,
+        setKeywordDetailsTarget,
         handleCreateCategory,
         handleKeywordDragEnd,
         handleCopyAllKeywords,
@@ -302,6 +369,9 @@ export const useHomePageController = () => {
         handleRemoveCategoryRequest,
         handleRemoveCategoryConfirm,
         handleAddKeywords,
+        handleAddKeywordDetailsRequest,
+        handleEditKeywordRequest,
+        handleKeywordDetailsConfirm,
         handleCopyKeyword,
         handleViewCollection,
         handleRemoveKeywordRequest,

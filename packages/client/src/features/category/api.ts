@@ -15,6 +15,9 @@ export function getCategories() {
                 keywords {
                     id
                     name
+                    meaning
+                    effect
+                    note
                     image {
                         id
                         url

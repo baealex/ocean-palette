@@ -39,6 +39,9 @@ model Category {
 model Keyword {
     id         Int                 @id @default(autoincrement())
     name       String              @unique
+    meaning    String              @default("")
+    effect     String              @default("")
+    note       String              @default("")
     createdAt  DateTime            @default(now())
     imageId    Int?
     image      Image?              @relation(fields: [imageId], references: [id])

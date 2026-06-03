@@ -6,6 +6,9 @@ export interface KeywordToCategory {
 export interface Keyword {
     id: number;
     name: string;
+    meaning?: string;
+    effect?: string;
+    note?: string;
     image?: Image;
     categories?: KeywordToCategory[];
 }

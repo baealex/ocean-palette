@@ -1,6 +1,6 @@
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { Card } from '~/components/ui/Card';
 import { cn } from '~/components/ui/cn';
@@ -15,7 +15,12 @@ import {
     HoverCardContent,
     HoverCardTrigger,
 } from '~/components/ui/HoverCard';
-import { MoreIcon } from '~/icons';
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from '~/components/ui/Popover';
+import { DraftIcon, MoreIcon } from '~/icons';
 import type { Keyword } from '~/models/types';
 
 import { makeKeywordSortableId } from './dnd-ids';
@@ -26,6 +31,7 @@ interface SortableKeywordItemProps {
     disabled?: boolean;
     onCopyKeyword: (keywordName: string) => void;
     onViewCollection: (keywordName: string) => void;
+    onEditKeyword: (keyword: Keyword) => void;
     onRemoveKeyword: (keywordId: number) => void;
     onAddSampleImage: (keywordId: number) => void;
     onRemoveSampleImage: (keywordId: number) => void;
@@ -37,11 +43,13 @@ export const SortableKeywordItem = ({
     disabled = false,
     onCopyKeyword,
     onViewCollection,
+    onEditKeyword,
     onRemoveKeyword,
     onAddSampleImage,
     onRemoveSampleImage,
 }: SortableKeywordItemProps) => {
     const wasDraggingRef = useRef(false);
+    const [detailsOpen, setDetailsOpen] = useState(false);
 
     const sortableId = makeKeywordSortableId(categoryId, keyword.id);
     const {
@@ -61,6 +69,14 @@ export const SortableKeywordItem = ({
         transform: CSS.Translate.toString(transform),
         transition,
     };
+    const keywordDetails = [
+        { label: 'Meaning', value: keyword.meaning?.trim() },
+        { label: 'Effect', value: keyword.effect?.trim() },
+        { label: 'Note', value: keyword.note?.trim() },
+    ].filter((detail): detail is { label: string; value: string } =>
+        Boolean(detail.value),
+    );
+    const hasKeywordDetails = keywordDetails.length > 0;
 
     useEffect(() => {
         if (isDragging) {
@@ -129,6 +145,61 @@ export const SortableKeywordItem = ({
                     keywordButton
                 )}
 
+                {hasKeywordDetails ? (
+                    <Popover
+                        open={detailsOpen}
+                        onOpenChange={setDetailsOpen}
+                        modal={false}
+                    >
+                        <PopoverTrigger asChild>
+                            <button
+                                type="button"
+                                className="ui-focus-ring inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-token-sm text-brand-600 transition-colors hover:bg-surface-base hover:text-brand-700"
+                                aria-label={`${keyword.name} details`}
+                                aria-haspopup="dialog"
+                                aria-expanded={detailsOpen}
+                                disabled={disabled}
+                            >
+                                <DraftIcon width={12} height={12} aria-hidden />
+                            </button>
+                        </PopoverTrigger>
+                        <PopoverContent
+                            align="start"
+                            sideOffset={6}
+                            collisionPadding={8}
+                            className="w-64 p-3"
+                        >
+                            <p className="truncate text-xs font-semibold text-ink">
+                                {keyword.name}
+                            </p>
+                            <dl className="mt-2 space-y-2">
+                                {keywordDetails.map((detail) => (
+                                    <div key={detail.label} className="min-w-0">
+                                        <dt className="text-[10px] font-semibold uppercase text-ink-subtle">
+                                            {detail.label}
+                                        </dt>
+                                        <dd className="mt-0.5 max-h-20 overflow-auto whitespace-pre-wrap break-words text-xs leading-snug text-ink-muted">
+                                            {detail.value}
+                                        </dd>
+                                    </div>
+                                ))}
+                            </dl>
+                            <div className="mt-3 border-t border-line/60 pt-2">
+                                <button
+                                    type="button"
+                                    className="ui-focus-ring rounded-token-sm px-2 py-1 text-xs font-semibold text-brand-700 transition-colors hover:bg-brand-50"
+                                    onClick={() => {
+                                        setDetailsOpen(false);
+                                        onEditKeyword(keyword);
+                                    }}
+                                >
+                                    Edit keyword
+                                </button>
+                            </div>
+                        </PopoverContent>
+                    </Popover>
+                ) : null}
+
                 <div className="relative shrink-0">
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
@@ -155,6 +226,13 @@ export const SortableKeywordItem = ({
                                 }}
                             >
                                 View Collection
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                                onSelect={() => {
+                                    onEditKeyword(keyword);
+                                }}
+                            >
+                                Edit keyword
                             </DropdownMenuItem>
                             {keyword.image ? (
                                 <DropdownMenuItem
