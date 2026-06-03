@@ -29,6 +29,17 @@ docker run \
 
 Open `http://localhost:7768` and start organizing.
 
+#### Docker Data and Updates
+
+- `/data` stores the SQLite database. `/assets` stores image/static assets.
+  Keep both paths mounted to host directories to preserve data across container
+  replacements.
+- New Docker releases are published only as exact version tags. The `latest`
+  tag is not moved, so existing `latest` users do not receive updates from
+  `docker pull`.
+- To update, back up `./data` and `./assets`, read the GitHub Release notes,
+  change the image tag to the target version, and restart the container.
+
 ### Node.js
 
 ```bash
