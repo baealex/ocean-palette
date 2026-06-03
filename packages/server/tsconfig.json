@@ -8,14 +8,11 @@
         "baseUrl": "./src",
         "target": "ES2022",
         "ignoreDeprecations": "6.0",
-        "types": ["node", "jest"],
+        "types": ["node"],
         "paths": {
             "~/*": ["./*"]
         }
     },
     "include": ["src/**/*"],
-    "exclude": ["scripts/**/*", "src/**/*.test.ts"],
-    "ts-node": {
-        "require": ["tsconfig-paths/register"]
-    }
+    "exclude": ["scripts/**/*", "src/**/*.test.ts"]
 }

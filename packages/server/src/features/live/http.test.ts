@@ -1,4 +1,5 @@
 import type { Request, Response } from 'express';
+import type { Mock } from 'vitest';
 
 import { liveImagesService } from '~/features/live';
 import {
@@ -10,33 +11,33 @@ import {
     updateLiveConfig,
 } from './http';
 
-jest.mock('~/features/live', () => ({
+vi.mock('~/features/live', () => ({
     errorMessage: (error: unknown) =>
         error instanceof Error ? error.message : String(error),
     hasErrorCode: () => false,
     liveImagesService: {
-        getConfig: jest.fn(),
-        getStatus: jest.fn(),
-        updateConfig: jest.fn(),
-        listImages: jest.fn(),
-        getPrompt: jest.fn(),
-        getMetadata: jest.fn(),
-        deleteImage: jest.fn(),
-        syncNow: jest.fn(),
+        getConfig: vi.fn(),
+        getStatus: vi.fn(),
+        updateConfig: vi.fn(),
+        listImages: vi.fn(),
+        getPrompt: vi.fn(),
+        getMetadata: vi.fn(),
+        deleteImage: vi.fn(),
+        syncNow: vi.fn(),
     },
 }));
 
 type MockResponse = Response & {
-    status: jest.Mock;
-    json: jest.Mock;
-    end: jest.Mock;
+    status: Mock;
+    json: Mock;
+    end: Mock;
 };
 
 function createMockResponse(): MockResponse {
     const response = {} as MockResponse;
-    response.status = jest.fn().mockReturnValue(response);
-    response.json = jest.fn().mockReturnValue(response);
-    response.end = jest.fn().mockReturnValue(response);
+    response.status = vi.fn().mockReturnValue(response);
+    response.json = vi.fn().mockReturnValue(response);
+    response.end = vi.fn().mockReturnValue(response);
     return response;
 }
 
@@ -58,13 +59,13 @@ function createMockRequest({
 
 describe('live controllers business logic', () => {
     const mockedService = liveImagesService as unknown as {
-        getStatus: jest.Mock;
-        updateConfig: jest.Mock;
-        listImages: jest.Mock;
-        getPrompt: jest.Mock;
-        getMetadata: jest.Mock;
-        deleteImage: jest.Mock;
-        syncNow: jest.Mock;
+        getStatus: Mock;
+        updateConfig: Mock;
+        listImages: Mock;
+        getPrompt: Mock;
+        getMetadata: Mock;
+        deleteImage: Mock;
+        syncNow: Mock;
     };
 
     beforeEach(() => {

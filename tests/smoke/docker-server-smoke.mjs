@@ -189,6 +189,47 @@ async function assertReadEndpoint(baseUrl) {
     console.log('[smoke:docker] GET /api/home passed');
 }
 
+function assertStorageContract() {
+    const dataTarget = run({
+        command: 'docker',
+        commandArgs: [
+            'exec',
+            containerId,
+            'readlink',
+            '/app/packages/server/prisma/data',
+        ],
+    });
+    const assetsTarget = run({
+        command: 'docker',
+        commandArgs: [
+            'exec',
+            containerId,
+            'readlink',
+            '/app/packages/server/public/assets',
+        ],
+    });
+
+    assert(
+        dataTarget === '/data',
+        `Expected prisma/data to link to /data, got ${dataTarget}`,
+    );
+    assert(
+        assetsTarget === '/assets',
+        `Expected public/assets to link to /assets, got ${assetsTarget}`,
+    );
+
+    run({
+        command: 'docker',
+        commandArgs: ['exec', containerId, 'test', '-f', '/data/db.sqlite3'],
+    });
+    run({
+        command: 'docker',
+        commandArgs: ['exec', containerId, 'test', '-d', '/assets/images'],
+    });
+
+    console.log('[smoke:docker] storage contract passed');
+}
+
 async function collectLogs() {
     if (!containerId) {
         return;
@@ -269,6 +310,7 @@ async function main() {
     await assertAppShell(baseUrl);
     await assertGraphqlRead(baseUrl);
     await assertReadEndpoint(baseUrl);
+    assertStorageContract();
 
     console.log('[smoke:docker] Docker smoke passed');
 }

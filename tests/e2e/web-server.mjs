@@ -42,7 +42,7 @@ runPnpm({
 
 const server = childProcess.spawn(
     pnpmCommand,
-    ['exec', 'ts-node', 'script/_start.ts'],
+    ['exec', 'tsx', 'script/_start.ts'],
     {
         cwd: serverRoot,
         env: {

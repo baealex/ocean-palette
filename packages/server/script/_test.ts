@@ -8,7 +8,7 @@ const main = async () => {
     try {
         await removeDatabase(databaseUrl);
         await createDatabase();
-        childProcess.execSync('jest --coverage --runInBand', {
+        childProcess.execSync('vitest run', {
             env: {
                 ...process.env,
                 DATABASE_URL: databaseUrl,
