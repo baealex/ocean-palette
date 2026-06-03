@@ -18,10 +18,13 @@ export const HomePage = () => {
         removeCategoryTarget,
         removeKeywordTarget,
         removeKeywordName,
+        keywordDetailsTarget,
+        keywordDetailsCategory,
         setCategoryName,
         setRenameCategoryTarget,
         setRemoveCategoryTargetId,
         setRemoveKeywordTarget,
+        setKeywordDetailsTarget,
         handleCreateCategory,
         handleKeywordDragEnd,
         handleCopyAllKeywords,
@@ -30,6 +33,9 @@ export const HomePage = () => {
         handleRemoveCategoryRequest,
         handleRemoveCategoryConfirm,
         handleAddKeywords,
+        handleAddKeywordDetailsRequest,
+        handleEditKeywordRequest,
+        handleKeywordDetailsConfirm,
         handleCopyKeyword,
         handleViewCollection,
         handleRemoveKeywordRequest,
@@ -96,8 +102,10 @@ export const HomePage = () => {
                 onRenameCategory={handleRenameCategoryRequest}
                 onRemoveCategory={handleRemoveCategoryRequest}
                 onAddKeywords={handleAddKeywords}
+                onAddKeywordDetails={handleAddKeywordDetailsRequest}
                 onCopyKeyword={handleCopyKeyword}
                 onViewCollection={handleViewCollection}
+                onEditKeyword={handleEditKeywordRequest}
                 onRemoveKeyword={handleRemoveKeywordRequest}
                 onAddKeywordSampleImage={handleAddKeywordSampleImageRequest}
                 onRemoveKeywordSampleImage={handleRemoveKeywordSampleImage}
@@ -114,6 +122,9 @@ export const HomePage = () => {
                 removeCategoryTarget={removeCategoryTarget}
                 removeKeywordTarget={removeKeywordTarget}
                 removeKeywordName={removeKeywordName}
+                keywordDetailsTarget={keywordDetailsTarget}
+                keywordDetailsCategory={keywordDetailsCategory}
+                saving={saving}
                 onRenameCategoryConfirm={handleRenameCategoryConfirm}
                 onCloseRenameDialog={() => {
                     setRenameCategoryTarget(null);
@@ -125,6 +136,10 @@ export const HomePage = () => {
                 onRemoveKeywordConfirm={handleRemoveKeywordConfirm}
                 onCloseRemoveKeywordDialog={() => {
                     setRemoveKeywordTarget(null);
+                }}
+                onKeywordDetailsConfirm={handleKeywordDetailsConfirm}
+                onCloseKeywordDetailsDialog={() => {
+                    setKeywordDetailsTarget(null);
                 }}
             />
         </PageFrame>

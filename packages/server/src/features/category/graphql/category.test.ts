@@ -91,6 +91,9 @@ describe('Category Schema', () => {
                 keywords {
                     id
                     name
+                    meaning
+                    effect
+                    note
                     categories {
                         id
                         order
@@ -114,6 +117,15 @@ describe('Category Schema', () => {
         });
 
         expect(res.body.data.allCategories).toHaveLength(2);
+        expect(res.body.data.allCategories[0].keywords[0]).toHaveProperty(
+            'meaning',
+        );
+        expect(res.body.data.allCategories[0].keywords[0]).toHaveProperty(
+            'effect',
+        );
+        expect(res.body.data.allCategories[0].keywords[0]).toHaveProperty(
+            'note',
+        );
     });
 
     it('카테고리를 생성한다.', async () => {

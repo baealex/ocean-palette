@@ -7,6 +7,9 @@ export const keywordType = gql`
     type Keyword {
         id: ID!
         name: String
+        meaning: String
+        effect: String
+        note: String
         image: Image
         createdAt: String!
         updatedAt: String!
@@ -37,7 +40,20 @@ export const keywordQuery = gql`
 
 export const keywordMutation = gql`
     type Mutation {
-        createKeyword(name: String!, categoryId: ID!): Keyword!
+        createKeyword(
+            name: String!
+            categoryId: ID!
+            meaning: String
+            effect: String
+            note: String
+        ): Keyword!
+        updateKeyword(
+            id: ID!
+            name: String!
+            meaning: String
+            effect: String
+            note: String
+        ): Keyword!
         createSampleImage(imageId: ID!, keywordId: ID!): Keyword!
         updateKeywordOrder(categoryId: ID!, keywordId: ID!, order: Int!): Boolean!
         deleteKeyword(categoryId: ID!, keywordId: ID!): Boolean!
@@ -64,6 +80,46 @@ const clampOrderToIndex = (order: number, length: number) => {
     return order - 1;
 };
 
+const normalizeRequiredText = (value: unknown, fieldName: string) => {
+    const text = typeof value === 'string' ? value.trim() : '';
+    if (!text) {
+        throw new Error(`${fieldName} is required`);
+    }
+    return text;
+};
+
+const normalizeOptionalText = (value: unknown) =>
+    typeof value === 'string' ? value.trim() : undefined;
+
+const buildKeywordTextData = ({
+    meaning,
+    effect,
+    note,
+}: Pick<Keyword, 'meaning' | 'effect' | 'note'>) => {
+    const normalized = {
+        meaning: normalizeOptionalText(meaning),
+        effect: normalizeOptionalText(effect),
+        note: normalizeOptionalText(note),
+    };
+
+    return {
+        ...(normalized.meaning !== undefined
+            ? { meaning: normalized.meaning }
+            : {}),
+        ...(normalized.effect !== undefined
+            ? { effect: normalized.effect }
+            : {}),
+        ...(normalized.note !== undefined ? { note: normalized.note } : {}),
+    };
+};
+
+const buildKeywordCreateUpdateData = (
+    textData: ReturnType<typeof buildKeywordTextData>,
+) =>
+    Object.fromEntries(
+        Object.entries(textData).filter(([, value]) => value.length > 0),
+    );
+
 export const keywordResolvers: IResolvers = {
     Query: {
         allKeywords: models.keyword.findMany,
@@ -77,13 +133,25 @@ export const keywordResolvers: IResolvers = {
     Mutation: {
         createKeyword: async (
             _,
-            { name, categoryId }: Keyword & KeywordToCategory,
+            {
+                name,
+                categoryId,
+                meaning,
+                effect,
+                note,
+            }: Keyword & KeywordToCategory,
         ) => {
             categoryId = Number(categoryId);
+            const keywordName = normalizeRequiredText(name, 'Keyword name');
+            const keywordTextData = buildKeywordTextData({
+                meaning,
+                effect,
+                note,
+            });
             return models.$transaction(async (tx) => {
                 const keyword = await tx.keyword.findFirst({
                     where: {
-                        name,
+                        name: keywordName,
                     },
                     select: {
                         id: true,
@@ -119,6 +187,7 @@ export const keywordResolvers: IResolvers = {
                             id: keyword.id,
                         },
                         data: {
+                            ...buildKeywordCreateUpdateData(keywordTextData),
                             categories: {
                                 create: {
                                     order,
@@ -135,7 +204,8 @@ export const keywordResolvers: IResolvers = {
 
                 return tx.keyword.create({
                     data: {
-                        name,
+                        name: keywordName,
+                        ...keywordTextData,
                         categories: {
                             create: {
                                 order,
@@ -148,6 +218,20 @@ export const keywordResolvers: IResolvers = {
                         },
                     },
                 });
+            });
+        },
+        updateKeyword: async (
+            _,
+            { id, name, meaning, effect, note }: Keyword,
+        ) => {
+            return models.keyword.update({
+                where: {
+                    id: Number(id),
+                },
+                data: {
+                    name: normalizeRequiredText(name, 'Keyword name'),
+                    ...buildKeywordTextData({ meaning, effect, note }),
+                },
             });
         },
         createSampleImage: async (

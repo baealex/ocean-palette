@@ -19,18 +19,27 @@ import {
 } from '~/features/home/dnd-ids';
 import { SortableCategoryCard } from '~/features/home/SortableCategoryCard';
 import type { HomeCategory } from '~/features/home/types';
+import type { Keyword } from '~/models/types';
 
 interface HomeCategoryBoardProps {
     categories: HomeCategory[];
     saving: boolean;
-    onReorderCategory: (activeCategoryId: number, overCategoryId: number) => void;
+    onReorderCategory: (
+        activeCategoryId: number,
+        overCategoryId: number,
+    ) => void;
     onKeywordDragEnd: (categoryId: number, event: DragEndEvent) => void;
     onCopyAllKeywords: (category: HomeCategory) => void;
     onRenameCategory: (category: HomeCategory) => void;
     onRemoveCategory: (categoryId: number) => void;
-    onAddKeywords: (categoryId: number, rawKeywords: string) => Promise<boolean>;
+    onAddKeywords: (
+        categoryId: number,
+        rawKeywords: string,
+    ) => Promise<boolean>;
+    onAddKeywordDetails: (categoryId: number) => void;
     onCopyKeyword: (keywordName: string) => void;
     onViewCollection: (keywordName: string) => void;
+    onEditKeyword: (categoryId: number, keyword: Keyword) => void;
     onRemoveKeyword: (categoryId: number, keywordId: number) => void;
     onAddKeywordSampleImage: (keywordId: number) => void;
     onRemoveKeywordSampleImage: (keywordId: number) => void;
@@ -45,8 +54,10 @@ export const HomeCategoryBoard = ({
     onRenameCategory,
     onRemoveCategory,
     onAddKeywords,
+    onAddKeywordDetails,
     onCopyKeyword,
     onViewCollection,
+    onEditKeyword,
     onRemoveKeyword,
     onAddKeywordSampleImage,
     onRemoveKeywordSampleImage,
@@ -98,11 +109,15 @@ export const HomeCategoryBoard = ({
                             onRenameCategory={onRenameCategory}
                             onRemoveCategory={onRemoveCategory}
                             onAddKeywords={onAddKeywords}
+                            onAddKeywordDetails={onAddKeywordDetails}
                             onCopyKeyword={onCopyKeyword}
                             onViewCollection={onViewCollection}
+                            onEditKeyword={onEditKeyword}
                             onRemoveKeyword={onRemoveKeyword}
                             onAddKeywordSampleImage={onAddKeywordSampleImage}
-                            onRemoveKeywordSampleImage={onRemoveKeywordSampleImage}
+                            onRemoveKeywordSampleImage={
+                                onRemoveKeywordSampleImage
+                            }
                         />
                     ))}
                 </div>

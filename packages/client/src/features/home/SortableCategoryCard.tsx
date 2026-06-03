@@ -28,6 +28,7 @@ import {
 import { IconButton } from '~/components/ui/IconButton';
 import { Input } from '~/components/ui/Input';
 import { DragHandleIcon, MoreIcon } from '~/icons';
+import type { Keyword } from '~/models/types';
 import { makeCategorySortableId, makeKeywordSortableId } from './dnd-ids';
 import { SortableKeywordItem } from './SortableKeywordItem';
 import type { HomeCategory } from './types';
@@ -43,8 +44,10 @@ interface SortableCategoryCardProps {
         categoryId: number,
         rawKeywords: string,
     ) => Promise<boolean>;
+    onAddKeywordDetails: (categoryId: number) => void;
     onCopyKeyword: (keywordName: string) => void;
     onViewCollection: (keywordName: string) => void;
+    onEditKeyword: (categoryId: number, keyword: Keyword) => void;
     onRemoveKeyword: (categoryId: number, keywordId: number) => void;
     onAddKeywordSampleImage: (keywordId: number) => void;
     onRemoveKeywordSampleImage: (keywordId: number) => void;
@@ -58,8 +61,10 @@ export const SortableCategoryCard = ({
     onRenameCategory,
     onRemoveCategory,
     onAddKeywords,
+    onAddKeywordDetails,
     onCopyKeyword,
     onViewCollection,
+    onEditKeyword,
     onRemoveKeyword,
     onAddKeywordSampleImage,
     onRemoveKeywordSampleImage,
@@ -219,6 +224,9 @@ export const SortableCategoryCard = ({
                                         disabled={saving}
                                         onCopyKeyword={onCopyKeyword}
                                         onViewCollection={onViewCollection}
+                                        onEditKeyword={(keyword) =>
+                                            onEditKeyword(category.id, keyword)
+                                        }
                                         onRemoveKeyword={(keywordId) =>
                                             onRemoveKeyword(
                                                 category.id,
@@ -244,7 +252,7 @@ export const SortableCategoryCard = ({
 
                 <form
                     onSubmit={handleAddKeywordSubmit}
-                    className="mt-3 flex gap-2 border-t border-line/70 pt-3"
+                    className="mt-3 flex flex-col gap-2 border-t border-line/70 pt-3 sm:flex-row"
                 >
                     <Input
                         value={keywordInput}
@@ -257,15 +265,27 @@ export const SortableCategoryCard = ({
                         className="min-w-0 flex-1 text-xs"
                         disabled={saving}
                     />
-                    <Button
-                        type="submit"
-                        variant="control"
-                        size="control"
-                        className="shrink-0"
-                        disabled={saving}
-                    >
-                        Add
-                    </Button>
+                    <div className="flex shrink-0 gap-2">
+                        <Button
+                            type="submit"
+                            variant="control"
+                            size="control"
+                            className="flex-1 sm:flex-none"
+                            disabled={saving}
+                        >
+                            Add
+                        </Button>
+                        <Button
+                            type="button"
+                            variant="secondary"
+                            size="control"
+                            className="flex-1 sm:flex-none"
+                            disabled={saving}
+                            onClick={() => onAddKeywordDetails(category.id)}
+                        >
+                            Add details
+                        </Button>
+                    </div>
                 </form>
             </div>
         </Card>

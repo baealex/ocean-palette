@@ -1,10 +1,19 @@
 import { ConfirmDialog } from '~/components/ui/ConfirmDialog';
 import { PromptDialog } from '~/components/ui/PromptDialog';
+import type { KeywordFieldsInput } from '~/features/keyword/api';
 import type { HomeCategory } from '~/features/home/types';
+import type { Keyword } from '~/models/types';
+
+import { KeywordFieldsDialog } from './KeywordFieldsDialog';
 
 interface KeywordRemoveTarget {
     categoryId: number;
     keywordId: number;
+}
+
+interface KeywordDetailsTarget {
+    categoryId: number;
+    keyword: Keyword | null;
 }
 
 interface HomePageDialogsProps {
@@ -13,12 +22,17 @@ interface HomePageDialogsProps {
     removeCategoryTarget: HomeCategory | null;
     removeKeywordTarget: KeywordRemoveTarget | null;
     removeKeywordName: string | null;
+    keywordDetailsTarget: KeywordDetailsTarget | null;
+    keywordDetailsCategory: HomeCategory | null;
+    saving: boolean;
     onRenameCategoryConfirm: (nextName: string) => void;
     onCloseRenameDialog: () => void;
     onRemoveCategoryConfirm: () => void;
     onCloseRemoveCategoryDialog: () => void;
     onRemoveKeywordConfirm: () => void;
     onCloseRemoveKeywordDialog: () => void;
+    onKeywordDetailsConfirm: (values: KeywordFieldsInput) => void;
+    onCloseKeywordDetailsDialog: () => void;
 }
 
 export const HomePageDialogs = ({
@@ -27,15 +41,33 @@ export const HomePageDialogs = ({
     removeCategoryTarget,
     removeKeywordTarget,
     removeKeywordName,
+    keywordDetailsTarget,
+    keywordDetailsCategory,
+    saving,
     onRenameCategoryConfirm,
     onCloseRenameDialog,
     onRemoveCategoryConfirm,
     onCloseRemoveCategoryDialog,
     onRemoveKeywordConfirm,
     onCloseRemoveKeywordDialog,
+    onKeywordDetailsConfirm,
+    onCloseKeywordDetailsDialog,
 }: HomePageDialogsProps) => {
     return (
         <>
+            <KeywordFieldsDialog
+                open={keywordDetailsTarget !== null}
+                categoryName={keywordDetailsCategory?.name}
+                keyword={keywordDetailsTarget?.keyword ?? null}
+                submitting={saving}
+                onSubmit={onKeywordDetailsConfirm}
+                onOpenChange={(open) => {
+                    if (!open) {
+                        onCloseKeywordDetailsDialog();
+                    }
+                }}
+            />
+
             <PromptDialog
                 open={Boolean(renameCategoryTarget)}
                 title="Rename category"
