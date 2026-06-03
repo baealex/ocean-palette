@@ -1,12 +1,13 @@
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
+import type { Mock } from 'vitest';
 
 import { LiveImagesImageRepository } from './live-images.image-repository';
 import { ingestSourceToLibrary } from './live-images.ingest';
 
 interface MockImageRepository {
-    findImageByHash: jest.Mock;
+    findImageByHash: Mock;
 }
 
 async function collectFiles(rootPath: string): Promise<string[]> {
@@ -62,7 +63,7 @@ describe('ingestSourceToLibrary rollback', () => {
 
     it('cleans copied destination file when library registration fails', async () => {
         const imageRepository: MockImageRepository = {
-            findImageByHash: jest.fn().mockResolvedValue(null),
+            findImageByHash: vi.fn().mockResolvedValue(null),
         };
 
         const sourceStats = await fs.promises.stat(sourcePath);
@@ -95,7 +96,7 @@ describe('ingestSourceToLibrary rollback', () => {
 
     it('restores source file in move mode when library registration fails', async () => {
         const imageRepository: MockImageRepository = {
-            findImageByHash: jest.fn().mockResolvedValue(null),
+            findImageByHash: vi.fn().mockResolvedValue(null),
         };
 
         const sourceStats = await fs.promises.stat(sourcePath);

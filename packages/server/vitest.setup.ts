@@ -9,8 +9,8 @@ const mockPrisma = new PrismaClient({
     adapter,
 });
 
-jest.mock('~/models', () => {
-    const actual = jest.requireActual('~/models') as Record<string, unknown>;
+vi.doMock('~/models', async () => {
+    const actual = await vi.importActual<Record<string, unknown>>('~/models');
     return {
         ...actual,
         models: mockPrisma,

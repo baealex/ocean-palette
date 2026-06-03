@@ -3,6 +3,7 @@ import os from 'os';
 import path from 'path';
 import zlib from 'zlib';
 import exifr from 'exifr';
+import type { Mock } from 'vitest';
 
 import {
     readImageMetadata,
@@ -10,10 +11,10 @@ import {
     readImagePrompt,
 } from './prompt-reader';
 
-jest.mock('exifr', () => ({
+vi.mock('exifr', () => ({
     __esModule: true,
     default: {
-        parse: jest.fn(),
+        parse: vi.fn(),
     },
 }));
 
@@ -70,7 +71,7 @@ async function writeTempPng(
 }
 
 describe('readImagePrompt business logic', () => {
-    const mockedParse = exifr.parse as unknown as jest.Mock;
+    const mockedParse = exifr.parse as unknown as Mock;
     const tempDirPaths: string[] = [];
 
     afterEach(async () => {

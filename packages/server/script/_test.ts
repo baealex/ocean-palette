@@ -1,8 +1,5 @@
 import childProcess from 'child_process';
-import {
-    createDatabase,
-    removeDatabase,
-} from './shared';
+import { createDatabase, removeDatabase } from './shared';
 
 const main = async () => {
     const fileName = 'test.sqlite3';
@@ -10,7 +7,7 @@ const main = async () => {
     try {
         await removeDatabase(fileName);
         await createDatabase();
-        childProcess.execSync('jest --coverage --runInBand', {
+        childProcess.execSync('vitest run', {
             stdio: 'inherit',
         });
     } catch (e) {
