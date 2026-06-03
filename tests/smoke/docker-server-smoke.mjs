@@ -8,6 +8,8 @@ import { setTimeout as delay } from 'node:timers/promises';
 const DEFAULT_IMAGE = 'ocean-palette:docker-smoke';
 const CONTAINER_PORT = 7768;
 const READINESS_TIMEOUT_MS = 90_000;
+const TINY_PNG_DATA_URL =
+    'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/p9sAAAAASUVORK5CYII=';
 
 const args = new Map();
 for (let index = 2; index < process.argv.length; index += 1) {
@@ -189,33 +191,78 @@ async function assertReadEndpoint(baseUrl) {
     console.log('[smoke:docker] GET /api/home passed');
 }
 
-function assertStorageContract() {
-    const dataTarget = run({
-        command: 'docker',
-        commandArgs: [
-            'exec',
-            containerId,
-            'readlink',
-            '/app/packages/server/prisma/data',
-        ],
-    });
-    const assetsTarget = run({
-        command: 'docker',
-        commandArgs: [
-            'exec',
-            containerId,
-            'readlink',
-            '/app/packages/server/public/assets',
-        ],
+async function assertImageUploadStorage(baseUrl) {
+    const { response, text } = await fetchText(`${baseUrl}/api/image`, {
+        method: 'POST',
+        headers: {
+            'content-type': 'application/json',
+        },
+        body: JSON.stringify({
+            image: TINY_PNG_DATA_URL,
+        }),
     });
 
     assert(
-        dataTarget === '/data',
-        `Expected prisma/data to link to /data, got ${dataTarget}`,
+        response.status === 200,
+        `POST /api/image returned ${response.status}: ${text}`,
+    );
+
+    let payload;
+    try {
+        payload = JSON.parse(text);
+    } catch (error) {
+        throw new Error(
+            `POST /api/image did not return JSON: ${error instanceof Error ? error.message : String(error)}`,
+        );
+    }
+
+    assert(
+        typeof payload.url === 'string' &&
+            payload.url.startsWith('/assets/images/'),
+        `POST /api/image returned unexpected url: ${payload.url}`,
+    );
+
+    const assetRelativePath = payload.url.slice('/assets/images/'.length);
+
+    run({
+        command: 'docker',
+        commandArgs: [
+            'exec',
+            containerId,
+            'test',
+            '-f',
+            `/assets/images/${assetRelativePath}`,
+        ],
+    });
+
+    const { response: assetResponse } = await fetchText(
+        `${baseUrl}${payload.url}`,
     );
     assert(
-        assetsTarget === '/assets',
-        `Expected public/assets to link to /assets, got ${assetsTarget}`,
+        assetResponse.status === 200,
+        `GET ${payload.url} returned ${assetResponse.status}`,
+    );
+
+    console.log('[smoke:docker] image upload storage passed');
+}
+
+function assertStorageContract() {
+    const databaseUrl = run({
+        command: 'docker',
+        commandArgs: ['exec', containerId, 'printenv', 'DATABASE_URL'],
+    });
+    const imageDir = run({
+        command: 'docker',
+        commandArgs: ['exec', containerId, 'printenv', 'OCEAN_PALETTE_IMAGE_DIR'],
+    });
+
+    assert(
+        databaseUrl === 'file:/data/db.sqlite3',
+        `Expected DATABASE_URL to be file:/data/db.sqlite3, got ${databaseUrl}`,
+    );
+    assert(
+        imageDir === '/assets/images',
+        `Expected OCEAN_PALETTE_IMAGE_DIR to be /assets/images, got ${imageDir}`,
     );
 
     run({
@@ -225,6 +272,28 @@ function assertStorageContract() {
     run({
         command: 'docker',
         commandArgs: ['exec', containerId, 'test', '-d', '/assets/images'],
+    });
+    run({
+        command: 'docker',
+        commandArgs: [
+            'exec',
+            containerId,
+            'test',
+            '!',
+            '-e',
+            '/app/packages/server/prisma/data',
+        ],
+    });
+    run({
+        command: 'docker',
+        commandArgs: [
+            'exec',
+            containerId,
+            'test',
+            '!',
+            '-e',
+            '/app/packages/server/public/assets',
+        ],
     });
 
     console.log('[smoke:docker] storage contract passed');
@@ -311,6 +380,7 @@ async function main() {
     await assertGraphqlRead(baseUrl);
     await assertReadEndpoint(baseUrl);
     assertStorageContract();
+    await assertImageUploadStorage(baseUrl);
 
     console.log('[smoke:docker] Docker smoke passed');
 }

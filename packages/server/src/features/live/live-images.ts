@@ -9,6 +9,7 @@ import {
     type ParsedImageMeta,
     readImageMetadata,
 } from '~/features/image/prompt-reader';
+import { resolveImageBaseDirPath } from '~/features/image/image-storage';
 import { logger } from '~/modules/logger';
 import { LiveImagesConfigRepository } from './live-images.config-repository';
 import { errorMessage, hasErrorCode } from './live-images.errors';
@@ -77,7 +78,7 @@ class LiveImagesService {
         updatedAt: Date.now(),
     };
 
-    private readonly imageBaseDirPath = path.resolve('public/assets/images');
+    private readonly imageBaseDirPath = resolveImageBaseDirPath();
     private watchDirPath = this.config.watchDir;
     private ingestMode: IngestMode = this.config.ingestMode;
     private readonly libraryManager = new LiveImagesLibraryManager({

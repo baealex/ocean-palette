@@ -33,7 +33,9 @@ Updated: 2026-04-26
 - Server start script includes `prisma migrate deploy`.
 - Prisma uses `prisma.config.ts` for datasource URL resolution.
 - Server runtime Prisma client uses the `@prisma/adapter-better-sqlite3` driver adapter.
-- SQLite database URL remains `file:./prisma/data/db.sqlite3`.
+- Source-run SQLite database URL remains `file:./prisma/data/db.sqlite3`.
+- Docker sets `DATABASE_URL=file:/data/db.sqlite3` and
+  `OCEAN_PALETTE_IMAGE_DIR=/assets/images` directly, without symlinks.
 - Server domain code lives under `packages/server/src/features/*`; root `schema`,
   `routes`, and `app.ts` should stay composition-only.
 - Client Radix/Sonner usage should go through `@baejino/react-ui` wrappers when

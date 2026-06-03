@@ -16,29 +16,24 @@ Manage prompts like a color palette, browse your generated images, extract metad
 
 ### Docker (Recommended)
 
-Choose an exact version from the GitHub Releases page. Do not rely on the
-floating `latest` tag for installs or upgrades.
-
 ```bash
 docker run \
     -v ./data:/data \
     -v ./assets:/assets \
     -p 7768:7768 \
-    baealex/ocean-palette:<version>
+    baealex/ocean-palette
 ```
 
 Open `http://localhost:7768` and start organizing.
 
-#### Docker Data and Updates
+#### Docker Data and Environment
 
-- `/data` stores the SQLite database. `/assets` stores image/static assets.
-  Keep both paths mounted to host directories to preserve data across container
-  replacements.
-- New Docker releases are published only as exact version tags. The `latest`
-  tag is not moved, so existing `latest` users do not receive updates from
-  `docker pull`.
-- To update, back up `./data` and `./assets`, read the GitHub Release notes,
-  change the image tag to the target version, and restart the container.
+- `/data/db.sqlite3` stores the SQLite database. `/assets/images` stores image
+  files served from `/assets/images/*`.
+- The Docker image sets `DATABASE_URL=file:/data/db.sqlite3` and
+  `OCEAN_PALETTE_IMAGE_DIR=/assets/images`.
+- Keep `./data:/data` and `./assets:/assets` mounted to preserve data across
+  container replacements.
 
 ### Node.js
 

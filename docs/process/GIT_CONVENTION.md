@@ -67,18 +67,17 @@ Use the template headings exactly:
 1. CI checks (`lint`, `type-check`, `build`) pass
 2. Local validation for the changed scope is complete
 3. Any docs/scripts/env changes are documented in PR body
-4. Release-impacting changes include version/tag plan
+4. Release-impacting changes include deployment plan
 
 ### 3-5. Release-Impact PR
 Changes in the files below are treated as release-impacting.
-1. `packages/cli/package.json`
-2. `scripts/release/prepublish.mjs`, `scripts/release/bump-version.mjs`
-3. `.github/workflows/RELEASE.yml`
-4. `Dockerfile`, `docker-compose.yml`
+1. `.github/workflows/BUILD_IMAGE.yml`
+2. `packages/server/Dockerfile`, `docker-compose.yml`
+3. `docs/process/DEPLOYMENT_RELEASE_STRATEGY.md`
 
 Release-impact PRs must include:
-1. expected release version
-2. tag plan (`vX.Y.Z`)
+1. expected Docker release channel (`latest` under the current policy)
+2. deployment trigger plan (`BUILD IMAGE` manual workflow)
 3. verification result (`pnpm test:e2e` app/server smoke pass, or the reason it could not be run locally)
 
 ### 3-6. Merge Policy
