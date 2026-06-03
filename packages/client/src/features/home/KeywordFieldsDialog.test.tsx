@@ -27,6 +27,9 @@ describe('KeywordFieldsDialog', () => {
         fireEvent.change(screen.getByLabelText('Meaning'), {
             target: { value: '영화 같은 조명' },
         });
+        fireEvent.change(screen.getByLabelText('Aliases'), {
+            target: { value: 'movie light, dramatic light' },
+        });
         fireEvent.change(screen.getByLabelText('Effect'), {
             target: { value: 'Adds dramatic contrast' },
         });
@@ -40,6 +43,7 @@ describe('KeywordFieldsDialog', () => {
             meaning: '영화 같은 조명',
             effect: 'Adds dramatic contrast',
             note: 'Use with portraits',
+            aliases: ['movie light', 'dramatic light'],
         });
     });
 
@@ -53,6 +57,13 @@ describe('KeywordFieldsDialog', () => {
                     meaning: '부드러운 빛',
                     effect: 'Softens shadows',
                     note: 'Good for skin texture',
+                    aliases: [
+                        {
+                            id: 11,
+                            name: 'gentle light',
+                            keywordId: 7,
+                        },
+                    ],
                 }}
                 onSubmit={vi.fn()}
                 onOpenChange={vi.fn()}
@@ -65,5 +76,6 @@ describe('KeywordFieldsDialog', () => {
         expect(
             screen.getByDisplayValue('Good for skin texture'),
         ).toBeInTheDocument();
+        expect(screen.getByDisplayValue('gentle light')).toBeInTheDocument();
     });
 });

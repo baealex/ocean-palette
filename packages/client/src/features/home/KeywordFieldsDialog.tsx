@@ -24,12 +24,29 @@ interface KeywordFieldsDialogProps {
     onOpenChange: (open: boolean) => void;
 }
 
-const createInitialValues = (keyword: Keyword | null): KeywordFieldsInput => ({
+interface KeywordFieldsFormValues {
+    name: string;
+    meaning: string;
+    effect: string;
+    note: string;
+    aliases: string;
+}
+
+const createInitialValues = (
+    keyword: Keyword | null,
+): KeywordFieldsFormValues => ({
     name: keyword?.name ?? '',
     meaning: keyword?.meaning ?? '',
     effect: keyword?.effect ?? '',
     note: keyword?.note ?? '',
+    aliases: keyword?.aliases?.map((alias) => alias.name).join(', ') ?? '',
 });
+
+const parseAliases = (value: string) =>
+    value
+        .split(',')
+        .map((alias) => alias.trim())
+        .filter((alias) => alias.length > 0);
 
 export const KeywordFieldsDialog = ({
     open,
@@ -39,7 +56,7 @@ export const KeywordFieldsDialog = ({
     onSubmit,
     onOpenChange,
 }: KeywordFieldsDialogProps) => {
-    const [values, setValues] = useState<KeywordFieldsInput>(
+    const [values, setValues] = useState<KeywordFieldsFormValues>(
         createInitialValues(keyword),
     );
 
@@ -50,7 +67,7 @@ export const KeywordFieldsDialog = ({
     }, [keyword, open]);
 
     const setValue =
-        (field: keyof KeywordFieldsInput) =>
+        (field: keyof KeywordFieldsFormValues) =>
         (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
             setValues((prev) => ({
                 ...prev,
@@ -63,7 +80,13 @@ export const KeywordFieldsDialog = ({
         if (!values.name.trim()) {
             return;
         }
-        onSubmit(values);
+        onSubmit({
+            name: values.name,
+            meaning: values.meaning,
+            effect: values.effect,
+            note: values.note,
+            aliases: parseAliases(values.aliases),
+        });
     };
 
     const title = keyword ? 'Edit keyword' : 'Add keyword details';
@@ -100,6 +123,18 @@ export const KeywordFieldsDialog = ({
                                 id="keyword-meaning"
                                 value={values.meaning}
                                 onChange={setValue('meaning')}
+                                disabled={submitting}
+                            />
+                        </Field>
+
+                        <Field>
+                            <FieldLabel htmlFor="keyword-aliases">
+                                Aliases
+                            </FieldLabel>
+                            <Input
+                                id="keyword-aliases"
+                                value={values.aliases}
+                                onChange={setValue('aliases')}
                                 disabled={submitting}
                             />
                         </Field>

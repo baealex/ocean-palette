@@ -25,6 +25,20 @@ describe('SortableKeywordItem', () => {
                             meaning: '영화 같은 조명',
                             effect: 'Adds dramatic contrast',
                             note: 'Use with portraits',
+                            aliases: [
+                                {
+                                    id: 1,
+                                    name: 'dramatic light',
+                                    keywordId: 10,
+                                },
+                            ],
+                            usage: {
+                                keywordId: 10,
+                                totalCount: 3,
+                                promptCount: 2,
+                                negativePromptCount: 1,
+                                aliases: ['dramatic light'],
+                            },
                         }}
                         onCopyKeyword={vi.fn()}
                         onViewCollection={vi.fn()}
@@ -38,6 +52,9 @@ describe('SortableKeywordItem', () => {
         );
 
         expect(screen.getByText('cinematic lighting')).toBeInTheDocument();
+        expect(
+            screen.getByLabelText('cinematic lighting recent usage'),
+        ).toHaveTextContent('3');
         const detailsButton = screen.getByRole('button', {
             name: 'cinematic lighting details',
         });
@@ -55,9 +72,11 @@ describe('SortableKeywordItem', () => {
         expect(screen.getByText('Meaning')).toBeInTheDocument();
         expect(screen.getByText('Effect')).toBeInTheDocument();
         expect(screen.getByText('Note')).toBeInTheDocument();
+        expect(screen.getByText('Aliases')).toBeInTheDocument();
         expect(screen.getByText('영화 같은 조명')).toBeInTheDocument();
         expect(screen.getByText('Adds dramatic contrast')).toBeInTheDocument();
         expect(screen.getByText('Use with portraits')).toBeInTheDocument();
+        expect(screen.getByText('dramatic light')).toBeInTheDocument();
         expect(
             screen.getByRole('button', { name: 'Edit keyword' }),
         ).toBeInTheDocument();

@@ -77,8 +77,12 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
+    await models.keywordAlias.deleteMany();
     await models.keywordToCategory.deleteMany();
     await models.category.deleteMany();
+    await models.collection.deleteMany();
+    await models.imageMeta.deleteMany();
+    await models.image.deleteMany();
     await models.keyword.deleteMany();
 });
 
@@ -137,6 +141,10 @@ describe('Keyword Schema', () => {
                         meaning
                         effect
                         note
+                        aliases {
+                            id
+                            name
+                        }
                         categories {
                             id
                             order
@@ -150,6 +158,7 @@ describe('Keyword Schema', () => {
         expect(response.body.data.allKeywords[0]).toHaveProperty('meaning');
         expect(response.body.data.allKeywords[0]).toHaveProperty('effect');
         expect(response.body.data.allKeywords[0]).toHaveProperty('note');
+        expect(response.body.data.allKeywords[0]).toHaveProperty('aliases');
     });
 
     it('키워드를 생성한다.', async () => {
@@ -196,13 +205,17 @@ describe('Keyword Schema', () => {
                         categoryId: "${allCategories[0].id}",
                         meaning: "부드러운 빛",
                         effect: "Softens shadows around the subject",
-                        note: "Good for portrait prompts"
+                        note: "Good for portrait prompts",
+                        aliases: ["gentle glow", "soft glow"]
                     ) {
                         id
                         name
                         meaning
                         effect
                         note
+                        aliases {
+                            name
+                        }
                     }
                 }
             `,
@@ -214,6 +227,10 @@ describe('Keyword Schema', () => {
             effect: 'Softens shadows around the subject',
             note: 'Good for portrait prompts',
         });
+        expect(response.body.data.createKeyword.aliases).toEqual([
+            { name: 'gentle glow' },
+            { name: 'soft glow' },
+        ]);
     });
 
     it('기존 키워드 상세 필드를 빈 생성 입력으로 덮어쓰지 않는다.', async () => {
@@ -288,13 +305,17 @@ describe('Keyword Schema', () => {
                         name: "Sharp focus",
                         meaning: "또렷한 초점",
                         effect: "Keeps the subject crisp",
-                        note: "Use with product shots"
+                        note: "Use with product shots",
+                        aliases: ["crisp focus", "clear focus"]
                     ) {
                         id
                         name
                         meaning
                         effect
                         note
+                        aliases {
+                            name
+                        }
                     }
                 }
             `,
@@ -305,6 +326,164 @@ describe('Keyword Schema', () => {
             meaning: '또렷한 초점',
             effect: 'Keeps the subject crisp',
             note: 'Use with product shots',
+        });
+        expect(response.body.data.updateKeyword.aliases).toEqual([
+            { name: 'clear focus' },
+            { name: 'crisp focus' },
+        ]);
+    });
+
+    it('키워드 alias를 생성, 수정, 삭제한다.', async () => {
+        const keyword = await models.keyword.create({
+            data: {
+                name: 'Low angle',
+            },
+        });
+
+        const createResponse = await request(app)
+            .post('/graphql')
+            .send({
+                query: `
+                mutation {
+                    createKeywordAlias(keywordId: "${keyword.id}", name: "from below") {
+                        id
+                        name
+                        keywordId
+                    }
+                }
+            `,
+            });
+
+        expect(createResponse.body.data.createKeywordAlias).toMatchObject({
+            name: 'from below',
+            keywordId: keyword.id,
+        });
+
+        const aliasId = createResponse.body.data.createKeywordAlias.id;
+        const updateResponse = await request(app)
+            .post('/graphql')
+            .send({
+                query: `
+                mutation {
+                    updateKeywordAlias(id: "${aliasId}", name: "worm view") {
+                        id
+                        name
+                    }
+                }
+            `,
+            });
+
+        expect(updateResponse.body.data.updateKeywordAlias.name).toBe(
+            'worm view',
+        );
+
+        const deleteResponse = await request(app)
+            .post('/graphql')
+            .send({
+                query: `
+                mutation {
+                    deleteKeywordAlias(id: "${aliasId}")
+                }
+            `,
+            });
+
+        expect(deleteResponse.body.data.deleteKeywordAlias).toBe(true);
+    });
+
+    it('최근 Collection prompt에서 keyword usage를 집계한다.', async () => {
+        const keyword = await models.keyword.create({
+            data: {
+                name: 'Cinematic lighting',
+                aliases: {
+                    create: {
+                        name: 'dramatic light',
+                    },
+                },
+            },
+        });
+        const recentDate = new Date();
+        recentDate.setDate(recentDate.getDate() - 3);
+        const oldDate = new Date();
+        oldDate.setDate(oldDate.getDate() - 45);
+        const recentImage = await models.image.create({
+            data: {
+                url: 'keyword-usage-recent.png',
+                hash: 'keyword-usage-recent',
+                generatedAt: recentDate,
+                meta: {
+                    create: {
+                        model: 'usage-model',
+                        parseVersion: 'test-v1',
+                    },
+                },
+            },
+        });
+        const oldImage = await models.image.create({
+            data: {
+                url: 'keyword-usage-old.png',
+                hash: 'keyword-usage-old',
+                generatedAt: oldDate,
+                meta: {
+                    create: {
+                        model: 'usage-model',
+                        parseVersion: 'test-v1',
+                    },
+                },
+            },
+        });
+
+        await models.collection.createMany({
+            data: [
+                {
+                    imageId: recentImage.id,
+                    title: 'Recent A',
+                    prompt: 'portrait with dramatic light',
+                    negativePrompt: 'low quality',
+                    createdAt: recentDate,
+                },
+                {
+                    imageId: recentImage.id,
+                    title: 'Recent B',
+                    prompt: 'cinematic lighting, detailed face',
+                    negativePrompt: 'dramatic light',
+                    createdAt: recentDate,
+                },
+                {
+                    imageId: oldImage.id,
+                    title: 'Old',
+                    prompt: 'dramatic light',
+                    negativePrompt: '',
+                    createdAt: oldDate,
+                },
+            ],
+        });
+
+        const response = await request(app)
+            .post('/graphql')
+            .send({
+                query: `
+                query {
+                    keywordUsage(model: "usage-model") {
+                        keywordId
+                        totalCount
+                        promptCount
+                        negativePromptCount
+                        aliases
+                    }
+                }
+            `,
+            });
+
+        const targetUsage = response.body.data.keywordUsage.find(
+            (usage: { keywordId: string }) =>
+                Number(usage.keywordId) === keyword.id,
+        );
+
+        expect(targetUsage).toMatchObject({
+            totalCount: 3,
+            promptCount: 2,
+            negativePromptCount: 1,
+            aliases: ['dramatic light'],
         });
     });
 

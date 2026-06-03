@@ -3,6 +3,20 @@ export interface KeywordToCategory {
     order: number;
 }
 
+export interface KeywordAlias {
+    id: number;
+    name: string;
+    keywordId: number;
+}
+
+export interface KeywordUsage {
+    keywordId: number;
+    totalCount: number;
+    promptCount: number;
+    negativePromptCount: number;
+    aliases: string[];
+}
+
 export interface Keyword {
     id: number;
     name: string;
@@ -10,6 +24,8 @@ export interface Keyword {
     effect?: string;
     note?: string;
     image?: Image;
+    aliases?: KeywordAlias[];
+    usage?: KeywordUsage;
     categories?: KeywordToCategory[];
 }
 

@@ -1,7 +1,15 @@
 import { IResolvers } from '@graphql-tools/utils';
 
-import { Keyword, KeywordToCategory, models } from '~/models';
+import {
+    Keyword,
+    KeywordAlias,
+    KeywordToCategory,
+    Prisma,
+    models,
+} from '~/models';
 import { gql } from '~/modules/graphql';
+
+import { calculateKeywordUsage } from '../usage';
 
 export const keywordType = gql`
     type Keyword {
@@ -10,10 +18,33 @@ export const keywordType = gql`
         meaning: String
         effect: String
         note: String
+        aliases: [KeywordAlias!]!
         image: Image
         createdAt: String!
         updatedAt: String!
         categories: [keywordToCategory!]!
+    }
+
+    type KeywordAlias {
+        id: ID!
+        name: String!
+        keywordId: Int!
+        createdAt: String!
+        updatedAt: String!
+    }
+
+    enum KeywordUsagePromptScope {
+        ALL
+        PROMPT
+        NEGATIVE_PROMPT
+    }
+
+    type KeywordUsage {
+        keywordId: ID!
+        totalCount: Int!
+        promptCount: Int!
+        negativePromptCount: Int!
+        aliases: [String!]!
     }
 
     type Image {
@@ -35,6 +66,7 @@ export const keywordQuery = gql`
     type Query {
         allKeywords: [Keyword!]!
         keyword(id: ID!): Keyword!
+        keywordUsage(dateFrom: String, dateTo: String, model: String, promptScope: KeywordUsagePromptScope): [KeywordUsage!]!
     }
 `;
 
@@ -46,6 +78,7 @@ export const keywordMutation = gql`
             meaning: String
             effect: String
             note: String
+            aliases: [String!]
         ): Keyword!
         updateKeyword(
             id: ID!
@@ -53,7 +86,11 @@ export const keywordMutation = gql`
             meaning: String
             effect: String
             note: String
+            aliases: [String!]
         ): Keyword!
+        createKeywordAlias(keywordId: ID!, name: String!): KeywordAlias!
+        updateKeywordAlias(id: ID!, name: String!): KeywordAlias!
+        deleteKeywordAlias(id: ID!): Boolean!
         createSampleImage(imageId: ID!, keywordId: ID!): Keyword!
         updateKeywordOrder(categoryId: ID!, keywordId: ID!, order: Int!): Boolean!
         deleteKeyword(categoryId: ID!, keywordId: ID!): Boolean!
@@ -66,6 +103,11 @@ export const keywordTypeDefs = `
     ${keywordQuery}
     ${keywordMutation}
 `;
+
+type KeywordWriteArgs = Keyword &
+    KeywordToCategory & {
+        aliases?: string[];
+    };
 
 const clampOrderToIndex = (order: number, length: number) => {
     if (length <= 0) {
@@ -120,6 +162,86 @@ const buildKeywordCreateUpdateData = (
         Object.entries(textData).filter(([, value]) => value.length > 0),
     );
 
+const normalizeAliasNames = (aliases: unknown) => {
+    if (!Array.isArray(aliases)) {
+        return undefined;
+    }
+
+    const names = new Map<string, string>();
+    for (const alias of aliases) {
+        const name = normalizeOptionalText(alias);
+        if (name) {
+            const key = name.toLowerCase();
+            if (!names.has(key)) {
+                names.set(key, name);
+            }
+        }
+    }
+
+    return [...names.values()];
+};
+
+const replaceKeywordAliases = async ({
+    tx,
+    keywordId,
+    aliases,
+}: {
+    tx: Prisma.TransactionClient;
+    keywordId: number;
+    aliases: unknown;
+}) => {
+    const aliasNames = normalizeAliasNames(aliases);
+    if (aliasNames === undefined) {
+        return;
+    }
+
+    await tx.keywordAlias.deleteMany({
+        where: {
+            keywordId,
+        },
+    });
+
+    if (aliasNames.length === 0) {
+        return;
+    }
+
+    await tx.keywordAlias.createMany({
+        data: aliasNames.map((name) => ({
+            keywordId,
+            name,
+        })),
+    });
+};
+
+const parseDate = (value: unknown, fieldName: string) => {
+    if (typeof value !== 'string' || !value.trim()) {
+        return null;
+    }
+
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) {
+        throw new Error(`${fieldName} must be a valid date`);
+    }
+
+    return date;
+};
+
+const getDefaultDateFrom = () => {
+    const date = new Date();
+    date.setDate(date.getDate() - 30);
+    return date;
+};
+
+const normalizePromptScope = (scope: unknown) => {
+    if (scope === 'PROMPT') {
+        return 'prompt';
+    }
+    if (scope === 'NEGATIVE_PROMPT') {
+        return 'negative_prompt';
+    }
+    return 'all';
+};
+
 export const keywordResolvers: IResolvers = {
     Query: {
         allKeywords: models.keyword.findMany,
@@ -129,6 +251,82 @@ export const keywordResolvers: IResolvers = {
                     id: Number(id),
                 },
             }),
+        keywordUsage: async (
+            _,
+            {
+                dateFrom,
+                dateTo,
+                model,
+                promptScope,
+            }: {
+                dateFrom?: string;
+                dateTo?: string;
+                model?: string;
+                promptScope?: string;
+            },
+        ) => {
+            const from =
+                parseDate(dateFrom, 'dateFrom') ?? getDefaultDateFrom();
+            const to = parseDate(dateTo, 'dateTo');
+            const filters: Prisma.CollectionWhereInput[] = [
+                {
+                    createdAt: {
+                        gte: from,
+                        ...(to ? { lte: to } : {}),
+                    },
+                },
+            ];
+            const normalizedModel = model?.trim();
+
+            if (normalizedModel) {
+                filters.push({
+                    image: {
+                        meta: {
+                            is: {
+                                model: {
+                                    contains: normalizedModel,
+                                },
+                            },
+                        },
+                    },
+                });
+            }
+
+            const [keywords, collections] = await Promise.all([
+                models.keyword.findMany({
+                    include: {
+                        aliases: {
+                            orderBy: {
+                                name: 'asc',
+                            },
+                        },
+                    },
+                    orderBy: {
+                        id: 'asc',
+                    },
+                }),
+                models.collection.findMany({
+                    where:
+                        filters.length === 1
+                            ? filters[0]
+                            : {
+                                  AND: filters,
+                              },
+                    select: {
+                        prompt: true,
+                        negativePrompt: true,
+                    },
+                }),
+            ]);
+
+            return calculateKeywordUsage({
+                keywords,
+                collections,
+                options: {
+                    promptScope: normalizePromptScope(promptScope),
+                },
+            });
+        },
     },
     Mutation: {
         createKeyword: async (
@@ -139,7 +337,8 @@ export const keywordResolvers: IResolvers = {
                 meaning,
                 effect,
                 note,
-            }: Keyword & KeywordToCategory,
+                aliases,
+            }: KeywordWriteArgs,
         ) => {
             categoryId = Number(categoryId);
             const keywordName = normalizeRequiredText(name, 'Keyword name');
@@ -182,7 +381,7 @@ export const keywordResolvers: IResolvers = {
                 const order = nextOrder ? nextOrder.order + 1 : 1;
 
                 if (keyword) {
-                    return tx.keyword.update({
+                    const updatedKeyword = await tx.keyword.update({
                         where: {
                             id: keyword.id,
                         },
@@ -200,9 +399,15 @@ export const keywordResolvers: IResolvers = {
                             },
                         },
                     });
+                    await replaceKeywordAliases({
+                        tx,
+                        keywordId: keyword.id,
+                        aliases,
+                    });
+                    return updatedKeyword;
                 }
 
-                return tx.keyword.create({
+                const createdKeyword = await tx.keyword.create({
                     data: {
                         name: keywordName,
                         ...keywordTextData,
@@ -218,21 +423,77 @@ export const keywordResolvers: IResolvers = {
                         },
                     },
                 });
+                await replaceKeywordAliases({
+                    tx,
+                    keywordId: createdKeyword.id,
+                    aliases,
+                });
+                return createdKeyword;
             });
         },
         updateKeyword: async (
             _,
-            { id, name, meaning, effect, note }: Keyword,
+            { id, name, meaning, effect, note, aliases }: KeywordWriteArgs,
         ) => {
-            return models.keyword.update({
+            return models.$transaction(async (tx) => {
+                const keywordId = Number(id);
+                const updatedKeyword = await tx.keyword.update({
+                    where: {
+                        id: keywordId,
+                    },
+                    data: {
+                        name: normalizeRequiredText(name, 'Keyword name'),
+                        ...buildKeywordTextData({ meaning, effect, note }),
+                    },
+                });
+                await replaceKeywordAliases({
+                    tx,
+                    keywordId,
+                    aliases,
+                });
+                return updatedKeyword;
+            });
+        },
+        createKeywordAlias: async (_, { keywordId, name }: KeywordAlias) => {
+            const parsedKeywordId = Number(keywordId);
+            const keyword = await models.keyword.findUnique({
+                where: {
+                    id: parsedKeywordId,
+                },
+                select: {
+                    id: true,
+                },
+            });
+
+            if (!keyword) {
+                throw new Error('Keyword does not exist');
+            }
+
+            return models.keywordAlias.create({
+                data: {
+                    keywordId: parsedKeywordId,
+                    name: normalizeRequiredText(name, 'Alias name'),
+                },
+            });
+        },
+        updateKeywordAlias: async (_, { id, name }: KeywordAlias) => {
+            return models.keywordAlias.update({
                 where: {
                     id: Number(id),
                 },
                 data: {
-                    name: normalizeRequiredText(name, 'Keyword name'),
-                    ...buildKeywordTextData({ meaning, effect, note }),
+                    name: normalizeRequiredText(name, 'Alias name'),
                 },
             });
+        },
+        deleteKeywordAlias: async (_, { id }: KeywordAlias) => {
+            await models.keywordAlias.delete({
+                where: {
+                    id: Number(id),
+                },
+            });
+
+            return true;
         },
         createSampleImage: async (
             _,
@@ -415,6 +676,15 @@ export const keywordResolvers: IResolvers = {
         },
     },
     Keyword: {
+        aliases: (keyword: Keyword) =>
+            models.keywordAlias.findMany({
+                where: {
+                    keywordId: keyword.id,
+                },
+                orderBy: {
+                    name: 'asc',
+                },
+            }),
         categories: (keyword: Keyword) =>
             models.keywordToCategory.findMany({
                 where: {

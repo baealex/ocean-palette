@@ -18,6 +18,11 @@ export function getCategories() {
                     meaning
                     effect
                     note
+                    aliases {
+                        id
+                        name
+                        keywordId
+                    }
                     image {
                         id
                         url

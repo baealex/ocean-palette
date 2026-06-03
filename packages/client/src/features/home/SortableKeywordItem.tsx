@@ -73,10 +73,18 @@ export const SortableKeywordItem = ({
         { label: 'Meaning', value: keyword.meaning?.trim() },
         { label: 'Effect', value: keyword.effect?.trim() },
         { label: 'Note', value: keyword.note?.trim() },
+        {
+            label: 'Aliases',
+            value: keyword.aliases
+                ?.map((alias) => alias.name.trim())
+                .filter((alias) => alias.length > 0)
+                .join(', '),
+        },
     ].filter((detail): detail is { label: string; value: string } =>
         Boolean(detail.value),
     );
     const hasKeywordDetails = keywordDetails.length > 0;
+    const usageCount = keyword.usage?.totalCount;
 
     useEffect(() => {
         if (isDragging) {
@@ -144,6 +152,21 @@ export const SortableKeywordItem = ({
                 ) : (
                     keywordButton
                 )}
+
+                {usageCount !== undefined ? (
+                    <span
+                        aria-label={`${keyword.name} recent usage`}
+                        title={`${usageCount} recent uses`}
+                        className={cn(
+                            'inline-flex h-5 min-w-5 shrink-0 items-center justify-center rounded-full bg-surface-base px-1.5 text-[10px] font-semibold leading-none',
+                            usageCount > 0
+                                ? 'text-brand-700'
+                                : 'text-ink-subtle',
+                        )}
+                    >
+                        {usageCount}
+                    </span>
+                ) : null}
 
                 {hasKeywordDetails ? (
                     <Popover

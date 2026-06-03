@@ -14,17 +14,22 @@ import {
     createSampleImage,
     deleteKeyword,
     deleteSampleImage,
+    getKeywordUsage,
     updateKeyword,
     updateKeywordOrder,
 } from '~/features/keyword/api';
 import type { KeywordFieldsInput } from '~/features/keyword/api';
 import { imageToBase64 } from '~/modules/image';
+import type { KeywordUsage } from '~/models/types';
 
 import type { HomeCategory } from './types';
 
 const sortCategories = (categories: HomeCategory[]) =>
     [...categories].sort((left, right) => left.order - right.order);
-const normalizeCategories = (categories: HomeCategory[]): HomeCategory[] =>
+const normalizeCategories = (
+    categories: HomeCategory[],
+    usageByKeywordId: Map<number, KeywordUsage>,
+): HomeCategory[] =>
     categories.map((category) => ({
         ...category,
         id: Number(category.id),
@@ -35,6 +40,12 @@ const normalizeCategories = (categories: HomeCategory[]): HomeCategory[] =>
             meaning: keyword.meaning ?? '',
             effect: keyword.effect ?? '',
             note: keyword.note ?? '',
+            aliases: keyword.aliases?.map((alias) => ({
+                ...alias,
+                id: Number(alias.id),
+                keywordId: Number(alias.keywordId),
+            })),
+            usage: usageByKeywordId.get(Number(keyword.id)),
             categories: keyword.categories?.map((link) => ({
                 ...link,
                 id: Number(link.id),
@@ -95,13 +106,28 @@ export const useHomeBoard = () => {
         }));
 
         try {
-            const response = await getCategories();
+            const [categoriesResponse, usageResponse] = await Promise.all([
+                getCategories(),
+                getKeywordUsage(),
+            ]);
+            const usageByKeywordId = new Map(
+                usageResponse.data.keywordUsage.map((usage) => [
+                    Number(usage.keywordId),
+                    {
+                        ...usage,
+                        keywordId: Number(usage.keywordId),
+                    },
+                ]),
+            );
             setState((prev) => ({
                 ...prev,
                 loading: false,
                 error: null,
                 categories: sortCategories(
-                    normalizeCategories(response.data.allCategories),
+                    normalizeCategories(
+                        categoriesResponse.data.allCategories,
+                        usageByKeywordId,
+                    ),
                 ),
             }));
         } catch (error) {
@@ -359,6 +385,9 @@ export const useHomeBoard = () => {
                     meaning: keyword.meaning?.trim() ?? '',
                     effect: keyword.effect?.trim() ?? '',
                     note: keyword.note?.trim() ?? '',
+                    aliases: keyword.aliases
+                        ?.map((alias) => alias.trim())
+                        .filter((alias) => alias.length > 0),
                 });
             }, 'Failed to add keyword details');
         },
@@ -383,6 +412,9 @@ export const useHomeBoard = () => {
                     meaning: keyword.meaning?.trim() ?? '',
                     effect: keyword.effect?.trim() ?? '',
                     note: keyword.note?.trim() ?? '',
+                    aliases: keyword.aliases
+                        ?.map((alias) => alias.trim())
+                        .filter((alias) => alias.length > 0),
                 });
             }, 'Failed to edit keyword');
         },

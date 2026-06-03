@@ -1,4 +1,4 @@
-import type { Keyword } from '~/models/types';
+import type { Keyword, KeywordUsage } from '~/models/types';
 
 import { graphQLRequest } from '~/api/graphql-core';
 
@@ -7,6 +7,7 @@ export interface KeywordFieldsInput {
     meaning?: string;
     effect?: string;
     note?: string;
+    aliases?: string[];
 }
 
 const keywordFields = `
@@ -15,7 +16,30 @@ const keywordFields = `
     meaning
     effect
     note
+    aliases {
+        id
+        name
+        keywordId
+    }
 `;
+
+const keywordUsageFields = `
+    keywordId
+    totalCount
+    promptCount
+    negativePromptCount
+    aliases
+`;
+
+export function getKeywordUsage() {
+    return graphQLRequest<'keywordUsage', KeywordUsage[]>(`
+        query {
+            keywordUsage {
+                ${keywordUsageFields}
+            }
+        }
+    `);
+}
 
 export function createKeyword(
     data: { categoryId: number } & KeywordFieldsInput,
@@ -34,6 +58,7 @@ export function createKeyword(
             $meaning: String
             $effect: String
             $note: String
+            $aliases: [String!]
         ) {
             createKeyword(
                 categoryId: $categoryId
@@ -41,6 +66,7 @@ export function createKeyword(
                 meaning: $meaning
                 effect: $effect
                 note: $note
+                aliases: $aliases
             ) {
                 ${keywordFields}
                 categories {
@@ -56,6 +82,7 @@ export function createKeyword(
             meaning: data.meaning,
             effect: data.effect,
             note: data.note,
+            aliases: data.aliases,
         },
     );
 }
@@ -72,6 +99,7 @@ export function updateKeyword(data: { id: number } & KeywordFieldsInput) {
             $meaning: String
             $effect: String
             $note: String
+            $aliases: [String!]
         ) {
             updateKeyword(
                 id: $id
@@ -79,6 +107,7 @@ export function updateKeyword(data: { id: number } & KeywordFieldsInput) {
                 meaning: $meaning
                 effect: $effect
                 note: $note
+                aliases: $aliases
             ) {
                 ${keywordFields}
             }
@@ -90,6 +119,7 @@ export function updateKeyword(data: { id: number } & KeywordFieldsInput) {
             meaning: data.meaning,
             effect: data.effect,
             note: data.note,
+            aliases: data.aliases,
         },
     );
 }

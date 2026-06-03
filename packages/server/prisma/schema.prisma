@@ -46,7 +46,19 @@ model Keyword {
     imageId    Int?
     image      Image?              @relation(fields: [imageId], references: [id])
     updatedAt  DateTime            @updatedAt
+    aliases    KeywordAlias[]
     categories KeywordToCategory[]
+}
+
+model KeywordAlias {
+    id        Int      @id @default(autoincrement())
+    name      String   @unique
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    keyword   Keyword  @relation(fields: [keywordId], references: [id], onDelete: Cascade)
+    keywordId Int
+
+    @@index([keywordId])
 }
 
 model KeywordToCategory {
