@@ -1,10 +1,13 @@
-import path from 'path';
 import { defineConfig, devices } from '@playwright/test';
 
 const port = Number(process.env.E2E_PORT ?? 7769);
 const baseURL = `http://127.0.0.1:${port}`;
-const e2eDir = path.resolve('.tmp/e2e');
-const databaseUrl = `file:${path.join(e2eDir, 'db.sqlite3')}`;
+const databaseUrl = 'file:../../.tmp/e2e/db.sqlite3';
+const webServerEnv = Object.fromEntries(
+    Object.entries(process.env).filter(
+        (entry): entry is [string, string] => typeof entry[1] === 'string',
+    ),
+);
 
 export default defineConfig({
     testDir: './tests/e2e',
@@ -23,15 +26,13 @@ export default defineConfig({
         },
     ],
     webServer: {
-        command: [
-            'rm -rf .tmp/e2e',
-            'mkdir -p .tmp/e2e',
-            'pnpm build',
-            [
-                'cd packages/server',
-                `DATABASE_URL="${databaseUrl}" PORT="${port}" pnpm exec tsx script/_start.ts`,
-            ].join(' && '),
-        ].join(' && '),
+        command: 'node tests/e2e/web-server.mjs',
+        env: {
+            ...webServerEnv,
+            DATABASE_URL: databaseUrl,
+            E2E_PORT: String(port),
+            PORT: String(port),
+        },
         url: baseURL,
         reuseExistingServer: !process.env.CI,
         timeout: 120_000,

@@ -28,19 +28,53 @@ const runPrisma = (command: string) => {
 };
 
 export const createDatabase = async () => {
+    const databasePath = process.env.DATABASE_URL
+        ? resolveSqliteDatabasePath(process.env.DATABASE_URL)
+        : null;
+
+    if (databasePath) {
+        fs.mkdirSync(path.dirname(databasePath), {
+            recursive: true,
+        });
+    }
+
     runPrisma('generate');
     runPrisma('migrate deploy');
 };
 
 const databaseFileSuffixes = ['', '-journal', '-wal', '-shm'];
 
-const getDatabaseFilePaths = (fileName: string) => [
-    path.resolve(packageRootPath, fileName),
-    path.resolve(prismaPath, fileName),
-];
+export const resolveSqliteDatabasePath = (databaseUrl: string) => {
+    if (!databaseUrl.startsWith('file:')) {
+        return null;
+    }
 
-export const removeDatabase = async (fileName = 'db.sqlite3') => {
-    for (const databasePath of getDatabaseFilePaths(fileName)) {
+    const databasePath = databaseUrl.slice('file:'.length);
+
+    if (!databasePath) {
+        return null;
+    }
+
+    return path.isAbsolute(databasePath)
+        ? databasePath
+        : path.resolve(packageRootPath, databasePath);
+};
+
+const getDatabaseFilePaths = (fileNameOrUrl: string) => {
+    const databasePath = resolveSqliteDatabasePath(fileNameOrUrl);
+
+    if (databasePath) {
+        return [databasePath];
+    }
+
+    return [
+        path.resolve(packageRootPath, fileNameOrUrl),
+        path.resolve(prismaPath, fileNameOrUrl),
+    ];
+};
+
+export const removeDatabase = async (fileNameOrUrl = 'db.sqlite3') => {
+    for (const databasePath of getDatabaseFilePaths(fileNameOrUrl)) {
         for (const suffix of databaseFileSuffixes) {
             const targetPath = `${databasePath}${suffix}`;
             if (fs.existsSync(targetPath)) {

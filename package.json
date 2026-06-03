@@ -27,7 +27,8 @@
         "test:client": "pnpm --filter @ocean-palette/client run test",
         "test": "pnpm --filter @ocean-palette/server run test && pnpm --filter @ocean-palette/client run test",
         "test:e2e": "playwright test",
-        "smoke:docker": "node tests/smoke/docker-server-smoke.mjs"
+        "smoke:docker": "node tests/smoke/docker-server-smoke.mjs",
+        "smoke:migration": "node tests/smoke/migration-smoke.mjs"
     },
     "devDependencies": {
         "@biomejs/biome": "^2.4.16",
