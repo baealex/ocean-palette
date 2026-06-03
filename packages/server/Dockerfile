@@ -40,7 +40,8 @@ ENV DATABASE_URL=file:./prisma/data/db.sqlite3
 COPY --from=server /app /app
 COPY --from=client /app/packages/client/dist /app/packages/client/dist
 
-RUN mkdir -p /app/packages/server/public/assets/images
+RUN mkdir -p /data /assets/images
+RUN rm -rf /app/packages/server/prisma/data /app/packages/server/public/assets
 RUN ln -s /data /app/packages/server/prisma/data
 RUN ln -s /assets /app/packages/server/public/assets
 

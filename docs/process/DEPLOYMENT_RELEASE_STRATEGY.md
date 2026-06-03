@@ -49,10 +49,17 @@ Updated: 2026-05-21
 2. Persistent volumes
 - `/data`: database persistence
 - `/assets`: image/static assets persistence
+- In Docker, `packages/server/prisma/data` must be a symlink to `/data`.
+- In Docker, `packages/server/public/assets` must be a symlink to `/assets`.
 
 3. Startup migration behavior
 - Server start path runs `prisma generate` and `prisma migrate deploy` before app boot.
 - Any deployment target must provide writable persistent volume for DB files.
+
+4. Docker storage migration warning
+- Changing Docker storage symlinks is data-impacting even when the database schema does not change.
+- A new image cannot automatically rescue DB or asset files that were written into an old container layer.
+- Do not publish a new `latest` image for a storage contract change until the release has a user-facing migration note, `pnpm smoke:docker` has passed, and the operator has recorded the image digest.
 
 ## 5. Deployment Runbook
 1. Docker (recommended)
@@ -102,7 +109,7 @@ pnpm start
 - Ordinary UI/code/docs changes may use the manual `latest` publishing flow after CI passes.
 
 3. Before applying new container in production-like host
-- Backup mounted `./data` volume when the change is data-impacting, migration-related, or storage-path-related.
+- Backup mounted `./data` and `./assets` volumes when the change is data-impacting, migration-related, or storage-path-related.
 - Confirm writable mount permissions for `/data` and `/assets`.
 - Confirm required environment variables and secrets match the deployed image.
 - Record the published image digest before replacing the running container.
@@ -110,6 +117,21 @@ pnpm start
 4. After deployment
 - Verify container health and startup logs.
 - Open the service URL and confirm core user flows (home, collection, image metadata read).
+
+5. Docker storage migration release gate
+- Keep migration instructions out of Quick Start docs unless a released image requires them.
+- Prepare user-facing migration notes separately for the target release. They must cover both `docker run` and Docker Compose users.
+- Migration notes must copy any rescued old-container DB/assets into a staging directory first, not directly over mounted `./data` or `./assets`.
+- After starting the replacement container, confirm the storage contract inside that container:
+```bash
+docker exec <container> sh -lc 'readlink /app/packages/server/prisma/data && readlink /app/packages/server/public/assets'
+```
+- Expected output:
+```text
+/data
+/assets
+```
+- If either value is different, stop the deployment and do not run the image as `latest`.
 
 ## 8. Smoke Test Policy
 - The repository is an app/server deployment target, not an npm package distribution target.
@@ -121,6 +143,7 @@ pnpm start
 - Source run default: `packages/server/.env` sets `DATABASE_URL="file:./prisma/data/db.sqlite3"`.
 - Example file: `packages/server/.env.example`.
 - Container default: `packages/server/Dockerfile` sets `DATABASE_URL=file:./prisma/data/db.sqlite3`; `/data` is linked into that database directory at runtime.
+- Container asset default: `/assets` is linked to `packages/server/public/assets`, so app URLs under `/assets/images` map to the mounted `./assets/images` directory.
 - Treat changes to required env vars, defaults, or secret names as release-impacting.
 
 ## 10. Required Build Secrets
