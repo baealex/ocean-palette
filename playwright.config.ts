@@ -29,7 +29,7 @@ export default defineConfig({
             'pnpm build',
             [
                 'cd packages/server',
-                `DATABASE_URL="${databaseUrl}" PORT="${port}" pnpm exec ts-node script/_start.ts`,
+                `DATABASE_URL="${databaseUrl}" PORT="${port}" pnpm exec tsx script/_start.ts`,
             ].join(' && '),
         ].join(' && '),
         url: baseURL,
