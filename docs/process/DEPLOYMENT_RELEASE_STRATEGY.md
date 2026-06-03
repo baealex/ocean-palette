@@ -10,7 +10,7 @@ Updated: 2026-06-03
 ## 2. Deployment Channels
 1. DockerHub image
 - Image: `baealex/ocean-palette`
-- Published tags: exact version tags only, for example `1.1.0`
+- Published tags: exact version tags only, for example `0.1.0`
 - Floating `latest` is not updated by the release workflow.
 - Multi-arch targets: `linux/amd64`, `linux/arm64`
 
@@ -29,8 +29,18 @@ docker run \
 ```
 
 2. Docker Compose
+Edit `docker-compose.yml` so the image includes the exact release version:
+
+```yaml
+services:
+  app:
+    image: baealex/ocean-palette:<exact-version>
+```
+
+Then run:
+
 ```bash
-OCEAN_PALETTE_VERSION=<exact-version> docker compose up -d
+docker compose up -d
 ```
 
 3. Production rule
@@ -38,18 +48,18 @@ OCEAN_PALETTE_VERSION=<exact-version> docker compose up -d
 - Do not use `baealex/ocean-palette`, `baealex/ocean-palette:latest`, or any other floating tag for installs or upgrades.
 
 4. Existing `latest` tag
-- Existing `latest` images are treated as legacy.
-- New releases do not update `latest`.
-- This prevents `docker pull` or tag-less compose runs from silently applying a storage-contract change.
+- Existing users who run `baealex/ocean-palette` or `baealex/ocean-palette:latest` keep pulling the current `latest` image.
+- New releases do not move `latest`, so `docker pull` does not apply the new versioned image to those users.
+- Users must opt in to a new release by changing their image tag to an exact version.
 
 ## 4. Release Trigger
 - GitHub Actions `RELEASE` runs only on an explicit `v*` tag push.
-- Example: `v1.1.0`
+- Example: `v0.1.0`
 - Official release trigger:
 
 ```bash
-git tag v1.1.0
-git push origin v1.1.0
+git tag v0.1.0
+git push origin v0.1.0
 ```
 
 - Do not treat PR merge itself as deployment.
