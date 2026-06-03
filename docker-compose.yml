@@ -2,7 +2,8 @@ version: "2.1"
 
 services:
   app:
-    image: baealex/ocean-palette
+    # Replace 0.1.0 with the exact Ocean Palette release version to run.
+    image: baealex/ocean-palette:0.1.0
     ports:
       - 7768:7768
     volumes:
