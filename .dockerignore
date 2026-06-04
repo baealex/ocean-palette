@@ -12,3 +12,6 @@ docs
 packages/client/node_modules
 packages/server/node_modules
 packages/client/dist
+packages/server/.env
+packages/server/prisma/data
+packages/server/public/assets

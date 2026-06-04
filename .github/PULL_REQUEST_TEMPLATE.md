@@ -24,5 +24,5 @@
 - [ ] Type-check completed
 - [ ] Tests completed
 - [ ] Documentation updated (if needed)
-- [ ] Release-impacting changes are marked with a version/tag/manual-gate plan, or this PR is not release-impacting
+- [ ] Release-impacting changes are marked with a deployment/manual-gate plan, or this PR is not release-impacting
 - [ ] Data-impacting changes include backup/migration/rollback notes, or this PR is not data-impacting

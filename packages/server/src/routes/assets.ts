@@ -1,9 +1,13 @@
 import express from 'express';
-import path from 'path';
+
+import {
+    IMAGE_ASSET_URL_PREFIX,
+    resolveImageBaseDirPath,
+} from '~/features/image/image-storage';
 
 export const assetsRouter = express
     .Router()
     .use(
-        '/assets/images/',
-        express.static(path.resolve('public/assets/images/')),
+        `${IMAGE_ASSET_URL_PREFIX}/`,
+        express.static(resolveImageBaseDirPath()),
     );

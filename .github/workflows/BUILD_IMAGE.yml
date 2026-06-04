@@ -1,0 +1,62 @@
+name: BUILD IMAGE
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v6
+        with:
+          run_install: false
+
+      - name: Use Node.js from .nvmrc
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+
+      - name: Build local smoke image
+        run: docker build --file ./packages/server/Dockerfile --tag ocean-palette:smoke .
+
+      - name: Run Docker smoke
+        run: pnpm smoke:docker -- --image ocean-palette:smoke --skip-build
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v4
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push
+        id: build-and-push
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: ./packages/server/Dockerfile
+          platforms: linux/amd64,linux/arm64/v8
+          push: true
+          tags: baealex/ocean-palette:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Report image digest
+        run: |
+          echo "Image digest: ${{ steps.build-and-push.outputs.digest }}"
+          {
+            echo "### Docker image"
+            echo '- Image: `baealex/ocean-palette:latest`'
+            echo "- Digest: \`${{ steps.build-and-push.outputs.digest }}\`"
+          } >> "$GITHUB_STEP_SUMMARY"

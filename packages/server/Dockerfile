@@ -31,19 +31,18 @@ COPY ./packages/server/prisma ./packages/server/prisma
 RUN pnpm install --frozen-lockfile
 
 COPY ./packages/server ./packages/server
+RUN rm -rf /app/packages/server/prisma/data /app/packages/server/public/assets
 
 FROM node:22-alpine
 
 WORKDIR /app/packages/server
-ENV DATABASE_URL=file:./prisma/data/db.sqlite3
+ENV DATABASE_URL=file:/data/db.sqlite3
+ENV OCEAN_PALETTE_IMAGE_DIR=/assets/images
 
 COPY --from=server /app /app
 COPY --from=client /app/packages/client/dist /app/packages/client/dist
 
 RUN mkdir -p /data /assets/images
-RUN rm -rf /app/packages/server/prisma/data /app/packages/server/public/assets
-RUN ln -s /data /app/packages/server/prisma/data
-RUN ln -s /assets /app/packages/server/public/assets
 
 ENTRYPOINT ["npm", "run"]
 CMD ["start"]

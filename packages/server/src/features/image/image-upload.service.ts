@@ -10,9 +10,10 @@ import {
 } from '~/features/live/live-images.time-format';
 import { LiveImagesImageRepository } from '~/features/live/live-images.image-repository';
 import { resolveGeneratedAt } from '~/features/live/live-images.utils';
+import { resolveImageAssetUrl, resolveImageBaseDirPath } from './image-storage';
 
 const imageRepository = new LiveImagesImageRepository();
-const imageBaseDir = path.resolve('./public/assets/images');
+const imageBaseDir = resolveImageBaseDirPath();
 const DATA_URL_REGEX = /^data:image\/([a-zA-Z0-9.+-]+);base64,(.+)$/;
 
 interface ParsedDataUrlImage {
@@ -35,16 +36,6 @@ function normalizeExtension(input: string): string {
         return 'jpg';
     }
     return normalized;
-}
-
-function ensurePath(pathSegments: string[]): void {
-    let currentPath = '';
-    for (const segment of pathSegments) {
-        currentPath = path.resolve(currentPath, segment);
-        if (!fs.existsSync(currentPath)) {
-            fs.mkdirSync(currentPath);
-        }
-    }
 }
 
 function parseDataUrlImage(input: unknown): ParsedDataUrlImage | null {
@@ -112,11 +103,13 @@ export async function uploadImageFromDataUrl(
     const now = new Date();
     const datePath = resolveDatePathSegments(now);
     const dateSegments = [datePath.year, datePath.month, datePath.day];
-    ensurePath(['./public', 'assets', 'images', ...dateSegments]);
+    await fs.promises.mkdir(path.resolve(imageBaseDir, ...dateSegments), {
+        recursive: true,
+    });
 
     const fileName = `${resolveCreatedAtEpochToken(now)}.${parsed.extension}`;
     const absolutePath = path.resolve(imageBaseDir, ...dateSegments, fileName);
-    const url = `/assets/images/${dateSegments.join('/')}/${fileName}`;
+    const url = resolveImageAssetUrl([...dateSegments, fileName]);
 
     await fs.promises.writeFile(absolutePath, parsed.buffer);
 

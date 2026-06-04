@@ -1,6 +1,10 @@
 import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3';
 import { PrismaClient } from '@prisma/client';
 
+import { loadServerEnv } from './modules/env';
+
+loadServerEnv();
+
 export const createPrismaClient = (
     url = process.env.DATABASE_URL ?? 'file:./prisma/data/db.sqlite3',
 ) => {
